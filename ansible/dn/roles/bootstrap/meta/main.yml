@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: Juan Manuel Palacios Plaza
+  description: FreeBSD system bootstrapping
+  license: proprietary
+  min_ansible_version: "2.20"

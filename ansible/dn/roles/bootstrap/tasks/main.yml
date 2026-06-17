@@ -1,0 +1,80 @@
+---
+- name: Check if Python is installed
+  ansible.builtin.raw: "pkg info -eq lang/python3"
+  register: python_check
+  failed_when: false
+  changed_when: false
+  tags:
+    - base-packages
+
+- name: Install Python if missing
+  ansible.builtin.raw: "pkg install -y lang/python3"
+  when: python_check.rc != 0
+  changed_when: true
+  tags:
+    - base-packages
+
+- name: Gather facts
+  ansible.builtin.setup:
+  tags:
+    - facts
+
+- name: Create pkg repos directory
+  ansible.builtin.file:
+    path: /usr/local/etc/pkg/repos
+    state: directory
+    mode: "0755"
+  tags:
+    - pkg
+    - latest-repo
+
+- name: Configure 'latest' pkg repository
+  ansible.builtin.copy:
+    dest: /usr/local/etc/pkg/repos/FreeBSD.conf
+    content: |
+      FreeBSD: {
+          url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
+      }
+    mode: "0644"
+  tags:
+    - pkg
+    - latest-repo
+
+- name: Install base packages
+  community.general.pkgng:
+    name:
+      - lang/python3
+      - shells/bash
+      - shells/bash-completion
+      - shells/bash-completion-freebsd
+      - shells/bash-completion-zfs
+    state: latest
+  tags:
+    - base-packages
+
+- name: Create admin accounts
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    comment: "{{ item.comment }}"
+    groups: "{{ item.groups }}"
+    append: true
+    shell: "{{ item.shell }}"
+    password: "{{ item.password_value | ansible.builtin.password_hash(hashtype='sha512', salt=item.password_salt) }}"
+    update_password: on_create
+  loop: "{{ admins }}"
+  loop_control:
+    label: "{{ item.name }}"
+  tags:
+    - users
+    - admin
+  no_log: "{{ disable_sensitive_logging }}"
+
+- name: Add SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('ansible.builtin.file', item.name + '_' + item.key_type + '.pub') }}"
+  loop: "{{ admins }}"
+  tags:
+    - ssh
+    - keys
+  no_log: "{{ disable_sensitive_logging }}"

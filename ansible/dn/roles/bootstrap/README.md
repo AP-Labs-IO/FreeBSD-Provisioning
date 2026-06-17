@@ -1,0 +1,43 @@
+Bootstrap
+=========
+
+Bootstraps a fresh FreeBSD installation with latest Python, Bash, Bash shell completion, and admin accounts (full with SSH keys).
+
+Requirements
+------------
+
+* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
+
+Role Variables
+--------------
+
+| Variable | Description                                                                                                                                                                                             |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| admins   | List of administrator users, with each entry being a dictionary with `name`, `comment`, `groups` (list), `shell`, `password_value` (encrypted), `password_salt` (encrypted), and `key_type` attributes. |
+
+Dependencies
+------------
+
+None.
+
+Example Playbook
+----------------
+
+```yaml
+- name: Bootstrap
+  hosts: all
+  become: false
+  gather_facts: false
+  vars:
+    ansible_user: root
+  vars_files:
+    - vars/admins.yml
+    - vars/secrets.yml
+  roles:
+    - bootstrap
+```
+
+Author Information
+------------------
+
+Juan Manuel Palacios (<jmpalacios@gmail.com>).
