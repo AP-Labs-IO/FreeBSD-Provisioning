@@ -32,7 +32,6 @@ Example Playbook
     ansible_user: root
   vars_files:
     - vars/admins.yml
-    - vars/secrets.yml
   roles:
     - bootstrap
 ```
