@@ -11,9 +11,9 @@ Requirements
 Role Variables
 --------------
 
-| Variable | Description                                                                                                                                                                                 |
-|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| admins   | List of administrator users, with each entry being a dictionary with `name`, `comment`, `groups` (list), `shell`, `password_value` (encrypted), `password_salt`, and `key_type` attributes. |
+| Variable | Description                                                                                                                                                                  |
+|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| admins   | List of administrator users, with each entry being a dictionary with `name`, `comment`, `groups` (list), `shell`, `password` (encrypted), `salt`, and `key_type` attributes. |
 
 Dependencies
 ------------
