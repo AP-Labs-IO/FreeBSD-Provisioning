@@ -30,8 +30,6 @@ Example Playbook
   gather_facts: false
   vars:
     ansible_user: root
-  vars_files:
-    - vars/admins.yml
   roles:
     - bootstrap
 ```
