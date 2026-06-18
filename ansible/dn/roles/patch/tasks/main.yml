@@ -1,0 +1,25 @@
+---
+- name: Apply OS patches
+  ansible.builtin.shell: "freebsd-update --not-running-from-cron fetch install"
+  environment:
+    PAGER: cat
+  register: update_output
+  changed_when: "'Installing updates:' in update_output.stdout"
+  failed_when:
+    - update_output.rc != 0
+    - "'No updates needed' not in update_output.stdout"
+  tags:
+    - update
+    - patch
+    - patches
+    - freebsd-update
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: "Rebooting to apply OS patches"
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: update_output.changed
+  tags:
+    - reboot
