@@ -1,6 +1,6 @@
 ---
 - name: Check if Python is installed
-  ansible.builtin.raw: "pkg info -eq lang/python3"
+  ansible.builtin.raw: "ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3"
   register: python_check
   failed_when: false
   changed_when: false
