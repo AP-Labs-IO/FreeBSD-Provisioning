@@ -29,6 +29,13 @@
     - root
   no_log: "{{ disable_sensitive_logging }}"
 
+- name: Prohibit password-based SSH authentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: ^PasswordAuthentication
+    line: "#PasswordAuthentication no"
+  notify: Restart sshd
+
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
