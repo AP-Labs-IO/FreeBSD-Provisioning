@@ -43,6 +43,9 @@
     line: "PermitRootLogin prohibit-password"
   notify: Restart sshd
 
+- name: Force sshd restart
+  ansible.builtin.meta: flush_handlers
+
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
