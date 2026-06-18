@@ -36,6 +36,13 @@
     line: "#PasswordAuthentication no"
   notify: Restart sshd
 
+- name: Enable key-based only SSH authentication for root
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: ^#PermitRootLogin
+    line: "PermitRootLogin prohibit-password"
+  notify: Restart sshd
+
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
