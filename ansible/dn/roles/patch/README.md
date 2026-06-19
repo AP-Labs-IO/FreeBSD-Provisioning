@@ -7,6 +7,12 @@ Requirements
 ------------
 
 * A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
+* An already bootstrapped FreeBSD environment, i.e.:
+  * With a Python runtime.
+  * With key-based SSH access.
+  * A functional `become` setup.
+
+The last set of requirements can be easily met by running the `bootstrap` as a precursor to this role.
 
 Role Variables
 --------------
