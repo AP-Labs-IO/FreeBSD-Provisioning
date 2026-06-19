@@ -34,6 +34,11 @@ Example Playbook
     - bootstrap
 ```
 
+License
+--------
+
+Proprietary.
+
 Author Information
 ------------------
 
