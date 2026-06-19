@@ -37,7 +37,7 @@ Example Playbook
 License
 --------
 
-Proprietary.
+All Rights Reserved. Proprietary and Confidential.
 
 Author Information
 ------------------
