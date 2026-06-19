@@ -32,14 +32,14 @@
 - name: Prohibit password-based SSH authentication
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: "^PasswordAuthentication"
+    regexp: "(?i)^#?PasswordAuthentication"
     line: "#PasswordAuthentication no"
   notify: Restart sshd
 
 - name: Enable key-based only SSH authentication for root
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
-    regexp: "^#PermitRootLogin"
+    regexp: "(?i)^#?PermitRootLogin"
     line: "PermitRootLogin prohibit-password"
   notify: Restart sshd
 
