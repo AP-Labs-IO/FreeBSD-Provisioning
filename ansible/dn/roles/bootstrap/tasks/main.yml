@@ -33,7 +33,7 @@
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PasswordAuthentication"
-    line: "#PasswordAuthentication no"
+    line: "PasswordAuthentication no"
   notify: Restart sshd
 
 - name: Enable key-based only SSH authentication for root
