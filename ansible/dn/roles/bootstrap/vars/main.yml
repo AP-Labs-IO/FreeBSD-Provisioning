@@ -1,5 +1,5 @@
 ---
-admins:
+bootstrap_admins:
   - name: jmpp
     comment: "Juan Palacios Plaza"
     groups:

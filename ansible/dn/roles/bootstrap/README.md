@@ -13,7 +13,7 @@ Role Variables
 
 | Variable | Description                                                                                                                                                                  |
 |----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| admins   | List of administrator users, with each entry being a dictionary with `name`, `comment`, `groups` (list), `shell`, `password` (encrypted), `salt`, and `key_type` attributes. |
+| bootstrap_admins | List of administrator users, with each entry being a dictionary with `name`, `comment`, `groups` (list), `shell`, `password` (encrypted), `salt`, and `key_type` attributes. |
 
 Dependencies
 ------------
