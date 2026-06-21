@@ -16,7 +16,7 @@
 
 - name: Reboot
   ansible.builtin.reboot:
-    msg: "Rebooting to apply OS patches"
+    msg: Rebooting to apply OS patches
     connect_timeout: 5
     reboot_timeout: 600
     pre_reboot_delay: 5
