@@ -1,6 +1,6 @@
 ---
 - name: Apply OS patches
-  ansible.builtin.command: "freebsd-update --not-running-from-cron fetch install"
+  ansible.builtin.command: freebsd-update --not-running-from-cron fetch install
   environment:
     PAGER: cat
   register: patch_update_output
