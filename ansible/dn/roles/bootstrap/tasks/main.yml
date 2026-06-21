@@ -7,7 +7,7 @@
   tags:
     - base-packages
 
-- name: Install Python if missing
+- name: Install Python
   ansible.builtin.raw: "pkg install -y lang/python3"
   when: bootstrap_python_check.rc != 0
   changed_when: true
