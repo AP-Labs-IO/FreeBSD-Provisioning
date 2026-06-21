@@ -1,6 +1,6 @@
 ---
 - name: Check if Python is installed
-  ansible.builtin.raw: "ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3"
+  ansible.builtin.raw: ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3
   register: bootstrap_python_check
   failed_when: false
   changed_when: false
@@ -8,7 +8,7 @@
     - base-packages
 
 - name: Install Python
-  ansible.builtin.raw: "pkg install -y lang/python3"
+  ansible.builtin.raw: pkg install -y lang/python3
   when: bootstrap_python_check.rc != 0
   changed_when: true
   tags:
@@ -33,14 +33,14 @@
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PasswordAuthentication"
-    line: "PasswordAuthentication no"
+    line: PasswordAuthentication no
   notify: Restart sshd
 
 - name: Enable key-based only SSH authentication for root
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PermitRootLogin"
-    line: "PermitRootLogin prohibit-password"
+    line: PermitRootLogin prohibit-password
   notify: Restart sshd
 
 - name: Flush handlers
