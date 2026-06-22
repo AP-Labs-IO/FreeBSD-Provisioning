@@ -20,6 +20,8 @@
     connect_timeout: 5
     reboot_timeout: 600
     pre_reboot_delay: 5
-  when: (patch_update_output.changed | default(false) | bool) or (force_reboot | default(false) | bool)
+  when: >
+    (patch_update_output.changed | default(false) | bool) or
+    (force_reboot | default(false) | bool)
   tags:
     - reboot
