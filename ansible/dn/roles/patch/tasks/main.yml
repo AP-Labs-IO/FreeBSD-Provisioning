@@ -3,11 +3,11 @@
   ansible.builtin.command: freebsd-update --not-running-from-cron fetch install
   environment:
     PAGER: cat
-  register: patch_update_output
-  changed_when: "'Installing updates:' in patch_update_output.stdout"
+  register: patch_reg_update_output
+  changed_when: "'Installing updates:' in patch_reg_update_output.stdout"
   failed_when:
-    - patch_update_output.rc != 0
-    - "'No updates needed' not in patch_update_output.stdout"
+    - patch_reg_update_output.rc != 0
+    - "'No updates needed' not in patch_reg_update_output.stdout"
   tags:
     - update
     - patching
@@ -20,7 +20,7 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
   when: >
-    (patch_update_output.changed | default(false) | bool) or
+    (patch_reg_update_output.changed | default(false) | bool) or
     (force_reboot | default(false) | bool)
   tags:
     - patching
