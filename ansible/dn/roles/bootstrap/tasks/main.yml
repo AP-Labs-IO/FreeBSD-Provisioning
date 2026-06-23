@@ -1,7 +1,7 @@
 ---
 - name: Checking if Python is installed
   ansible.builtin.raw: ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3
-  register: bootstrap_python_check
+  register: bootstrap_reg_python_check
   failed_when: false
   changed_when: false
   tags:
@@ -9,7 +9,7 @@
 
 - name: Installing Python
   ansible.builtin.raw: pkg install -y lang/python3
-  when: bootstrap_python_check.rc != 0
+  when: bootstrap_reg_python_check.rc != 0
   changed_when: true
   tags:
     - base-packages
