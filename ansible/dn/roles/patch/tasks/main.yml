@@ -1,5 +1,5 @@
 ---
-- name: Apply OS patches
+- name: Applying OS patches
   ansible.builtin.command: freebsd-update --not-running-from-cron fetch install
   environment:
     PAGER: cat
@@ -13,7 +13,7 @@
     - patching
     - freebsd-update
 
-- name: Reboot
+- name: Rebooting
   ansible.builtin.reboot:
     msg: Rebooting to apply OS patches
     connect_timeout: 5
