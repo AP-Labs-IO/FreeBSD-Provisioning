@@ -1,5 +1,5 @@
 ---
-- name: Configuring runtime kernel state
+- name: Configure runtime kernel state
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -57,7 +57,7 @@
     - runtime-state
     - sysctl
 
-- name: Checking if PIDs are randomized
+- name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
   register: kernel_reg_check_randompids
   failed_when: false
@@ -68,7 +68,7 @@
     - sysctl
     - randompid
 
-- name: Setting PID randomization
+- name: Set PID randomization
   ansible.posix.sysctl:
     name: kern.randompid
     state: present
