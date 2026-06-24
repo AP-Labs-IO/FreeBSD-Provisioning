@@ -1,0 +1,82 @@
+---
+- name: Configuring runtime kernel state
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: security.bsd.unprivileged_read_msgbuf
+      description: Disable unprivileged access to kernel message buffer
+      value: 0
+    - key: security.bsd.unprivileged_proc_debug
+      description: Disable unprivileged process debugging
+      value: 0
+    - key: kern.elf32.aslr.enable
+      description: Enable address map randomization for ELF32
+      value: 1
+    - key: kern.elf32.aslr.pie_enable
+      description: Enable address map randomization for ELF32 PIE binaries
+      value: 1
+    - key: kern.elf32.aslr.honor_sbrk
+      description: Disable sbrk(2) honoring for ELF32 with ASLR
+      value: 0
+    - key: kern.elf64.aslr.enable
+      description: Enable address map randomization for ELF64
+      value: 1
+    - key: kern.elf64.aslr.pie_enable
+      description: Enable address map randomization for ELF64 PIE binaries
+      value: 1
+    - key: kern.elf64.aslr.honor_sbrk
+      description: Disable sbrk(2) honoring for ELF64 with ASLR
+      value: 0
+    - key: vfs.zfs.vdev.min_auto_ashift
+      description: Set zfs vdev minimum ashift
+      value: 12
+    - key: kern.corefile
+      description: Set corefile path and name format
+      value: "/var/crash/%N.%U.%P.%I.core"
+    - key: security.mac.do.rules
+      description: Set mac_do(4) rules
+      value: "gid=0>uid=0,gid=*,+gid=*"
+    - key: net.inet.tcp.blackhole
+      description: Disable RST responses for connection attempts on closed TCP ports
+      value: 2
+    - key: net.inet.udp.blackhole
+      description: Disable ICMP responses for unreachable UDP ports
+      value: 1
+    - key: net.inet.icmp.drop_redirect
+      description: Ignore ICMP redirects
+      value: 1
+    - key: net.inet.tcp.drop_synfin
+      description: Drop TCP packets with SYN+FIN bits set
+      value: 1
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags:
+    - kernel
+    - runtime-state
+    - sysctl
+
+- name: Checking if PIDs are randomized
+  ansible.builtin.command: sysctl -n kern.randompid
+  register: kernel_reg_check_randompids
+  failed_when: false
+  changed_when: false
+  tags:
+    - kernel
+    - runtime-state
+    - sysctl
+    - randompid
+
+- name: Setting PID randomization
+  ansible.posix.sysctl:
+    name: kern.randompid
+    state: present
+    value: 1
+  when: kernel_reg_check_randompids.stdout | trim | int < 1
+  changed_when: true
+  tags:
+    - kernel
+    - runtime-state
+    - sysctl
+    - randompid
