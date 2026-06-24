@@ -19,6 +19,15 @@
   tags:
     - facts
 
+- name: Ensure sshd service is enabled
+  community.general.sysrc:
+    name: sshd_enable
+    state: present
+    value: "YES"
+  tags:
+    - ssh
+    - sshd
+
 - name: Add root SSH key
   ansible.posix.authorized_key:
     user: root
