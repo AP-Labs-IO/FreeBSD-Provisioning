@@ -1,0 +1,87 @@
+---
+- name: Loading kernel modules
+  community.general.sysrc:
+    name: "{{ item }}_load"
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+  loop:
+    - zfs
+    - crypto
+    - cryptodev
+    - aesni
+    - virtio_random
+    - mac_do
+  register: boot_reg_modules
+  tags:
+    - kernel
+    - kernel-modules
+    - loader
+
+- name: Configuring boot-time kernel tunables
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: security.bsd.allow_destructive_dtrace
+      description: Disallow destructive DTrace
+      value: 0
+    - key: kern.racct.enable
+      description: Enable RACCT/RCTL
+      value: 1
+    - key: kern.geom.label.disk_ident.enable
+      description: Disable disk ID labels
+      value: 0
+    - key: kern.geom.label.gptid.enable
+      description: Disable GPT UUID labels
+      value: 0
+    - key: kern.geom.label.ufsid.enable
+      description: Disable UFS ID labels
+      value: 0
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  register: boot_reg_tunables
+  tags:
+    - kernel
+    - tunables
+    - loader
+
+- name: Configuring basic system settings
+  community.general.sysrc:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: zfs_enable
+      value: "YES"
+    - key: clear_tmp_enable
+      value: "YES"
+    - key: dumpdev
+      value: AUTO
+    - key: moused_nondefault_enable
+      value: "NO"
+  register: boot_reg_basic_settings
+  tags:
+    - basic-settings
+    - rc-conf
+
+- name: Rebooting
+  ansible.builtin.reboot:
+    msg: Rebooting to load new kernel modules and/or tunables
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (boot_reg_modules.changed | default(false) | bool) or
+    (boot_reg_tunables.changed | default(false) | bool) or
+    (boot_reg_basic_settings.changed | default(false) | bool)
+  tags:
+    - kernel
+    - kernel-modules
+    - tunables
+    - basic-settings
+    - rc-conf
+    - reboot

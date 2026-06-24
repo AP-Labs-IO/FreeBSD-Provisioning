@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: Juan Manuel Palacios Plaza
+  description: Configure boot-time settings from loader(8) & rc.conf(5)
+  license: All Rights Reserved. Proprietary and Confidential.
+  min_ansible_version: "2.20"
