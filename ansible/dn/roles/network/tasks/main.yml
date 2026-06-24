@@ -1,0 +1,114 @@
+---
+- name: Setting hostname
+  community.general.sysrc:
+    name: hostname
+    state: present
+    value: "{{ ansible_facts['hostname'] }}"
+  register: network_reg_hostname
+  tags:
+    - network
+    - hostname
+
+- name: Enabling router solicitation daemon
+  community.general.sysrc:
+    name: rtsold_enable
+    state: present
+    value: "YES"
+  register: network_reg_rtsold
+  tags:
+    - network
+    - rtsold
+
+- name: Removing stock ifconfig configuration
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: "(?i)^ifconfig_(?!(.+_name|bridge|vtnet[1-9]0))"
+    state: absent
+  register: network_reg_reset
+  tags:
+    - network
+    - reset
+
+- name: Configuring cloned interfaces
+  community.general.sysrc:
+    name: cloned_interfaces
+    state: present
+    value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
+  register: network_reg_cloned
+  tags:
+    - network
+    - cloned-interfaces
+
+- name: Renaming source interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item.source }}_name"
+    state: present
+    value: "{{ item.target }}"
+  loop: "{{ interfaces }}"
+  loop_control:
+    label: "Renaming interface: {{ item.source }} -> {{ item.target }}"
+  register: network_reg_rename
+  tags:
+    - network
+    - rename-interfaces
+
+- name: Configuring bridges IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.bridge.name }}"
+    state: present
+    value: "addm {{ item.target }} up stp {{ item.target }}{% if item.bridge.ip4 is defined %} {{ item.bridge.ip4 }}{% endif %}"
+  loop: "{{ interfaces }}"
+  loop_control:
+    label: "Configuring bridge IPv4: {{ item.bridge.name }}"
+  register: network_reg_bridges_ip4
+  tags:
+    - network
+    - configure-bridges
+    - ipv4
+
+- name: Configuring bridges IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.bridge.name }}_ipv6"
+    state: present
+    value: "inet6 {{ item.bridge.ip6 }}"
+  loop: "{{ interfaces }}"
+  loop_control:
+    label: "Configuring bridge IPv6: {{ item.bridge.name }}"
+  when: item.bridge.ip6 is defined
+  register: network_reg_bridges_ip6
+  tags:
+    - network
+    - configure-bridges
+    - ipv6
+
+- name: Activating target interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item.target }}"
+    state: present
+    value: "up"
+  loop: "{{ interfaces }}"
+  loop_control:
+    label: "Link state up: {{ item.target }}"
+  register: network_reg_activate
+  tags:
+    - network
+    - activate
+
+- name: Rebooting
+  ansible.builtin.reboot:
+    msg: Rebooting to activate new network settings
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (network_reg_hostname.changed | default(false) | bool) or
+    (network_reg_rtsold.changed | default(false) | bool) or
+    (network_reg_reset.changed | default(false) | bool) or
+    (network_reg_cloned.changed | default(false) | bool) or
+    (network_reg_rename.changed | default(false) | bool) or
+    (network_reg_bridges_ip4.changed | default(false) | bool) or
+    (network_reg_bridges_ip6.changed | default(false) | bool) or
+    (network_reg_activate.changed | default(false) | bool)
+  tags:
+    - network
+    - reboot
