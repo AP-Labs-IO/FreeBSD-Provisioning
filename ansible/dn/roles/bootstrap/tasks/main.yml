@@ -1,5 +1,5 @@
 ---
-- name: Checking if Python is installed
+- name: Check if Python is installed
   ansible.builtin.raw: ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3
   register: bootstrap_reg_python_check
   failed_when: false
@@ -7,19 +7,19 @@
   tags:
     - base-packages
 
-- name: Installing Python
+- name: Install Python
   ansible.builtin.raw: pkg install -y lang/python3
   when: bootstrap_reg_python_check.rc != 0
   changed_when: true
   tags:
     - base-packages
 
-- name: Gathering facts
+- name: Gather facts
   ansible.builtin.setup:
   tags:
     - facts
 
-- name: Adding root SSH key
+- name: Add root SSH key
   ansible.posix.authorized_key:
     user: root
     key: "{{ lookup('ansible.builtin.file', 'keys/root_ed25519.pub') }}"
@@ -29,24 +29,24 @@
     - root
   no_log: "{{ disable_sensitive_logging }}"
 
-- name: Prohibiting password-based SSH authentication
+- name: Prohibit password-based SSH authentication
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PasswordAuthentication"
     line: PasswordAuthentication no
   notify: Restart sshd
 
-- name: Enabling key-based only SSH authentication for root
+- name: Enable key-based only SSH authentication for root
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PermitRootLogin"
     line: PermitRootLogin prohibit-password
   notify: Restart sshd
 
-- name: Flushing handlers
+- name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Creating pkg repos directory
+- name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
     state: directory
@@ -55,7 +55,7 @@
     - pkg
     - latest-repo
 
-- name: Configuring 'latest' pkg repository
+- name: Configure 'latest' pkg repository
   ansible.builtin.copy:
     dest: /usr/local/etc/pkg/repos/FreeBSD.conf
     content: |
@@ -67,7 +67,7 @@
     - pkg
     - latest-repo
 
-- name: Installing base packages
+- name: Install base packages
   community.general.pkgng:
     name:
       - lang/python3
@@ -79,7 +79,7 @@
   tags:
     - base-packages
 
-- name: Creating admin accounts
+- name: Create admin accounts
   ansible.builtin.user:
     name: "{{ item.name }}"
     comment: "{{ item.comment }}"
@@ -96,7 +96,7 @@
     - accounts
   no_log: "{{ disable_sensitive_logging }}"
 
-- name: Adding admin SSH keys
+- name: Add admin SSH keys
   ansible.posix.authorized_key:
     user: "{{ item.name }}"
     key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
