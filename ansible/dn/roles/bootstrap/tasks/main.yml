@@ -67,7 +67,7 @@
     - pkg
     - latest-repo
 
-- name: Install base packages
+- name: Install core packages
   community.general.pkgng:
     name:
       - lang/python3
