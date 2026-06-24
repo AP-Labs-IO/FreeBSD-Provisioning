@@ -1,5 +1,5 @@
 ---
-- name: Setting hostname
+- name: Set hostname
   community.general.sysrc:
     name: hostname
     state: present
@@ -9,7 +9,7 @@
     - network
     - hostname
 
-- name: Enabling router solicitation daemon
+- name: Enable router solicitation daemon
   community.general.sysrc:
     name: rtsold_enable
     state: present
@@ -19,7 +19,7 @@
     - network
     - rtsold
 
-- name: Removing stock ifconfig configuration
+- name: Remove stock ifconfig configuration
   ansible.builtin.lineinfile:
     path: /etc/rc.conf
     regexp: "(?i)^ifconfig_(?!(.+_name|bridge|vtnet[1-9]0))"
@@ -29,7 +29,7 @@
     - network
     - reset
 
-- name: Configuring cloned interfaces
+- name: Configure cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
     state: present
@@ -39,7 +39,7 @@
     - network
     - cloned-interfaces
 
-- name: Renaming source interfaces
+- name: Rename source interfaces
   community.general.sysrc:
     name: "ifconfig_{{ item.source }}_name"
     state: present
@@ -52,7 +52,7 @@
     - network
     - rename-interfaces
 
-- name: Configuring bridges IPv4
+- name: Configure bridges IPv4
   community.general.sysrc:
     name: "ifconfig_{{ item.bridge.name }}"
     state: present
@@ -66,7 +66,7 @@
     - configure-bridges
     - ipv4
 
-- name: Configuring bridges IPv6
+- name: Configure bridges IPv6
   community.general.sysrc:
     name: "ifconfig_{{ item.bridge.name }}_ipv6"
     state: present
@@ -81,7 +81,7 @@
     - configure-bridges
     - ipv6
 
-- name: Activating target interfaces
+- name: Activate target interfaces
   community.general.sysrc:
     name: "ifconfig_{{ item.target }}"
     state: present
@@ -94,7 +94,7 @@
     - network
     - activate
 
-- name: Rebooting
+- name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to activate new network settings
     connect_timeout: 5
