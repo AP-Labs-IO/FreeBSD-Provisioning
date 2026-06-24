@@ -1,5 +1,5 @@
 ---
-- name: Loading kernel modules
+- name: Load kernel modules
   community.general.sysrc:
     name: "{{ item }}_load"
     state: present
@@ -18,7 +18,7 @@
     - kernel-modules
     - loader
 
-- name: Configuring boot-time kernel tunables
+- name: Configure boot-time kernel tunables
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -49,7 +49,7 @@
     - tunables
     - loader
 
-- name: Configuring basic system settings
+- name: Configure basic system settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
@@ -68,7 +68,7 @@
     - basic-settings
     - rc-conf
 
-- name: Rebooting
+- name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to load new kernel modules and/or tunables
     connect_timeout: 5
