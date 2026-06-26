@@ -68,6 +68,49 @@
     - basic-settings
     - rc-conf
 
+- name: Mount EFI partition
+  ansible.posix.mount:
+    fstype: msdosfs
+    src: /dev/gpt/efiboot0
+    path: /boot/efi
+    opts: rw,noauto
+    state: mounted
+  tags:
+    - efi
+    - esp
+    - partition
+    - mount
+
+- name: Configure swap partitions
+  ansible.posix.mount:
+    fstype: swap
+    src: "/dev/{{ item }}"
+    path: none
+    opts: sw
+    state: present
+  loop: "{{ swap_partitions }}"
+  tags:
+    - swap
+    - partition
+    - mount
+
+- name: Check active swap partitions
+  ansible.builtin.command: swapinfo
+  register: boot_reg_check_swap
+  changed_when: false
+  tags:
+    - swap
+    - check
+
+- name: Activate inactive swap partitions
+  ansible.builtin.command: "swapon /dev/{{ item }}"
+  loop: "{{ swap_partitions }}"
+  when: item not in boot_reg_check_swap.stdout
+  changed_when: true
+  tags:
+    - swap
+    - activate
+
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to load new kernel modules and/or tunables
