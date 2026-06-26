@@ -1,0 +1,41 @@
+---
+- name: Install Bastille packages
+  community.general.pkgng:
+    name:
+      - devel/git
+      - sysutils/bastille
+      - sysutils/htop
+    state: latest
+  tags:
+    - packages
+
+- name: Install Bastille configuration
+  ansible.builtin.template:
+    src: usr/local/etc/bastille/bastille.conf.j2
+    dest: /usr/local/etc/bastille/bastille.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+  tags:
+    - bastille-config
+
+- name: Enable Bastille service
+  community.general.sysrc:
+    name: bastille_enable
+    state: present
+    value: "YES"
+  tags:
+    - bastille-service
+
+- name: Bootstrap FreeBSD releases
+  ansible.builtin.command:
+    cmd: "bastille bootstrap {{ item }} update"
+    creates: "{{ bastille_prefix }}/releases/{{ item }}/COPYRIGHT"
+  register: bastille_bootstrap_releases
+  changed_when: "'skipped' not in bastille_bootstrap_releases.stdout"
+  loop: "{{ bastille_releases }}"
+  loop_control:
+    label: "Release: {{ item }}"
+  tags:
+    - bastille
+    - bootstrap
