@@ -1,7 +1,7 @@
 Configure Users
 =========
 
-Configure the root & administrator users.
+Configure root & administrator users.
 
 Requirements
 ------------
@@ -30,7 +30,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -41,7 +41,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Configure users
+- name: Configure System Administrators
   hosts: all
   become: true
   roles:
