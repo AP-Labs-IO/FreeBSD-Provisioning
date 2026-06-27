@@ -5,7 +5,7 @@
     state: present
     value: "{{ ansible_facts['hostname'] }}"
   register: network_reg_hostname
-  tags: [hostname]
+  tags: [hostname, config]
 
 - name: Enable router solicitation daemon
   community.general.sysrc:
@@ -13,7 +13,7 @@
     state: present
     value: "YES"
   register: network_reg_rtsold
-  tags: [rtsold]
+  tags: [rtsold, config]
 
 - name: Remove stock ifconfig configuration
   ansible.builtin.lineinfile:
@@ -21,7 +21,7 @@
     regexp: "(?i)^ifconfig_(?!(.+_name|bridge|vtnet[1-9]0))"
     state: absent
   register: network_reg_reset
-  tags: [stock-config]
+  tags: [reset]
 
 - name: Configure cloned interfaces
   community.general.sysrc:
@@ -29,7 +29,7 @@
     state: present
     value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
   register: network_reg_cloned
-  tags: [cloned-interfaces]
+  tags: [interfaces, cloned, config]
 
 - name: Rename source interfaces
   community.general.sysrc:
@@ -40,7 +40,7 @@
   loop_control:
     label: "Renaming interface: {{ item.source }} -> {{ item.target }}"
   register: network_reg_rename
-  tags: [rename-interfaces]
+  tags: [interfaces, rename, config]
 
 - name: Configure bridges IPv4
   community.general.sysrc:
@@ -51,7 +51,7 @@
   loop_control:
     label: "Configuring bridge IPv4: {{ item.bridge.name }}"
   register: network_reg_bridges_ip4
-  tags: [configure-bridges, ipv4]
+  tags: [bridge, ipv4, config]
 
 - name: Configure bridges IPv6
   community.general.sysrc:
@@ -63,7 +63,7 @@
     label: "Configuring bridge IPv6: {{ item.bridge.name }}"
   when: item.bridge.ip6 is defined
   register: network_reg_bridges_ip6
-  tags: [configure-bridges, ipv6]
+  tags: [bridge, ipv6, config]
 
 - name: Activate target interfaces
   community.general.sysrc:
@@ -74,7 +74,7 @@
   loop_control:
     label: "Link state up: {{ item.target }}"
   register: network_reg_activate
-  tags: [activate-interfaces]
+  tags: [interfaces, link, config]
 
 - name: Reboot
   ansible.builtin.reboot:
@@ -91,3 +91,4 @@
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
     (network_reg_activate.changed | default(false) | bool)
+  tags: [reboot]
