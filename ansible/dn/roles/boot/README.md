@@ -29,7 +29,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -40,7 +40,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Configure loader
+- name: Configure Early Boot Environment
   hosts: all
   become: true
   roles:
