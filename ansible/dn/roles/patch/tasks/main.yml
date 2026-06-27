@@ -10,7 +10,6 @@
     - "'No updates needed' not in patch_reg_patches.stdout"
   tags:
     - update
-    - patching
     - freebsd-update
 
 - name: Reboot
@@ -22,6 +21,3 @@
   when: >
     (patch_reg_patches.changed | default(false) | bool) or
     (force_reboot | default(false) | bool)
-  tags:
-    - patching
-    - reboot
