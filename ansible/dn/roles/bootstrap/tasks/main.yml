@@ -21,7 +21,7 @@
   tags:
     - gather-facts
 
-- name: Ensure sshd service is enabled
+- name: Enable sshd service
   community.general.sysrc:
     name: sshd_enable
     state: present
@@ -40,7 +40,7 @@
     - root
   no_log: "{{ disable_sensitive_logging }}"
 
-- name: Prohibit password-based SSH authentication
+- name: Disable password-based SSH authentication
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "(?i)^#?PasswordAuthentication"
