@@ -6,6 +6,7 @@
   changed_when: false
   tags:
     - base-packages
+    - python
 
 - name: Install Python
   ansible.builtin.raw: pkg install -y lang/python3
@@ -13,11 +14,12 @@
   changed_when: true
   tags:
     - base-packages
+    - python
 
 - name: Gather facts
   ansible.builtin.setup:
   tags:
-    - facts
+    - gather-facts
 
 - name: Ensure sshd service is enabled
   community.general.sysrc:
@@ -44,6 +46,10 @@
     regexp: "(?i)^#?PasswordAuthentication"
     line: PasswordAuthentication no
   notify: Restart sshd
+  tags:
+    - ssh
+    - sshd
+    - password-auth
 
 - name: Enable key-based only SSH authentication for root
   ansible.builtin.lineinfile:
@@ -51,9 +57,16 @@
     regexp: "(?i)^#?PermitRootLogin"
     line: PermitRootLogin prohibit-password
   notify: Restart sshd
+  tags:
+    - ssh
+    - sshd
+    - key-auth
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+  tags:
+    - ssh
+    - sshd
 
 - name: Create pkg repos directory
   ansible.builtin.file:
@@ -86,7 +99,7 @@
       - shells/bash-completion-zfs
     state: latest
   tags:
-    - base-packages
+    - core-packages
 
 - name: Create admin accounts
   ansible.builtin.user:
