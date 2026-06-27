@@ -4,7 +4,7 @@
     name: ntpd_sync_on_start
     state: present
     value: "YES"
-  tags: [ntpd, sync-on-boot]
+  tags: [ntpd, config]
 
 - name: Start ntpd
   ansible.builtin.service:
@@ -18,7 +18,7 @@
     name: nfs_access_cache
     state: present
     value: 5
-  tags: [nfs, caching]
+  tags: [nfs, config]
 
 - name: Start NFS client
   ansible.builtin.service:
@@ -26,7 +26,7 @@
     pattern: nfscl
     enabled: true
     state: started
-  tags: [nfs, client]
+  tags: [nfs]
 
 - name: Mount services share
   ansible.posix.mount:
@@ -35,4 +35,4 @@
     path: "{{ services_share.dst }}"
     opts: nfsv4,rw,bgnow,nolockd
     state: mounted
-  tags: [services-share, nfs, mount]
+  tags: [services, nfs, mount, config]
