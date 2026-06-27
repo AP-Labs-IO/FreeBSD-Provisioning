@@ -6,8 +6,7 @@
       - sysutils/bastille
       - sysutils/htop
     state: latest
-  tags:
-    - packages
+  tags: [packages]
 
 - name: Install Bastille configuration
   ansible.builtin.template:
@@ -16,16 +15,14 @@
     owner: root
     group: wheel
     mode: "0644"
-  tags:
-    - bastille-config
+  tags: [bastille-config]
 
 - name: Enable Bastille service
   community.general.sysrc:
     name: bastille_enable
     state: present
     value: "YES"
-  tags:
-    - bastille-service
+  tags: [bastille-service]
 
 - name: Bootstrap FreeBSD releases
   ansible.builtin.command:
@@ -36,6 +33,4 @@
   loop: "{{ bastille_releases }}"
   loop_control:
     label: "Release: {{ item }}"
-  tags:
-    - bastille
-    - bootstrap
+  tags: [bastille, bootstrap]
