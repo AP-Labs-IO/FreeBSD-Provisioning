@@ -4,41 +4,31 @@
   register: bootstrap_reg_python_check
   failed_when: false
   changed_when: false
-  tags:
-    - base-packages
-    - python
+  tags: [base-packages, python]
 
 - name: Install Python
   ansible.builtin.raw: pkg install -y lang/python3
   when: bootstrap_reg_python_check.rc != 0
   changed_when: true
-  tags:
-    - base-packages
-    - python
+  tags: [base-packages, python]
 
 - name: Gather facts
   ansible.builtin.setup:
-  tags:
-    - gather-facts
+  tags: [gather-facts]
 
 - name: Enable sshd service
   community.general.sysrc:
     name: sshd_enable
     state: present
     value: "YES"
-  tags:
-    - ssh
-    - sshd
+  tags: [ssh, sshd]
 
 - name: Add root SSH key
   ansible.posix.authorized_key:
     user: root
     key: "{{ lookup('ansible.builtin.file', 'keys/root_ed25519.pub') }}"
   no_log: "{{ disable_sensitive_logging }}"
-  tags:
-    - ssh
-    - keys
-    - root
+  tags: [ssh, keys, root]
 
 - name: Disable password-based SSH authentication
   ansible.builtin.lineinfile:
@@ -46,10 +36,7 @@
     regexp: "(?i)^#?PasswordAuthentication"
     line: PasswordAuthentication no
   notify: Restart sshd
-  tags:
-    - ssh
-    - sshd
-    - password-auth
+  tags: [ssh, sshd, password-auth]
 
 - name: Enable key-based only SSH authentication for root
   ansible.builtin.lineinfile:
@@ -57,25 +44,18 @@
     regexp: "(?i)^#?PermitRootLogin"
     line: PermitRootLogin prohibit-password
   notify: Restart sshd
-  tags:
-    - ssh
-    - sshd
-    - key-auth
+  tags: [ssh, sshd, key-auth]
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
-  tags:
-    - ssh
-    - sshd
+  tags: [ssh, sshd]
 
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
     state: directory
     mode: "0755"
-  tags:
-    - pkg
-    - latest-repo
+  tags: [pkg, latest-repo]
 
 - name: Configure 'latest' pkg repository
   ansible.builtin.copy:
@@ -85,9 +65,7 @@
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
     mode: "0644"
-  tags:
-    - pkg
-    - latest-repo
+  tags: [pkg, latest-repo]
 
 - name: Install core packages
   community.general.pkgng:
@@ -98,8 +76,7 @@
       - shells/bash-completion-freebsd
       - shells/bash-completion-zfs
     state: latest
-  tags:
-    - core-packages
+  tags: [core-packages]
 
 - name: Create admin accounts
   ansible.builtin.user:
@@ -114,9 +91,7 @@
   loop_control:
     label: "{{ item.name }}"
   no_log: "{{ disable_sensitive_logging }}"
-  tags:
-    - admins
-    - accounts
+  tags: [admins, accounts]
 
 - name: Add admin SSH keys
   ansible.posix.authorized_key:
@@ -124,7 +99,4 @@
     key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
   loop: "{{ admins }}"
   no_log: "{{ disable_sensitive_logging }}"
-  tags:
-    - admins
-    - ssh
-    - keys
+  tags: [admins, ssh, keys]
