@@ -2,7 +2,6 @@
 - name: Query toor's shell
   ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
   register: admins_reg_toor_shell
-  failed_when: false
   changed_when: false
   tags:
     - toor
