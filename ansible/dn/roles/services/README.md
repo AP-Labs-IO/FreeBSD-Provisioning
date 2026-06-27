@@ -33,20 +33,15 @@ Example Playbook
   hosts: all
   become: false
   gather_facts: false
-  vars:
-    ansible_user: root
+  vars: { ansible_user: root }
   roles:
-    - role: bootstrap
-      tags:
-        - bootstrap
+    - { role: bootstrap, tags: [bootstrap] }
 
 - name: Configure Node Services
   hosts: all
   become: true
   roles:
-    - role: services
-      tags:
-        - services
+    - { role: services, tags: [services] }
 ```
 
 License
