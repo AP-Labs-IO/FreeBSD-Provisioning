@@ -22,7 +22,7 @@ Example Playbook
 ----------------
 
 ```yaml
-- name: Bootstrap Nodes
+- name: Bootstrap Node
   hosts: all
   become: false
   gather_facts: false
