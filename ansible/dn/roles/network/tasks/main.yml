@@ -6,7 +6,6 @@
     value: "{{ ansible_facts['hostname'] }}"
   register: network_reg_hostname
   tags:
-    - network
     - hostname
 
 - name: Enable router solicitation daemon
@@ -16,7 +15,6 @@
     value: "YES"
   register: network_reg_rtsold
   tags:
-    - network
     - rtsold
 
 - name: Remove stock ifconfig configuration
@@ -26,8 +24,7 @@
     state: absent
   register: network_reg_reset
   tags:
-    - network
-    - reset
+    - stock-config
 
 - name: Configure cloned interfaces
   community.general.sysrc:
@@ -36,7 +33,6 @@
     value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
   register: network_reg_cloned
   tags:
-    - network
     - cloned-interfaces
 
 - name: Rename source interfaces
@@ -49,7 +45,6 @@
     label: "Renaming interface: {{ item.source }} -> {{ item.target }}"
   register: network_reg_rename
   tags:
-    - network
     - rename-interfaces
 
 - name: Configure bridges IPv4
@@ -62,7 +57,6 @@
     label: "Configuring bridge IPv4: {{ item.bridge.name }}"
   register: network_reg_bridges_ip4
   tags:
-    - network
     - configure-bridges
     - ipv4
 
@@ -77,7 +71,6 @@
   when: item.bridge.ip6 is defined
   register: network_reg_bridges_ip6
   tags:
-    - network
     - configure-bridges
     - ipv6
 
@@ -91,8 +84,7 @@
     label: "Link state up: {{ item.target }}"
   register: network_reg_activate
   tags:
-    - network
-    - activate
+    - activate-interfaces
 
 - name: Reboot
   ansible.builtin.reboot:
@@ -109,6 +101,3 @@
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
     (network_reg_activate.changed | default(false) | bool)
-  tags:
-    - network
-    - reboot

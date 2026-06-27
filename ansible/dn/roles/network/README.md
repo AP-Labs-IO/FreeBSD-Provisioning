@@ -36,13 +36,17 @@ Example Playbook
   vars:
     ansible_user: root
   roles:
-    - bootstrap
+    - role: bootstrap
+      tags:
+        - bootstrap
 
 - name: Configure network
   hosts: all
   become: true
   roles:
-    - network
+    - role: network
+      tags:
+        - network
 ```
 
 License
