@@ -54,8 +54,8 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags:
     - kernel
-    - runtime-state
-    - sysctl
+    - runtime-tunables
+    - sysctls
 
 - name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
@@ -64,9 +64,9 @@
   changed_when: false
   tags:
     - kernel
-    - runtime-state
-    - sysctl
-    - randompid
+    - runtime-tunables
+    - sysctls
+    - randompids
 
 - name: Set PID randomization
   ansible.posix.sysctl:
@@ -77,6 +77,6 @@
   changed_when: true
   tags:
     - kernel
-    - runtime-state
-    - sysctl
-    - randompid
+    - runtime-tunables
+    - sysctls
+    - randompids
