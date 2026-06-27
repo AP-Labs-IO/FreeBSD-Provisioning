@@ -11,6 +11,9 @@
     - key: security.bsd.unprivileged_proc_debug
       description: Disable unprivileged process debugging
       value: 0
+    - key: security.mac.do.rules
+      description: Set mac_do(4) rules
+      value: "gid=0>uid=0,gid=*,+gid=*"
     - key: kern.elf32.aslr.enable
       description: Enable address map randomization for ELF32
       value: 1
@@ -29,15 +32,6 @@
     - key: kern.elf64.aslr.honor_sbrk
       description: Disable sbrk(2) honoring for ELF64 with ASLR
       value: 0
-    - key: vfs.zfs.vdev.min_auto_ashift
-      description: Set zfs vdev minimum ashift
-      value: 12
-    - key: kern.corefile
-      description: Set corefile path and name format
-      value: "/var/crash/%N.%U.%P.%I.core"
-    - key: security.mac.do.rules
-      description: Set mac_do(4) rules
-      value: "gid=0>uid=0,gid=*,+gid=*"
     - key: net.inet.tcp.blackhole
       description: Disable RST responses for connection attempts on closed TCP ports
       value: 2
@@ -50,6 +44,12 @@
     - key: net.inet.tcp.drop_synfin
       description: Drop TCP packets with SYN+FIN bits set
       value: 1
+    - key: vfs.zfs.vdev.min_auto_ashift
+      description: Set zfs vdev minimum ashift
+      value: 12
+    - key: kern.corefile
+      description: Set corefile path and name format
+      value: "/var/crash/%N.%U.%P.%I.core"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
