@@ -34,11 +34,11 @@
   ansible.posix.authorized_key:
     user: root
     key: "{{ lookup('ansible.builtin.file', 'keys/root_ed25519.pub') }}"
+  no_log: "{{ disable_sensitive_logging }}"
   tags:
     - ssh
     - keys
     - root
-  no_log: "{{ disable_sensitive_logging }}"
 
 - name: Disable password-based SSH authentication
   ansible.builtin.lineinfile:
@@ -113,18 +113,18 @@
   loop: "{{ admins }}"
   loop_control:
     label: "{{ item.name }}"
+  no_log: "{{ disable_sensitive_logging }}"
   tags:
     - admins
     - accounts
-  no_log: "{{ disable_sensitive_logging }}"
 
 - name: Add admin SSH keys
   ansible.posix.authorized_key:
     user: "{{ item.name }}"
     key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
   loop: "{{ admins }}"
+  no_log: "{{ disable_sensitive_logging }}"
   tags:
     - admins
     - ssh
     - keys
-  no_log: "{{ disable_sensitive_logging }}"
