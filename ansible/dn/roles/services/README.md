@@ -36,13 +36,17 @@ Example Playbook
   vars:
     ansible_user: root
   roles:
-    - bootstrap
+    - role: bootstrap
+      tags:
+        - bootstrap
 
 - name: Configure services
   hosts: all
   become: true
   roles:
-    - services
+    - role: services
+      tags:
+        - services
 ```
 
 License

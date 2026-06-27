@@ -43,7 +43,6 @@
     opts: nfsv4,rw,bgnow,nolockd
     state: mounted
   tags:
-    - services
-    - share
+    - services-share
     - nfs
     - mount
