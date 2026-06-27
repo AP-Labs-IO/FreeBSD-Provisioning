@@ -1,7 +1,7 @@
 Patch
 =========
 
-Patch a FreeBSD system with any updates that may be available via the freebsd-update(8) mechanism and reboot if necessary.
+FreeBSD OS patching via `freebsd-update(8)`.
 
 Requirements
 ------------
@@ -29,7 +29,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -40,7 +40,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Patch
+- name: Patch Operating System
   hosts: all
   become: true
   roles:
