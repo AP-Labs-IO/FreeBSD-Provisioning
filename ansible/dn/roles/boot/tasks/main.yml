@@ -13,10 +13,7 @@
     - virtio_random
     - mac_do
   register: boot_reg_modules
-  tags:
-    - kernel
-    - kernel-modules
-    - loader
+  tags: [kernel, kernel-modules, loader]
 
 - name: Configure boot-time kernel tunables
   ansible.posix.sysctl:
@@ -44,10 +41,7 @@
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
-  tags:
-    - kernel
-    - boot-tunables
-    - loader
+  tags: [kernel, boot-tunables, loader]
 
 - name: Configure basic system settings
   community.general.sysrc:
@@ -64,9 +58,7 @@
     - key: moused_nondefault_enable
       value: "NO"
   register: boot_reg_basic_settings
-  tags:
-    - basic-settings
-    - rc-conf
+  tags: [basic-settings, rc-conf]
 
 - name: Mount EFI partition
   ansible.posix.mount:
@@ -75,11 +67,7 @@
     path: /boot/efi
     opts: rw,noauto
     state: mounted
-  tags:
-    - efi
-    - esp
-    - partition
-    - mount
+  tags: [efi, esp, partition, mount]
 
 - name: Configure swap partitions
   ansible.posix.mount:
@@ -89,25 +77,20 @@
     opts: sw
     state: present
   loop: "{{ swap_partitions }}"
-  tags:
-    - swap
-    - partition
-    - mount
+  tags: [swap, partition, mount]
 
 - name: Check active swap partitions
   ansible.builtin.command: swapinfo
   register: boot_reg_check_swap
   changed_when: false
-  tags:
-    - swap
+  tags: [swap]
 
 - name: Activate inactive swap partitions
   ansible.builtin.command: "swapon /dev/{{ item }}"
   loop: "{{ swap_partitions }}"
   when: item not in boot_reg_check_swap.stdout
   changed_when: true
-  tags:
-    - swap
+  tags: [swap]
 
 - name: Reboot
   ansible.builtin.reboot:
