@@ -1,7 +1,7 @@
 Bootstrap
 =========
 
-Configure services, such as `ntpd`, NFS, etc.
+Configure basic node services, such as `ntpd`, NFS, etc.
 
 Requirements
 ------------
@@ -29,7 +29,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -40,7 +40,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Configure services
+- name: Configure Node Services
   hosts: all
   become: true
   roles:
