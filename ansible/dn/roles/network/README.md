@@ -1,4 +1,4 @@
-Bootstrap
+Network
 =========
 
 Configure network settings, such as hostname, interfaces, IPv4 & IPv6 settings, etc., as documented by `rc.conf(5)`.
