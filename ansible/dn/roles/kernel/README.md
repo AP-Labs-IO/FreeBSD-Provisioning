@@ -1,7 +1,7 @@
 Bootstrap
 =========
 
-Configure runtime kernel state, as documented by `sysctl(8)`.
+Configure runtime kernel parameters, as documented by `sysctl(8)`.
 
 Requirements
 ------------
@@ -29,7 +29,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -40,7 +40,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Configure kernel
+- name: Configure Kernel Parameters
   hosts: all
   become: true
   roles:
