@@ -1,4 +1,4 @@
-Configure Users
+Admins
 =========
 
 Configure root & administrator users.
