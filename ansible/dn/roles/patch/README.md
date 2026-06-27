@@ -33,20 +33,15 @@ Example Playbook
   hosts: all
   become: false
   gather_facts: false
-  vars:
-    ansible_user: root
+  vars: { ansible_user: root }
   roles:
-    - role: bootstrap
-      tags:
-        - bootstrap
+    - { role: bootstrap, tags: [bootstrap] }
 
 - name: Patch Operating System
   hosts: all
   become: true
   roles:
-    - role: patch
-      tags:
-        - patch
+    - { role: patch, tags: [patch] }
 ```
 
 License

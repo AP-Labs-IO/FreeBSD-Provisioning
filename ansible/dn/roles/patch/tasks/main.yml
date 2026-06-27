@@ -8,9 +8,7 @@
   failed_when:
     - patch_reg_patches.rc != 0
     - "'No updates needed' not in patch_reg_patches.stdout"
-  tags:
-    - update
-    - freebsd-update
+  tags: [update, freebsd-update]
 
 - name: Reboot
   ansible.builtin.reboot:
