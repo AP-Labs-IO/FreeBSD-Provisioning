@@ -60,7 +60,6 @@
 - name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
   register: kernel_reg_check_randompids
-  failed_when: false
   changed_when: false
   tags:
     - kernel
