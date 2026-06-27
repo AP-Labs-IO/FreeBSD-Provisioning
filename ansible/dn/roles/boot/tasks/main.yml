@@ -13,7 +13,7 @@
     - virtio_random
     - mac_do
   register: boot_reg_modules
-  tags: [kernel, kernel-modules, loader]
+  tags: [kernel, config, modules]
 
 - name: Configure boot-time kernel tunables
   ansible.posix.sysctl:
@@ -41,7 +41,7 @@
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
-  tags: [kernel, boot-tunables, loader]
+  tags: [kernel, config, tunables]
 
 - name: Configure basic system settings
   community.general.sysrc:
@@ -58,7 +58,7 @@
     - key: moused_nondefault_enable
       value: "NO"
   register: boot_reg_basic_settings
-  tags: [basic-settings, rc-conf]
+  tags: [rc, config]
 
 - name: Mount EFI partition
   ansible.posix.mount:
@@ -67,7 +67,7 @@
     path: /boot/efi
     opts: rw,noauto
     state: mounted
-  tags: [efi, esp, partition, mount]
+  tags: [efi, mount]
 
 - name: Configure swap partitions
   ansible.posix.mount:
@@ -77,7 +77,7 @@
     opts: sw
     state: present
   loop: "{{ swap_partitions }}"
-  tags: [swap, partition, mount]
+  tags: [swap, mount]
 
 - name: Check active swap partitions
   ansible.builtin.command: swapinfo
@@ -102,3 +102,4 @@
     (boot_reg_modules.changed | default(false) | bool) or
     (boot_reg_tunables.changed | default(false) | bool) or
     (boot_reg_basic_settings.changed | default(false) | bool)
+  tags: [reboot]
