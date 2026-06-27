@@ -3,17 +3,13 @@
   ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
   register: admins_reg_toor_shell
   changed_when: false
-  tags:
-    - toor
-    - shell
+  tags: [toor, shell]
 
 - name: Set toor's shell to Bash
   ansible.builtin.command: chsh -s /usr/local/bin/bash toor
   when: "'bash' not in admins_reg_toor_shell.stdout"
   changed_when: true
-  tags:
-    - toor
-    - shell
+  tags: [toor, shell]
 
 - name: Copy shell configuration files
   ansible.builtin.copy:
@@ -27,8 +23,4 @@
     label: "User: {{ item.0 }} -> File: {{ item.1.dst }}"
   vars:
     usernames: "{{ ['root'] + (admins | map(attribute='name') | list | default([])) }}"
-  tags:
-    - root
-    - admins
-    - shell
-    - configuration
+  tags: [root, admins, shell, configuration]

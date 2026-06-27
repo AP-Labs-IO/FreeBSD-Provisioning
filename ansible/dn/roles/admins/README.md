@@ -34,20 +34,15 @@ Example Playbook
   hosts: all
   become: false
   gather_facts: false
-  vars:
-    ansible_user: root
+  vars: { ansible_user: root }
   roles:
-    - role: bootstrap
-      tags:
-        - bootstrap
+    - { role: bootstrap, tags: [bootstrap] }
 
 - name: Configure System Administrators
   hosts: all
   become: true
   roles:
-    - role: admins
-      tags:
-        - admins
+    - { role: admins, tags: [admins] }
 ```
 
 License
