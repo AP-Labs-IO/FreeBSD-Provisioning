@@ -1,7 +1,7 @@
 Bootstrap
 =========
 
-Configure network settings, such as hostname, interfaces, IPv4 & IPv6 settings, etc, as documented by `rc.conf(5)`.
+Configure network settings, such as hostname, interfaces, IPv4 & IPv6 settings, etc., as documented by `rc.conf(5)`.
 
 Requirements
 ------------
@@ -29,7 +29,7 @@ Example Playbook
 
 ```yaml
 ---
-- name: Bootstrap
+- name: Bootstrap Nodes
   hosts: all
   become: false
   gather_facts: false
@@ -40,7 +40,7 @@ Example Playbook
       tags:
         - bootstrap
 
-- name: Configure network
+- name: Configure Network Interfaces
   hosts: all
   become: true
   roles:
