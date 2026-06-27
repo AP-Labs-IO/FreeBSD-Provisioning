@@ -1,4 +1,4 @@
-Bootstrap
+Services
 =========
 
 Configure basic node services, such as `ntpd`, NFS, etc.
