@@ -52,13 +52,13 @@
       value: 1
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  tags: [kernel, runtime-tunables, sysctls]
+  tags: [kernel, config]
 
 - name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
   register: kernel_reg_check_randompids
   changed_when: false
-  tags: [kernel, runtime-tunables, sysctls, randompids]
+  tags: [kernel, pid]
 
 - name: Set PID randomization
   ansible.posix.sysctl:
@@ -67,4 +67,4 @@
     value: 1
   when: kernel_reg_check_randompids.stdout | trim | int < 1
   changed_when: true
-  tags: [kernel, runtime-tunables, sysctls, randompids]
+  tags: [kernel, config, pid]
