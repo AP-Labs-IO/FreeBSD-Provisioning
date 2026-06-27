@@ -33,20 +33,15 @@ Example Playbook
   hosts: all
   become: false
   gather_facts: false
-  vars:
-    ansible_user: root
+  vars: { ansible_user: root }
   roles:
-    - role: bootstrap
-      tags:
-        - bootstrap
+    - { role: bootstrap, tags: [bootstrap] }
 
 - name: Configure Kernel Parameters
   hosts: all
   become: true
   roles:
-    - role: kernel
-      tags:
-        - kernel
+    - { role: kernel, tags: [kernel }
 ```
 
 License
