@@ -5,6 +5,7 @@
       - devel/git
       - sysutils/bastille
       - sysutils/htop
+      - sysutils/tree
     state: latest
   tags: [packages]
 
