@@ -23,6 +23,12 @@
     sysctl_file: /boot/loader.conf
     reload: false
   loop:
+    - key: autoboot_delay
+      description: Set boot delay
+      value: 2
+    - key: hw.usb.no_boot_wait
+      description: Prevent USB devices enumeration at boot
+      value: 1
     - key: security.bsd.allow_destructive_dtrace
       description: Disallow destructive DTrace
       value: 0
