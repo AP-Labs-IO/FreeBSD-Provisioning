@@ -41,3 +41,19 @@
   loop_control:
     label: "Release: {{ item }}"
   tags: [bootstrap, releases]
+
+- name: Create deployments tree
+  ansible.builtin.file:
+    path: "/root/{{ item.name }}"
+    state: directory
+    owner: root
+    group: wheel
+    mode: "{{ item.mode }}"
+  loop:
+    - name: deployments
+      mode: "0755"
+    - name: deployments/scripts
+      mode: "0755"
+    - name: deployments/services
+      mode: "0750"
+  tags: [deployments]
