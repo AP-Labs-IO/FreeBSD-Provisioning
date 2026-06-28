@@ -11,6 +11,24 @@
     - key: security.bsd.unprivileged_proc_debug
       description: Disable unprivileged process debugging
       value: 0
+    - key: security.bsd.see_other_uids
+      description: Prevent unprivileged processes from seeing subjects/objects from other uids
+      value: 0
+    - key: security.bsd.see_other_gids
+      description: Prevent unprivileged processes from seeing subjects/objects from other gids
+      value: 0
+    - key: security.bsd.see_jail_proc
+      description: Prevent unprivileged processes from seeing subjects/objects from other jids
+      value: 0
+    - key: security.bsd.hardlink_check_uid
+      description: Prevent unprivileged processes from creating hard links to files owned by other users
+      value: 1
+    - key: security.bsd.hardlink_check_gid
+      description: Prevent unprivileged processes from creating hard links to files owned by other groups
+      value: 1
+    - key: security.bsd.unprivileged_mlock
+      description: Prevent unprivileged users from locking physical memory
+      value: 0
     - key: security.mac.do.rules
       description: Set mac_do(4) rules
       value: "gid=0>uid=0,gid=*,+gid=*"
