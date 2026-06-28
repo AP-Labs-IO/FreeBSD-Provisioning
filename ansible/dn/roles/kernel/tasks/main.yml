@@ -5,6 +5,9 @@
     state: present
     value: "{{ item.value }}"
   loop:
+    - key: hw.mds_disable
+      description: Enable automatic CPU side-channel mitigations
+      value: 3
     - key: security.bsd.unprivileged_read_msgbuf
       description: Disable unprivileged access to kernel message buffer
       value: 0
