@@ -24,6 +24,13 @@
     value: "YES"
   tags: [config]
 
+- name: Configure jail startup delay
+  community.general.sysrc:
+    name: bastille_startup_delay
+    state: present
+    value: 5
+  tags: [config]
+
 - name: Bootstrap FreeBSD releases
   ansible.builtin.command:
     cmd: "bastille bootstrap {{ item }} update"
