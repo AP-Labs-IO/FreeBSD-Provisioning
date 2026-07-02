@@ -61,7 +61,7 @@
   ansible.builtin.copy:
     dest: /usr/local/etc/pkg/repos/FreeBSD.conf
     content: |
-      FreeBSD: {
+      FreeBSD{% if ansible_facts['distribution_major_version'] | trim | int >= 15 %}-ports{% endif %} {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
     mode: "0644"
@@ -69,6 +69,7 @@
 
 - name: Install core packages
   community.general.pkgng:
+    pkgsite: FreeBSD{% if ansible_facts['distribution_major_version'] | trim | int >= 15 %}-ports{% endif %}
     name:
       - lang/python3
       - shells/bash
