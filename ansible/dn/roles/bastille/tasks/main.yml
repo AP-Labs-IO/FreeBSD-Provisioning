@@ -41,7 +41,7 @@
   loop: "{{ bastille_releases }}"
   loop_control:
     label: "Release: {{ item }}"
-  tags: [bootstrap, releases]
+  tags: [releases]
 
 - name: Create deployments tree
   ansible.builtin.file:
