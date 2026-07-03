@@ -75,25 +75,25 @@
     state: mounted
   tags: [efi, mount]
 
-- name: Configure swap partitions
+- name: Configure swap devices
   ansible.posix.mount:
     fstype: swap
     src: "/dev/{{ item }}"
     path: none
     opts: sw
     state: present
-  loop: "{{ swap_partitions }}"
+  loop: "{{ swap_devices }}"
   tags: [swap, mount]
 
-- name: Check active swap partitions
+- name: Check active swap devices
   ansible.builtin.command: swapinfo
   register: boot_reg_check_swap
   changed_when: false
   tags: [swap]
 
-- name: Activate inactive swap partitions
+- name: Activate inactive swap devices
   ansible.builtin.command: "swapon /dev/{{ item }}"
-  loop: "{{ swap_partitions }}"
+  loop: "{{ swap_devices }}"
   when: item not in boot_reg_check_swap.stdout
   changed_when: true
   tags: [swap]
