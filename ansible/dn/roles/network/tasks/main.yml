@@ -92,3 +92,19 @@
     (network_reg_bridges_ip6.changed | default(false) | bool) or
     (network_reg_activate.changed | default(false) | bool)
   tags: [reboot]
+
+- name: Disable packet filtering on bridge interfaces
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: net.link.bridge.pfil_bridge
+      description: Prevent packet filtering on bridge interfaces
+      value: 0
+    - key: net.link.bridge.pfil_member
+      description: Prevent packet filtering on interfaces members of a bridge
+      value: 0
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
