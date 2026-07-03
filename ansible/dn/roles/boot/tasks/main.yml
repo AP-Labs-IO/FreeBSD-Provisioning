@@ -75,6 +75,30 @@
     state: mounted
   tags: [efi, mount]
 
+- name: Check for stock system swap devices
+  ansible.builtin.command: swapinfo
+  register: boot_reg_active_stock_swaps
+  changed_when: false
+  tags: [reset, swap]
+
+- name: Deactivate stock swap if active
+  ansible.builtin.command: "swapoff {{ item }}"
+  loop: "{{ active_stock_swaps }}"
+  vars:
+    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | list }}"
+    active_devices: "{{ device_lines | map('split') | map('first') | list }}"
+    active_stock_swaps: "{{ active_devices | difference(swap_devices) }}"
+  when: active_stock_swaps | length > 0
+  changed_when: true
+  tags: [reset, swap]
+
+- name: Remove stock swap configurations from fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: "^#?(?!({{ swap_devices | join('|') }})).+swap"
+    state: absent
+  tags: [reset, swap]
+
 - name: Configure swap devices
   ansible.posix.mount:
     fstype: swap
