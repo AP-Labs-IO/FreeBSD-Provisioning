@@ -78,7 +78,7 @@
 - name: Configure swap devices
   ansible.posix.mount:
     fstype: swap
-    src: "/dev/{{ item }}"
+    src: "{{ item }}"
     path: none
     opts: sw
     state: present
@@ -92,7 +92,7 @@
   tags: [swap]
 
 - name: Activate inactive swap devices
-  ansible.builtin.command: "swapon /dev/{{ item }}"
+  ansible.builtin.command: "swapon {{ item }}"
   loop: "{{ swap_devices }}"
   when: item not in boot_reg_check_swap.stdout
   changed_when: true
