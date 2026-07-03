@@ -61,6 +61,10 @@
       value: "YES"
     - key: dumpdev
       value: AUTO
+    - key: moused_enable
+      value: "YES"
+    - key: moused_type
+      value: "auto"
     - key: moused_nondefault_enable
       value: "NO"
   register: boot_reg_basic_settings
