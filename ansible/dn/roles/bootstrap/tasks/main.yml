@@ -57,11 +57,11 @@
     mode: "0755"
   tags: [pkg, config]
 
-- name: Configure 'latest' pkg repository
+- name: Configure 'latest' pkg ports repository
   ansible.builtin.copy:
     dest: /usr/local/etc/pkg/repos/FreeBSD.conf
     content: |
-      FreeBSD: {
+      {{ ports_repository_name }} {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
     mode: "0644"
@@ -69,6 +69,7 @@
 
 - name: Install core packages
   community.general.pkgng:
+    pkgsite: "{{ ports_repository_name }}"
     name:
       - lang/python3
       - shells/bash
