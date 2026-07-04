@@ -5,13 +5,7 @@
     state: present
     value: "YES"
     path: /boot/loader.conf
-  loop:
-    - zfs
-    - crypto
-    - cryptodev
-    - aesni
-    - virtio_random
-    - mac_do
+  loop: "{{ kernel_modules }}"
   register: boot_reg_modules
   tags: [kernel, config, modules]
 
@@ -22,28 +16,7 @@
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop:
-    - key: autoboot_delay
-      description: Set boot delay
-      value: 2
-    - key: hw.usb.no_boot_wait
-      description: Prevent USB devices enumeration at boot
-      value: 1
-    - key: security.bsd.allow_destructive_dtrace
-      description: Disallow destructive DTrace
-      value: 0
-    - key: kern.racct.enable
-      description: Enable RACCT/RCTL
-      value: 1
-    - key: kern.geom.label.disk_ident.enable
-      description: Disable disk ID labels
-      value: 0
-    - key: kern.geom.label.gptid.enable
-      description: Disable GPT UUID labels
-      value: 0
-    - key: kern.geom.label.ufsid.enable
-      description: Disable UFS ID labels
-      value: 0
+  loop: "{{ kernel_tunables }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
@@ -54,19 +27,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop:
-    - key: zfs_enable
-      value: "YES"
-    - key: clear_tmp_enable
-      value: "YES"
-    - key: dumpdev
-      value: AUTO
-    - key: moused_enable
-      value: "YES"
-    - key: moused_type
-      value: "auto"
-    - key: moused_nondefault_enable
-      value: "NO"
+  loop: "{{ system_settings }}"
   register: boot_reg_basic_settings
   tags: [rc, config]
 
