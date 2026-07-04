@@ -89,7 +89,7 @@
   ansible.builtin.command: "swapoff {{ item }}"
   loop: "{{ active_stock_swaps }}"
   vars:
-    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | list }}"
+    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
     active_devices: "{{ device_lines | map('split') | map('first') | list }}"
     active_stock_swaps: "{{ active_devices | difference(swap_devices) }}"
   when: active_stock_swaps | length > 0
