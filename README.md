@@ -32,6 +32,7 @@ Dependencies
   * `system_settings`:
     * `key`: Name of `rc.conf(5)` setting to set via `sysrc(8)`.
     * `value`: Value of `key` to set via the corresponding `sysrc(8)` invocation.
+  * `swap_devices`: List of strings, each expected to point to the full path of a swap device to activate.
 
 Example Playbook
 ----------------
