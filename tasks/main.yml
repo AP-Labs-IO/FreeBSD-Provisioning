@@ -7,7 +7,7 @@
 
 - name: Set toor's shell to Bash
   ansible.builtin.command: chsh -s /usr/local/bin/bash toor
-  when: "'bash' not in admins_reg_toor_shell.stdout"
+  when: bash not in admins_reg_toor_shell.stdout
   changed_when: true
   tags: [root, toor, shell]
 
