@@ -24,6 +24,13 @@ Dependencies
 ------------
 
 * Bootstrap role.
+* Global variables provided by the consumer of the role:
+  * `admins`: List of administrator users to copy shell configuration files for, each being a dictionary with attributes:
+    * `name`: The administrator's username.
+  * `shell_config_files`: List of file dictionaries with attributes:
+    * `src`: Source basename of the shell configuration file to copy for each administrator user, expected to be found at a `shell/{{ src }}` files path.
+    * `dst`: Target basename of the shell configuration file once copied into each administrator's home directory.
+  * `group_shell_config_files`: Optional list of per inventory group shell configuration files to install for each administrator user, with the same structure as the `shell_config_files` variables above.
 
 Example Playbook
 ----------------
