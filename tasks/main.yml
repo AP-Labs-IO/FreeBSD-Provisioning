@@ -1,0 +1,26 @@
+---
+- name: Query toor's shell
+  ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
+  register: admins_reg_toor_shell
+  changed_when: false
+  tags: [root, toor, shell]
+
+- name: Set toor's shell to Bash
+  ansible.builtin.command: chsh -s /usr/local/bin/bash toor
+  when: "'bash' not in admins_reg_toor_shell.stdout"
+  changed_when: true
+  tags: [root, toor, shell]
+
+- name: Copy shell configuration files
+  ansible.builtin.copy:
+    src: "shell/{{ item.1.src }}"
+    dest: "{{ (item.0 == 'root') | ternary('/root', '/home/' + item.0) }}/{{ item.1.dst }}"
+    owner: "{{ item.0 }}"
+    group: "{{ (item.0 == 'root') | ternary('wheel', item.0) }}"
+    mode: "0640"
+  loop: "{{ usernames | product(shell_config_files + (group_shell_config_files | default([]))) | list }}"
+  loop_control:
+    label: "User: {{ item.0 }} -> File: {{ item.1.dst }}"
+  vars:
+    usernames: "{{ ['root'] + (admins | map(attribute='name') | list | default([])) }}"
+  tags: [root, admins, shell, config]
