@@ -1,0 +1,102 @@
+---
+- name: Load kernel modules
+  community.general.sysrc:
+    name: "{{ item }}_load"
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+  loop: "{{ kernel_modules }}"
+  register: boot_reg_modules
+  tags: [kernel, config, modules]
+
+- name: Configure boot-time kernel tunables
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop: "{{ kernel_tunables }}"
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  register: boot_reg_tunables
+  tags: [kernel, config, tunables]
+
+- name: Configure basic system settings
+  community.general.sysrc:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ system_settings }}"
+  loop_control:
+    label: "{{ item.key }} -> {{ item.value }}"
+  register: boot_reg_basic_settings
+  tags: [rc, config]
+
+- name: Mount EFI partition
+  ansible.posix.mount:
+    fstype: msdosfs
+    src: /dev/gpt/efiboot0
+    path: /boot/efi
+    opts: rw,noauto
+    state: mounted
+  tags: [efi, mount]
+
+- name: Check for stock swap devices
+  ansible.builtin.command: swapinfo
+  register: boot_reg_active_stock_swaps
+  changed_when: false
+  tags: [reset, swap]
+
+- name: Deactivate stock swap devices
+  ansible.builtin.command: "swapoff {{ item }}"
+  loop: "{{ active_stock_swaps }}"
+  vars:
+    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
+    active_devices: "{{ device_lines | map('split') | map('first') | list }}"
+    active_stock_swaps: "{{ active_devices | difference(swap_devices) }}"
+  when: active_stock_swaps | length > 0
+  changed_when: true
+  tags: [reset, swap]
+
+- name: Remove stock swap devices from fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: "^#?(?!({{ swap_devices | join('|') }})).+swap"
+    state: absent
+  tags: [reset, swap]
+
+- name: Configure custom swap devices
+  ansible.posix.mount:
+    fstype: swap
+    src: "{{ item }}"
+    path: none
+    opts: sw
+    state: present
+  loop: "{{ swap_devices }}"
+  tags: [swap, mount]
+
+- name: Check active custom swap devices
+  ansible.builtin.command: swapinfo
+  register: boot_reg_check_swap
+  changed_when: false
+  tags: [swap]
+
+- name: Activate inactive custom swap devices
+  ansible.builtin.command: "swapon {{ item }}"
+  loop: "{{ swap_devices }}"
+  when: item not in boot_reg_check_swap.stdout
+  changed_when: true
+  tags: [swap]
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to load new kernel modules and/or tunables
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (boot_reg_modules.changed | default(false) | bool) or
+    (boot_reg_tunables.changed | default(false) | bool) or
+    (boot_reg_basic_settings.changed | default(false) | bool)
+  tags: [reboot]
