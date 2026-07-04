@@ -28,6 +28,8 @@
     state: present
     value: "{{ item.value }}"
   loop: "{{ system_settings }}"
+  loop_control:
+    label: "{{ item.key }} -> {{ item.value }}"
   register: boot_reg_basic_settings
   tags: [rc, config]
 
