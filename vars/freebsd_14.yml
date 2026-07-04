@@ -1,2 +1,2 @@
 ---
-ports_repository_name: FreeBSD
+bootstrap_ports_repository_name: FreeBSD

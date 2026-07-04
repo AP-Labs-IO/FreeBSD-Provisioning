@@ -66,7 +66,7 @@
   ansible.builtin.copy:
     dest: /usr/local/etc/pkg/repos/FreeBSD.conf
     content: |
-      {{ ports_repository_name }} {
+      {{ bootstrap_ports_repository_name }} {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
     mode: "0644"
@@ -74,7 +74,7 @@
 
 - name: Install core packages
   community.general.pkgng:
-    pkgsite: "{{ ports_repository_name }}"
+    pkgsite: "{{ bootstrap_ports_repository_name }}"
     name:
       - lang/python3
       - shells/bash
