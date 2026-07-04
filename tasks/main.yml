@@ -101,6 +101,6 @@
     key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
   loop: "{{ admins }}"
   loop_control:
-    label: "{{ item.name (key_type) }}"
+    label: "{{ item.name }} ({{ item.key_type }})"
   no_log: "{{ disable_sensitive_logging }}"
   tags: [admins, ssh, keys]
