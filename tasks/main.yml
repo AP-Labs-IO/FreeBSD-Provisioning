@@ -16,6 +16,11 @@
   ansible.builtin.setup:
   tags: [facts]
 
+- name: Load version-specific role constants
+  ansible.builtin.include_vars:
+    file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
+  tags: [config]
+
 - name: Enable sshd service
   community.general.sysrc:
     name: sshd_enable
