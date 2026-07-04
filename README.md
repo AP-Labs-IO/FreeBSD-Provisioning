@@ -16,7 +16,17 @@ None.
 Dependencies
 ------------
 
-None.
+* SSH key of type `ed25519` located at the the top-level `files/keys/root_ed25519.pub` path.
+* Global variables provided by the consumer of the role:
+  * `admins`: List of administrator users to create, each being a dictionary with attributes:
+    * `name`: The administrator's username.
+    * `comment`: The administrator's full name.
+    * `shell`: Full path to the chosen administrator's shell.
+    * `password`: `ansible-vault` encrypted password.
+    * `salt`: Plain-text password salt.
+    * `key_type`: SSH key type.
+  * `disable_sensitive_logging`: Boolean that dictates whether task output considered sensitive is logged or not.
+* SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Playbook
 ----------------
