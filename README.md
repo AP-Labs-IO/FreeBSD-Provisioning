@@ -23,6 +23,7 @@ Dependencies
 ------------
 
 * Bootstrap role.
+* `force_reboot`: Optional boolean that forces the reboot of the target node, even when the "Reboot" task determines by itself that it's not necessary. Default: `false`.
 
 Example Playbook
 ----------------
