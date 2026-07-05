@@ -1,5 +1,5 @@
 ---
-- name: Configure runtime kernel state
+- name: Configure basic system security
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -32,9 +32,6 @@
     - key: security.bsd.unprivileged_mlock
       value: 0
       description: Prevent unprivileged users from locking physical memory
-    - key: security.mac.do.rules
-      value: "gid=0>uid=0,gid=*,+gid=*"
-      description: Set mac_do(4) rules
     - key: kern.elf32.aslr.enable
       value: 1
       description: Enable address map randomization for ELF32
@@ -65,12 +62,23 @@
     - key: net.inet.tcp.drop_synfin
       value: 1
       description: Drop TCP packets with SYN+FIN bits set
-    - key: vfs.zfs.vdev.min_auto_ashift
-      value: 12
-      description: Set zfs vdev minimum ashift
-    - key: kern.corefile
-      value: "/var/crash/%N.%U.%P.%I.core"
-      description: Set corefile path and name format
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
+- name: Set mac_do(4) rules
+  ansible.posix.sysctl:
+    name: security.mac.do.rules
+    state: present
+    value: "{{ mac_do_rules }}"
+  tags: [kernel, mac_do, config]
+
+- name: Configure extra kernel state
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ extra_runtime_kernel_state }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
