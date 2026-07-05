@@ -37,8 +37,8 @@
   ansible.builtin.command:
     cmd: "bastille bootstrap -u {{ item }}"
     creates: "{{ bastille_prefix }}/releases/{{ item }}/COPYRIGHT"
-  register: bastille_bootstrap_releases
-  changed_when: "'skipped' not in bastille_bootstrap_releases.stdout"
+  register: bastille_reg_bootstrap_releases
+  changed_when: "'skipped' not in bastille_reg_bootstrap_releases.stdout"
   loop: "{{ bastille_releases }}"
   loop_control:
     label: "Release: {{ item }}"
