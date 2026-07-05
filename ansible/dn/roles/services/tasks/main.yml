@@ -14,11 +14,14 @@
     state: started
   tags: [nfs]
 
-- name: Mount services share
+- name: Mount NFS shares
   ansible.posix.mount:
     fstype: nfs
-    src: "{{ services_share.host }}:{{ services_share.src }}"
-    path: "{{ services_share.dst }}"
-    opts: nfsv4,rw,bgnow,nolockd
+    src: "{{ item.host }}:{{ item.src }}"
+    path: "{{ item.path }}"
+    opts: "{{ item.opts }}"
     state: mounted
-  tags: [services, nfs, mount, config]
+  loop: "{{ nfs_shares }}"
+  loop_control:
+    label: "{{ item.host }}:{{ item.src }} -> {{ item.path }}"
+  tags: [nfs, shares, mount, config]
