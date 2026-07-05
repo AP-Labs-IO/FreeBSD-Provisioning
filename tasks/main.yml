@@ -33,6 +33,13 @@
   register: boot_reg_basic_settings
   tags: [rc, config]
 
+- name: Start ntpd
+  ansible.builtin.service:
+    name: ntpd
+    enabled: true
+    state: started
+  tags: [ntpd]
+
 - name: Mount EFI partition
   ansible.posix.mount:
     fstype: msdosfs
