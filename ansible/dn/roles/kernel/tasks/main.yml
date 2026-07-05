@@ -6,71 +6,71 @@
     value: "{{ item.value }}"
   loop:
     - key: hw.mds_disable
-      description: Enable automatic CPU side-channel mitigations
       value: 3
+      description: Enable automatic CPU side-channel mitigations
     - key: security.bsd.unprivileged_read_msgbuf
+      value: 0
       description: Disable unprivileged access to kernel message buffer
-      value: 0
     - key: security.bsd.unprivileged_proc_debug
+      value: 0
       description: Disable unprivileged process debugging
-      value: 0
     - key: security.bsd.see_other_uids
+      value: 0
       description: Prevent unprivileged processes from seeing subjects/objects from other uids
-      value: 0
     - key: security.bsd.see_other_gids
+      value: 0
       description: Prevent unprivileged processes from seeing subjects/objects from other gids
-      value: 0
     - key: security.bsd.see_jail_proc
+      value: 0
       description: Prevent unprivileged processes from seeing subjects/objects from other jids
-      value: 0
     - key: security.bsd.hardlink_check_uid
+      value: 1
       description: Prevent unprivileged processes from creating hard links to files owned by other users
-      value: 1
     - key: security.bsd.hardlink_check_gid
+      value: 1
       description: Prevent unprivileged processes from creating hard links to files owned by other groups
-      value: 1
     - key: security.bsd.unprivileged_mlock
+      value: 0
       description: Prevent unprivileged users from locking physical memory
-      value: 0
     - key: security.mac.do.rules
-      description: Set mac_do(4) rules
       value: "gid=0>uid=0,gid=*,+gid=*"
+      description: Set mac_do(4) rules
     - key: kern.elf32.aslr.enable
+      value: 1
       description: Enable address map randomization for ELF32
-      value: 1
     - key: kern.elf32.aslr.pie_enable
+      value: 1
       description: Enable address map randomization for ELF32 PIE binaries
-      value: 1
     - key: kern.elf32.aslr.honor_sbrk
+      value: 0
       description: Disable sbrk(2) honoring for ELF32 with ASLR
-      value: 0
     - key: kern.elf64.aslr.enable
+      value: 1
       description: Enable address map randomization for ELF64
-      value: 1
     - key: kern.elf64.aslr.pie_enable
+      value: 1
       description: Enable address map randomization for ELF64 PIE binaries
-      value: 1
     - key: kern.elf64.aslr.honor_sbrk
-      description: Disable sbrk(2) honoring for ELF64 with ASLR
       value: 0
+      description: Disable sbrk(2) honoring for ELF64 with ASLR
     - key: net.inet.tcp.blackhole
-      description: Disable RST responses for connection attempts on closed TCP ports
       value: 2
+      description: Disable RST responses for connection attempts on closed TCP ports
     - key: net.inet.udp.blackhole
+      value: 1
       description: Disable ICMP responses for unreachable UDP ports
-      value: 1
     - key: net.inet.icmp.drop_redirect
+      value: 1
       description: Ignore ICMP redirects
-      value: 1
     - key: net.inet.tcp.drop_synfin
-      description: Drop TCP packets with SYN+FIN bits set
       value: 1
+      description: Drop TCP packets with SYN+FIN bits set
     - key: vfs.zfs.vdev.min_auto_ashift
-      description: Set zfs vdev minimum ashift
       value: 12
+      description: Set zfs vdev minimum ashift
     - key: kern.corefile
-      description: Set corefile path and name format
       value: "/var/crash/%N.%U.%P.%I.core"
+      description: Set corefile path and name format
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
