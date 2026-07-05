@@ -35,7 +35,7 @@
 
 - name: Bootstrap FreeBSD releases
   ansible.builtin.command:
-    cmd: "bastille bootstrap {{ item }} update"
+    cmd: "bastille bootstrap -u {{ item }}"
     creates: "{{ bastille_prefix }}/releases/{{ item }}/COPYRIGHT"
   register: bastille_bootstrap_releases
   changed_when: "'skipped' not in bastille_bootstrap_releases.stdout"
