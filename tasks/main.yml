@@ -1,0 +1,27 @@
+---
+- name: Set NFS caching to 5 seconds
+  community.general.sysrc:
+    name: nfs_access_cache
+    state: present
+    value: 5
+  tags: [config]
+
+- name: Start NFS client
+  ansible.builtin.service:
+    name: nfsclient
+    pattern: nfscl
+    enabled: true
+    state: started
+  tags: [client]
+
+- name: Mount NFS shares
+  ansible.posix.mount:
+    fstype: nfs
+    src: "{{ item.host }}:{{ item.src }}"
+    path: "{{ item.path }}"
+    opts: "{{ item.opts }}"
+    state: mounted
+  loop: "{{ nfs_shares }}"
+  loop_control:
+    label: "{{ item.host }}:{{ item.src }} -> {{ item.path }}"
+  tags: [shares, mount, config]
