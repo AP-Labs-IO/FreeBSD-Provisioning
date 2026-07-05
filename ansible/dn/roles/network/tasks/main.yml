@@ -100,11 +100,11 @@
     value: "{{ item.value }}"
   loop:
     - key: net.link.bridge.pfil_bridge
+      value: 0
       description: Prevent packet filtering on bridge interfaces
-      value: 0
     - key: net.link.bridge.pfil_member
-      description: Prevent packet filtering on interfaces members of a bridge
       value: 0
+      description: Prevent packet filtering on interfaces members of a bridge
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
