@@ -1,11 +1,4 @@
 ---
-- name: Sync time on boot
-  community.general.sysrc:
-    name: ntpd_sync_on_start
-    state: present
-    value: "YES"
-  tags: [ntpd, config]
-
 - name: Start ntpd
   ansible.builtin.service:
     name: ntpd
