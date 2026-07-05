@@ -4,7 +4,7 @@
     name: nfs_access_cache
     state: present
     value: 5
-  tags: [nfs, config]
+  tags: [config]
 
 - name: Start NFS client
   ansible.builtin.service:
@@ -12,7 +12,7 @@
     pattern: nfscl
     enabled: true
     state: started
-  tags: [nfs]
+  tags: [client]
 
 - name: Mount NFS shares
   ansible.posix.mount:
@@ -24,4 +24,4 @@
   loop: "{{ nfs_shares }}"
   loop_control:
     label: "{{ item.host }}:{{ item.src }} -> {{ item.path }}"
-  tags: [nfs, shares, mount, config]
+  tags: [shares, mount, config]

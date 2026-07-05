@@ -1,7 +1,7 @@
-Services
+NFS Shares
 =========
 
-Configure basic node services, such as `ntpd`, NFS, etc.
+Configure and mount NFS shares.
 
 Requirements
 ------------
@@ -37,11 +37,11 @@ Example Playbook
   roles:
     - { role: bootstrap, tags: [bootstrap] }
 
-- name: Configure Node Services
+- name: Configure NFS shares
   hosts: all
   become: true
   roles:
-    - { role: services, tags: [services] }
+    - { role: nfs_shares, tags: [nfs_shares] }
 ```
 
 License
