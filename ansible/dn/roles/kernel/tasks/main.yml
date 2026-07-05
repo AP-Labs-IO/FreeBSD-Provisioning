@@ -66,6 +66,21 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
 
+- name: Check if PIDs are randomized
+  ansible.builtin.command: sysctl -n kern.randompid
+  register: kernel_reg_check_randompids
+  changed_when: false
+  tags: [kernel, pid]
+
+- name: Set PID randomization
+  ansible.posix.sysctl:
+    name: kern.randompid
+    state: present
+    value: 1
+  when: kernel_reg_check_randompids.stdout | trim | int < 1
+  changed_when: true
+  tags: [kernel, config, pid]
+
 - name: Set mac_do(4) rules
   ansible.posix.sysctl:
     name: security.mac.do.rules
@@ -82,18 +97,3 @@
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
-
-- name: Check if PIDs are randomized
-  ansible.builtin.command: sysctl -n kern.randompid
-  register: kernel_reg_check_randompids
-  changed_when: false
-  tags: [kernel, pid]
-
-- name: Set PID randomization
-  ansible.posix.sysctl:
-    name: kern.randompid
-    state: present
-    value: 1
-  when: kernel_reg_check_randompids.stdout | trim | int < 1
-  changed_when: true
-  tags: [kernel, config, pid]
