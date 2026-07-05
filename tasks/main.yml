@@ -1,0 +1,99 @@
+---
+- name: Configure basic system security
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: hw.mds_disable
+      value: 3
+      description: Enable automatic CPU side-channel mitigations
+    - key: security.bsd.unprivileged_read_msgbuf
+      value: 0
+      description: Disable unprivileged access to kernel message buffer
+    - key: security.bsd.unprivileged_proc_debug
+      value: 0
+      description: Disable unprivileged process debugging
+    - key: security.bsd.see_other_uids
+      value: 0
+      description: Prevent unprivileged processes from seeing subjects/objects from other uids
+    - key: security.bsd.see_other_gids
+      value: 0
+      description: Prevent unprivileged processes from seeing subjects/objects from other gids
+    - key: security.bsd.see_jail_proc
+      value: 0
+      description: Prevent unprivileged processes from seeing subjects/objects from other jids
+    - key: security.bsd.hardlink_check_uid
+      value: 1
+      description: Prevent unprivileged processes from creating hard links to files owned by other users
+    - key: security.bsd.hardlink_check_gid
+      value: 1
+      description: Prevent unprivileged processes from creating hard links to files owned by other groups
+    - key: security.bsd.unprivileged_mlock
+      value: 0
+      description: Prevent unprivileged users from locking physical memory
+    - key: kern.elf32.aslr.enable
+      value: 1
+      description: Enable address map randomization for ELF32
+    - key: kern.elf32.aslr.pie_enable
+      value: 1
+      description: Enable address map randomization for ELF32 PIE binaries
+    - key: kern.elf32.aslr.honor_sbrk
+      value: 0
+      description: Disable sbrk(2) honoring for ELF32 with ASLR
+    - key: kern.elf64.aslr.enable
+      value: 1
+      description: Enable address map randomization for ELF64
+    - key: kern.elf64.aslr.pie_enable
+      value: 1
+      description: Enable address map randomization for ELF64 PIE binaries
+    - key: kern.elf64.aslr.honor_sbrk
+      value: 0
+      description: Disable sbrk(2) honoring for ELF64 with ASLR
+    - key: net.inet.tcp.blackhole
+      value: 2
+      description: Disable RST responses for connection attempts on closed TCP ports
+    - key: net.inet.udp.blackhole
+      value: 1
+      description: Disable ICMP responses for unreachable UDP ports
+    - key: net.inet.icmp.drop_redirect
+      value: 1
+      description: Ignore ICMP redirects
+    - key: net.inet.tcp.drop_synfin
+      value: 1
+      description: Drop TCP packets with SYN+FIN bits set
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
+- name: Check if PIDs are randomized
+  ansible.builtin.command: sysctl -n kern.randompid
+  register: kernel_reg_check_randompids
+  changed_when: false
+  tags: [kernel, pid]
+
+- name: Set PID randomization
+  ansible.posix.sysctl:
+    name: kern.randompid
+    state: present
+    value: 1
+  when: kernel_reg_check_randompids.stdout | trim | int < 1
+  changed_when: true
+  tags: [kernel, config, pid]
+
+- name: Set mac_do(4) rules
+  ansible.posix.sysctl:
+    name: security.mac.do.rules
+    state: present
+    value: "{{ mac_do_rules }}"
+  tags: [kernel, mac_do, config]
+
+- name: Configure extra kernel state
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ extra_runtime_kernel_state }}"
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
