@@ -12,7 +12,7 @@ Requirements
   * With key-based SSH access.
   * A functional `become` setup.
 
-The last set of requirements can be easily met by running the `bootstrap` as a precursor to this role.
+The last set of requirements can be easily met by running the `ap_labs.bootstrap` as a precursor to this role.
 
 Role Variables
 --------------
