@@ -32,7 +32,7 @@
     value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ item.ip4 }}{% endif %}"
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring bridge IPv4: {{ item.name }}"
+    label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
   register: network_reg_bridges_ip4
   tags: [bridge, ipv4, config]
 
@@ -43,7 +43,7 @@
     value: "inet6 {{ item.ip6 }}"
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.name }}"
+    label: "Configuring bridge IPv6: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
   when: item.ip6 is defined
   register: network_reg_bridges_ip6
   tags: [bridge, ipv6, config]
