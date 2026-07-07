@@ -29,7 +29,7 @@
     value: "{{ ansible_facts['hostname'] }}"
   tags: [hostname, config]
 
-- name: Configure basic system settings
+- name: Configure custom system settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
