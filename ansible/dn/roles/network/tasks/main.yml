@@ -6,14 +6,6 @@
     state: started
   tags: [rtsold, config]
 
-- name: Remove stock ifconfig configuration
-  ansible.builtin.lineinfile:
-    path: /etc/rc.conf
-    regexp: "(?i)^ifconfig_(?!(.+_name|bridge|vtnet[1-9]0))"
-    state: absent
-  register: network_reg_reset
-  tags: [reset]
-
 - name: Configure cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
@@ -74,7 +66,6 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
   when: >
-    (network_reg_reset.changed | default(false) | bool) or
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_rename.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
