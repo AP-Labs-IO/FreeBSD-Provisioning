@@ -4,6 +4,7 @@
     name: rtsold
     enabled: true
     state: started
+  when: network_enable_rtsold
   tags: [rtsold, config]
 
 - name: Rename interfaces
