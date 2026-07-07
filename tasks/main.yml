@@ -21,11 +21,11 @@
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
   tags: [config]
 
-- name: Enable sshd service
-  community.general.sysrc:
-    name: sshd_enable
-    state: present
-    value: "YES"
+- name: Start sshd
+  ansible.builtin.service:
+    name: sshd
+    enabled: true
+    state: started
   tags: [ssh]
 
 - name: Add root SSH key
