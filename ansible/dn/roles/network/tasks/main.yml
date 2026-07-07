@@ -48,14 +48,18 @@
   register: network_reg_bridges_ip6
   tags: [interfaces, bridge, ipv6, config]
 
-- name: Activate target interfaces
+- name: Activate interfaces
   community.general.sysrc:
-    name: "ifconfig_{{ item.target }}"
+    name: "ifconfig_{{ item }}"
     state: present
     value: "up"
-  loop: "{{ interfaces }}"
+  loop: "{{ target_interfaces | unique | list }}"
+  vars:
+    renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
+    bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
+    target_interfaces: "{{ renamed_interfaces + bridge_members }}"
   loop_control:
-    label: "Link state up: {{ item.target }}"
+    label: "Link state up: {{ item }}"
   register: network_reg_activate
   tags: [interfaces, link, config]
 
