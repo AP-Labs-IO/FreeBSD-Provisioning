@@ -6,14 +6,14 @@
     state: started
   tags: [rtsold, config]
 
-- name: Rename source interfaces
+- name: Rename interfaces
   community.general.sysrc:
-    name: "ifconfig_{{ item.source }}_name"
+    name: "ifconfig_{{ item.src }}_name"
     state: present
-    value: "{{ item.target }}"
-  loop: "{{ interfaces }}"
+    value: "{{ item.dst }}"
+  loop: "{{ network_renamed_interfaces | default([]) }}"
   loop_control:
-    label: "Renaming interface: {{ item.source }} -> {{ item.target }}"
+    label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
   register: network_reg_rename
   tags: [interfaces, rename, config]
 
