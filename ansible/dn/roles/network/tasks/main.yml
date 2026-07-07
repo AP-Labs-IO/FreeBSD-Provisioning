@@ -21,7 +21,7 @@
   community.general.sysrc:
     name: cloned_interfaces
     state: present
-    value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
+    value: "{{ (network_bridge_interfaces | default([]) | map(attribute='name') | list) | join(' ') }}"
   register: network_reg_cloned
   tags: [interfaces, cloned, config]
 
