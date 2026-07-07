@@ -6,14 +6,6 @@
     state: started
   tags: [rtsold, config]
 
-- name: Configure cloned interfaces
-  community.general.sysrc:
-    name: cloned_interfaces
-    state: present
-    value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
-  register: network_reg_cloned
-  tags: [interfaces, cloned, config]
-
 - name: Rename source interfaces
   community.general.sysrc:
     name: "ifconfig_{{ item.source }}_name"
@@ -24,6 +16,14 @@
     label: "Renaming interface: {{ item.source }} -> {{ item.target }}"
   register: network_reg_rename
   tags: [interfaces, rename, config]
+
+- name: Configure cloned interfaces
+  community.general.sysrc:
+    name: cloned_interfaces
+    state: present
+    value: "{{ interfaces | map(attribute='bridge.name') | join(' ') }}"
+  register: network_reg_cloned
+  tags: [interfaces, cloned, config]
 
 - name: Configure bridges IPv4
   community.general.sysrc:
@@ -66,8 +66,8 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
   when: >
-    (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_rename.changed | default(false) | bool) or
+    (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
     (network_reg_activate.changed | default(false) | bool)
