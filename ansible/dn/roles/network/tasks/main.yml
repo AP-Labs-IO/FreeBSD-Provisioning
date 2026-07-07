@@ -1,12 +1,4 @@
 ---
-- name: Set hostname
-  community.general.sysrc:
-    name: hostname
-    state: present
-    value: "{{ ansible_facts['hostname'] }}"
-  register: network_reg_hostname
-  tags: [hostname, config]
-
 - name: Enable router solicitation daemon
   community.general.sysrc:
     name: rtsold_enable
@@ -83,7 +75,6 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
   when: >
-    (network_reg_hostname.changed | default(false) | bool) or
     (network_reg_rtsold.changed | default(false) | bool) or
     (network_reg_reset.changed | default(false) | bool) or
     (network_reg_cloned.changed | default(false) | bool) or
