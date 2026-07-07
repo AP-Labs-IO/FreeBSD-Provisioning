@@ -34,7 +34,7 @@
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
   register: network_reg_bridges_ip4
-  tags: [bridge, ipv4, config]
+  tags: [interfaces, bridge, ipv4, config]
 
 - name: Configure bridges IPv6
   community.general.sysrc:
@@ -46,7 +46,7 @@
     label: "Configuring bridge IPv6: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
   when: item.ip6 is defined
   register: network_reg_bridges_ip6
-  tags: [bridge, ipv6, config]
+  tags: [interfaces, bridge, ipv6, config]
 
 - name: Activate target interfaces
   community.general.sysrc:
