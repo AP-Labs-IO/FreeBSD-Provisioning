@@ -27,24 +27,24 @@
 
 - name: Configure bridges IPv4
   community.general.sysrc:
-    name: "ifconfig_{{ item.bridge.name }}"
+    name: "ifconfig_{{ item.name }}"
     state: present
-    value: "addm {{ item.target }} up stp {{ item.target }}{% if item.bridge.ip4 is defined %} {{ item.bridge.ip4 }}{% endif %}"
-  loop: "{{ interfaces }}"
+    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ item.ip4 }}{% endif %}"
+  loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring bridge IPv4: {{ item.bridge.name }}"
+    label: "Configuring bridge IPv4: {{ item.name }}"
   register: network_reg_bridges_ip4
   tags: [bridge, ipv4, config]
 
 - name: Configure bridges IPv6
   community.general.sysrc:
-    name: "ifconfig_{{ item.bridge.name }}_ipv6"
+    name: "ifconfig_{{ item.name }}_ipv6"
     state: present
-    value: "inet6 {{ item.bridge.ip6 }}"
-  loop: "{{ interfaces }}"
+    value: "inet6 {{ item.ip6 }}"
+  loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.bridge.name }}"
-  when: item.bridge.ip6 is defined
+    label: "Configuring bridge IPv6: {{ item.name }}"
+  when: item.ip6 is defined
   register: network_reg_bridges_ip6
   tags: [bridge, ipv6, config]
 
