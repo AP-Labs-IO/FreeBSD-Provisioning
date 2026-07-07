@@ -1,10 +1,9 @@
 ---
-- name: Enable router solicitation daemon
-  community.general.sysrc:
-    name: rtsold_enable
-    state: present
-    value: "YES"
-  register: network_reg_rtsold
+- name: Start rtsold
+  ansible.builtin.service:
+    name: rtsold
+    enabled: true
+    state: started
   tags: [rtsold, config]
 
 - name: Remove stock ifconfig configuration
@@ -75,7 +74,6 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
   when: >
-    (network_reg_rtsold.changed | default(false) | bool) or
     (network_reg_reset.changed | default(false) | bool) or
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_rename.changed | default(false) | bool) or
