@@ -37,7 +37,7 @@
   loop: "{{ system_settings }}"
   loop_control:
     label: "{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_basic_settings
+  register: boot_reg_custom_settings
   tags: [rc, config]
 
 - name: Start ntpd
@@ -112,5 +112,5 @@
   when: >
     (boot_reg_modules.changed | default(false) | bool) or
     (boot_reg_tunables.changed | default(false) | bool) or
-    (boot_reg_basic_settings.changed | default(false) | bool)
+    (boot_reg_custom_settings.changed | default(false) | bool)
   tags: [reboot]
