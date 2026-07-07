@@ -91,4 +91,5 @@
       description: Prevent packet filtering on interfaces members of a bridge
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  when: network_disable_bridge_filtering
   tags: [kernel, config]
