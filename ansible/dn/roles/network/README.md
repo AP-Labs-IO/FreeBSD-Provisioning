@@ -17,7 +17,10 @@ The last set of requirements can be easily met by running the `bootstrap` as a p
 Role Variables
 --------------
 
-None.
+| Variable                         | Default value | Description                                                     |
+|----------------------------------|---------------|-----------------------------------------------------------------|
+| network_enable_rtsold            | true          | Boolean toggle to enable the Router Solicitation daemon         |
+| network_disable_bridge_filtering | true          | Boolean toggle to disable packet filtering on bridge interfaces |
 
 Dependencies
 ------------
