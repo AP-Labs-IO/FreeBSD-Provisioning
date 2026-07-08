@@ -54,11 +54,11 @@
     name: "ifconfig_{{ item }}"
     state: present
     value: "up"
-  loop: "{{ target_interfaces | unique | list }}"
+  loop: "{{ network_target_interfaces | unique | list }}"
   vars:
-    renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
-    bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
-    target_interfaces: "{{ renamed_interfaces + bridge_members }}"
+    network_renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
+    network_bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
+    network_target_interfaces: "{{ network_renamed_interfaces + network_bridge_members }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
