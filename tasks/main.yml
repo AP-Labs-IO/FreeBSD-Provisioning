@@ -47,6 +47,14 @@
     state: started
   tags: [ntpd]
 
+- name: Start moused
+  ansible.builtin.service:
+    name: moused
+    enabled: true
+    state: started
+  when: boot_enable_moused
+  tags: [moused]
+
 - name: Mount EFI partition
   ansible.posix.mount:
     fstype: msdosfs
