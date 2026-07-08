@@ -1,0 +1,96 @@
+---
+- name: Start rtsold
+  ansible.builtin.service:
+    name: rtsold
+    enabled: true
+    state: started
+  when: network_enable_rtsold
+  tags: [rtsold, config]
+
+- name: Rename interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item.src }}_name"
+    state: present
+    value: "{{ item.dst }}"
+  loop: "{{ network_renamed_interfaces | default([]) }}"
+  loop_control:
+    label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
+  register: network_reg_rename
+  tags: [interfaces, rename, config]
+
+- name: Configure cloned interfaces
+  community.general.sysrc:
+    name: cloned_interfaces
+    state: present
+    value: "{{ (network_bridge_interfaces | default([]) | map(attribute='name') | list) | join(' ') }}"
+  register: network_reg_cloned
+  tags: [interfaces, cloned, config]
+
+- name: Configure bridges IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}"
+    state: present
+    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ item.ip4 }}{% endif %}"
+  loop: "{{ network_bridge_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
+  register: network_reg_bridges_ip4
+  tags: [interfaces, bridge, ipv4, config]
+
+- name: Configure bridges IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}_ipv6"
+    state: present
+    value: "inet6 {{ item.ip6 }}"
+  loop: "{{ network_bridge_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring bridge IPv6: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
+  when: item.ip6 is defined
+  register: network_reg_bridges_ip6
+  tags: [interfaces, bridge, ipv6, config]
+
+- name: Activate interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item }}"
+    state: present
+    value: "up"
+  loop: "{{ network_target_interfaces | unique | list }}"
+  vars:
+    network_renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
+    network_bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
+    network_target_interfaces: "{{ network_renamed_interfaces + network_bridge_members }}"
+  loop_control:
+    label: "Link state up: {{ item }}"
+  register: network_reg_activate
+  tags: [interfaces, link, config]
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to activate new network settings
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (network_reg_rename.changed | default(false) | bool) or
+    (network_reg_cloned.changed | default(false) | bool) or
+    (network_reg_bridges_ip4.changed | default(false) | bool) or
+    (network_reg_bridges_ip6.changed | default(false) | bool) or
+    (network_reg_activate.changed | default(false) | bool)
+  tags: [reboot]
+
+- name: Disable packet filtering on bridge interfaces
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: net.link.bridge.pfil_bridge
+      value: 0
+      description: Prevent packet filtering on bridge interfaces
+    - key: net.link.bridge.pfil_member
+      value: 0
+      description: Prevent packet filtering on interfaces members of a bridge
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  when: network_disable_bridge_filtering
+  tags: [kernel, config]
