@@ -11,7 +11,9 @@ Requirements
 Role Variables
 --------------
 
-None.
+| Variable                            | Default value | Description                                                                     |
+|-------------------------------------|---------------|---------------------------------------------------------------------------------|
+| bootstrap_disable_sensitive_logging | false         | Boolean that dictates whether task output considered sensitive is logged or not |
 
 Dependencies
 ------------
@@ -25,7 +27,6 @@ Dependencies
     * `password`: `ansible-vault` encrypted password.
     * `salt`: Plain-text password salt.
     * `key_type`: SSH key type.
-  * `disable_sensitive_logging`: Boolean that dictates whether task output considered sensitive is logged or not.
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Playbook
