@@ -1,2 +1,3 @@
 ---
 boot_enable_moused: true
+boot_efi_partition: /dev/gpt/efiboot0

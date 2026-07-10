@@ -58,7 +58,7 @@
 - name: Mount EFI partition
   ansible.posix.mount:
     fstype: msdosfs
-    src: /dev/gpt/efiboot0
+    src: {{ boot_efi_partition }}
     path: /boot/efi
     opts: rw,noauto
     state: mounted

@@ -17,9 +17,10 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable           | Default value | Description                               |
-|--------------------|---------------|-------------------------------------------|
-| boot_enable_moused | true          | Boolean toggle to enable the mouse daemon |
+| Variable            | Default value     | Description                               |
+|---------------------|-------------------|-------------------------------------------|
+| boot_enable_moused  | true              | Boolean toggle to enable the mouse daemon |
+| boot_efi_partition  | /dev/gpt/efiboot0 | EFI partition                             |
 
 Dependencies
 ------------
