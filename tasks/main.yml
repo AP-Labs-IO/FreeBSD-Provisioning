@@ -1,4 +1,11 @@
 ---
+- name: Set hostname
+  community.general.sysrc:
+    name: hostname
+    state: present
+    value: "{{ ansible_facts['hostname'] }}"
+  tags: [hostname, config]
+
 - name: Load kernel modules
   community.general.sysrc:
     name: "{{ item }}_load"
@@ -21,13 +28,6 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
   tags: [kernel, config, tunables]
-
-- name: Set hostname
-  community.general.sysrc:
-    name: hostname
-    state: present
-    value: "{{ ansible_facts['hostname'] }}"
-  tags: [hostname, config]
 
 - name: Configure custom system settings
   community.general.sysrc:
