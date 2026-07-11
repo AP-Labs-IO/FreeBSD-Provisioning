@@ -67,6 +67,7 @@
 - name: Check for stock swap devices
   ansible.builtin.command: swapinfo
   register: boot_reg_active_stock_swaps
+  when: swap_devices | default([]) | length > 0
   changed_when: false
   tags: [reset, swap]
 
@@ -86,6 +87,7 @@
     path: /etc/fstab
     regexp: "^#?(?!({{ swap_devices | join('|') }})).+swap"
     state: absent
+  when: swap_devices | default([]) | length > 0
   tags: [reset, swap]
 
 - name: Configure custom swap devices
@@ -96,18 +98,20 @@
     opts: sw
     state: present
   loop: "{{ swap_devices }}"
+  when: swap_devices | default([]) | length > 0
   tags: [swap, mount]
 
 - name: Check active custom swap devices
   ansible.builtin.command: swapinfo
   register: boot_reg_check_swap
+  when: swap_devices | default([]) | length > 0
   changed_when: false
   tags: [swap]
 
 - name: Activate inactive custom swap devices
   ansible.builtin.command: "swapon {{ item }}"
   loop: "{{ swap_devices }}"
-  when: item not in boot_reg_check_swap.stdout
+  when: swap_devices | default([]) | length > 0 and item not in boot_reg_check_swap.stdout
   changed_when: true
   tags: [swap]
 
