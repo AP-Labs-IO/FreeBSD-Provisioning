@@ -81,11 +81,19 @@
   changed_when: true
   tags: [kernel, config, pid]
 
+- name: Check if mac_do kernel module is loaded
+  ansible.builtin.command: kldstat -q -m mac_do
+  register: kernel_reg_check_mac_do
+  when: mac_do_rules is defined
+  changed_when: false
+  tags: [kernel, mac_do, config]
+
 - name: Set mac_do(4) rules
   ansible.posix.sysctl:
     name: security.mac.do.rules
     state: present
     value: "{{ mac_do_rules }}"
+  when: kernel_reg_check_mac_do.rc == 0
   tags: [kernel, mac_do, config]
 
 - name: Configure extra kernel state
