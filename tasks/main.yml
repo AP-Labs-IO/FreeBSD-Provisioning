@@ -1,4 +1,9 @@
 ---
+- name: Load OS version-specific role constants
+  ansible.builtin.include_vars:
+    file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
+  tags: [config]
+
 - name: Install Bastille packages
   community.general.pkgng:
     name:
@@ -35,7 +40,7 @@
 
 - name: Bootstrap FreeBSD releases
   ansible.builtin.command:
-    cmd: "bastille bootstrap -u {{ item }}"
+    cmd: "bastille bootstrap {{ bastille_bootstrap_flags }} {{ item }}"
     creates: "{{ bastille_prefix }}/releases/{{ item }}/COPYRIGHT"
   register: bastille_reg_bootstrap_releases
   changed_when: "'skipped' not in bastille_reg_bootstrap_releases.stdout"
