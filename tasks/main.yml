@@ -21,8 +21,10 @@
 - name: Configure cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
-    state: present
-    value: "{{ (network_bridge_interfaces | default([]) | map(attribute='name') | list) | join(' ') }}"
+    state: "{{ (cloned_interfaces | length > 0) | ternary('present', 'absent') }}"
+    value: "{{ cloned_interfaces | join(' ') }}"
+  vars:
+    cloned_interfaces: "{{ network_bridge_interfaces | default([]) | map(attribute='name') | list }}"
   register: network_reg_cloned
   tags: [interfaces, cloned, config]
 
