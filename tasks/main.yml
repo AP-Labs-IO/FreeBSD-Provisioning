@@ -22,8 +22,8 @@
   community.general.sysrc:
     name: "vlans_{{ item }}"
     state: present
-    value: "{{ network_vlan_interfaces | selectattr('parent', 'equalto', item) | map(attribute='tag') | join(' ') }}"
-  loop: "{{ network_vlan_interfaces | default([]) | map(attribute='parent') | unique | list }}"
+    value: "{{ network_vlan_interfaces | default([]) | selectattr('parent', 'defined') | selectattr('parent', 'equalto', item) | map(attribute='tag') | join(' ') }}"
+  loop: "{{ network_vlan_interfaces | default([]) | map(attribute='parent', default='') | reject('==', '') | unique | list }}"
   loop_control:
     label: "Configuring VLANs for parent: {{ item }}"
   register: network_reg_vlans
@@ -35,7 +35,7 @@
     state: "{{ (cloned_interfaces | length > 0) | ternary('present', 'absent') }}"
     value: "{{ cloned_interfaces | join(' ') }}"
   vars:
-    cloned_interfaces: "{{ network_bridge_interfaces | default([]) | map(attribute='name') | list }}"
+    cloned_interfaces: "{{ network_bridge_interfaces | default([]) | map(attribute='name', default='') | reject('==', '') | list }}"
   register: network_reg_cloned
   tags: [interfaces, cloned, config]
 
@@ -69,10 +69,29 @@
     value: "up"
   loop: "{{ target_interfaces | unique | list }}"
   vars:
-    renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
-    vlan_interfaces: "{{ network_vlan_interfaces | default([]) | map('formatattr', '%s.%s', ['parent', 'tag']) | list }}"
-    bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
-    target_interfaces: "{{ renamed_interfaces + vlan_interfaces + bridge_members }}"
+    renamed_interfaces: >-
+      {%- if network_renamed_interfaces is defined -%}
+        {{ network_renamed_interfaces | json_query('[].dst') | to_json }}
+      {%- else -%}
+        []
+      {%- endif -%}
+    vlan_interfaces: >-
+      {%- if network_vlan_interfaces is defined -%}
+        [
+          {% for v in network_vlan_interfaces %}
+            "{{ v.parent }}.{{ v.tag }}",
+          {% endfor %}
+        ]
+      {%- else -%}
+        []
+      {%- endif -%}
+    bridge_members: >-
+      {%- if network_bridge_interfaces is defined -%}
+        {{ network_bridge_interfaces | json_query('[].members') | flatten | to_json }}
+      {%- else -%}
+        []
+      {%- endif -%}
+    target_interfaces: "{{ (renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml) }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
