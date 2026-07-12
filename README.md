@@ -30,6 +30,9 @@ Dependencies
   * `network_renamed_interfaces`: List of dictionaries of network interfaces to rename, with attributes:
     * `src`: The original name of the interface.
     * `dst`: The desired name of the interface.
+  * `network_vlan_interfaces`: List of dictionaries of VLAN interfaces to create, with attributes:
+    * `parent`: The parent of the new VLAN interface.
+    * `tag`: The VLAN tag for the new VLAN interface.
   * `network_bridge_interfaces`: List of dictionaries of network bridges to create, with attributes:
     * `name`: Desired name for the bridge.
     * `members`: Ordered list of bridge members. The first entry is configured as the `stp` member of the bridge.

@@ -18,6 +18,17 @@
   register: network_reg_rename
   tags: [interfaces, rename, config]
 
+- name: Configure VLANs
+  community.general.sysrc:
+    name: "vlans_{{ item }}"
+    state: present
+    value: "{{ network_vlan_interfaces | selectattr('parent', 'equalto', item) | map(attribute='tag') | join(' ') }}"
+  loop: "{{ network_vlan_interfaces | default([]) | map(attribute='parent') | unique | list }}"
+  loop_control:
+    label: "Configuring VLANs for parent: {{ item }}"
+  register: network_reg_vlans
+  tags: [interfaces, vlan, config]
+
 - name: Configure cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
@@ -59,8 +70,9 @@
   loop: "{{ target_interfaces | unique | list }}"
   vars:
     renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
+    vlan_interfaces: "{{ network_vlan_interfaces | default([]) | map('formatattr', '%s.%s', ['parent', 'tag']) | list }}"
     bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
-    target_interfaces: "{{ renamed_interfaces + bridge_members }}"
+    target_interfaces: "{{ renamed_interfaces + vlan_interfaces + bridge_members }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
@@ -74,6 +86,7 @@
     pre_reboot_delay: 5
   when: >
     (network_reg_rename.changed | default(false) | bool) or
+    (network_reg_vlans.changed | default(false) | bool) or
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
