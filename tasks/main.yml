@@ -29,6 +29,29 @@
   register: network_reg_vlans_create
   tags: [interfaces, vlan, config]
 
+- name: Configure VLANs IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.parent }}_{{ item.tag }}"
+    state: present
+    value: "{{ item.ip4 | default('up') }}"
+  loop: "{{ network_vlan_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring VLAN IPv4: {{ item.parent }}_{{ item.tag }} -> {{ item.ip4 | default('up') }}"
+  register: network_reg_vlans_ip4
+  tags: [interfaces, vlan, ipv4, config]
+
+- name: Configure VLANs IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.parent }}_{{ item.tag }}_ipv6"
+    state: present
+    value: "inet6 {{ item.ip6 }}"
+  loop: "{{ network_vlan_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring VLAN IPv6: {{ item.parent }}_{{ item.tag }} -> inet6 {{ item.ip6 }}"
+  when: item.ip6 is defined
+  register: network_reg_vlans_ip6
+  tags: [interfaces, vlan, ipv6, config]
+
 - name: Configure cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
@@ -106,6 +129,8 @@
   when: >
     (network_reg_rename.changed | default(false) | bool) or
     (network_reg_vlans_create.changed | default(false) | bool) or
+    (network_reg_vlans_ip4.changed | default(false) | bool) or
+    (network_reg_vlans_ip6.changed | default(false) | bool) or
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
