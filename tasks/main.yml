@@ -33,7 +33,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.parent }}_{{ item.tag }}"
     state: present
-    value: "{{ item.ip4 | default('up') }}"
+    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif %}up"
   loop: "{{ network_vlan_interfaces | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv4: {{ item.parent }}_{{ item.tag }} -> {{ item.ip4 | default('up') }}"
@@ -66,7 +66,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ item.ip4 }}{% endif %}"
+    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }}{% endif %}"
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
