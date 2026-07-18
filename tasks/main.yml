@@ -100,11 +100,7 @@
       {%- endif -%}
     vlan_interfaces: >-
       {%- if network_vlan_interfaces is defined -%}
-        [
-          {% for v in network_vlan_interfaces %}
-            "{{ v.parent }}.{{ v.tag }}",
-          {% endfor %}
-        ]
+        {{ network_vlan_interfaces | map(attribute='parent') | unique | list | to_json }}
       {%- else -%}
         []
       {%- endif -%}
