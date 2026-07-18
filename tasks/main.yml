@@ -66,7 +66,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }}{% endif %}"
+    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif %}addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}"
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
