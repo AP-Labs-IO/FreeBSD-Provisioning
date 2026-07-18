@@ -64,7 +64,7 @@
 
 - name: Activate interfaces
   community.general.sysrc:
-    name: "ifconfig_{{ item }}"
+    name: "ifconfig_{{ item | replace('.', '_') }}"
     state: present
     value: "up"
   loop: "{{ target_interfaces | unique | list }}"
