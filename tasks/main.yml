@@ -36,7 +36,7 @@
     value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif %}up"
   loop: "{{ network_vlan_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv4: {{ item.parent }}_{{ item.tag }} -> {{ item.ip4 | default('up') }}"
+    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }}"
   register: network_reg_vlans_ip4
   tags: [interfaces, vlan, ipv4, config]
 
@@ -47,7 +47,7 @@
     value: "inet6 {{ item.ip6 }}"
   loop: "{{ network_vlan_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv6: {{ item.parent }}_{{ item.tag }} -> inet6 {{ item.ip6 | default('none') }}"
+    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }}"
   when: item.ip6 is defined
   register: network_reg_vlans_ip6
   tags: [interfaces, vlan, ipv6, config]
@@ -80,7 +80,7 @@
     value: "inet6 {{ item.ip6 }}"
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
+    label: "Configuring bridge IPv6: {{ item.name }}"
   when: item.ip6 is defined
   register: network_reg_bridges_ip6
   tags: [interfaces, bridge, ipv6, config]
