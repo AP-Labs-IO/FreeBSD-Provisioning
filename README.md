@@ -40,6 +40,8 @@ Dependencies
     * `members`: Ordered list of bridge members. The first entry is configured as the `stp` member of the bridge.
     * `ip4`: Optional IPv4 configuration of the bridge.
     * `ip6`: Optional IPv6 configuration of the bridge.
+  * `network_default_route_ip4`: IPv4 default router.
+  * `network_default_route_ip6`: IPv6 default router.
 
 Example Playbook
 ----------------

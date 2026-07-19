@@ -116,6 +116,22 @@
   register: network_reg_activate
   tags: [interfaces, link, config]
 
+- name: Configure default route IPv4
+  community.general.sysrc:
+    name: defaultrouter
+    state: "{{ network_default_route_ipv4 is defined | ternary('present', 'absent') }}"
+    value: "{{ network_default_route_ipv4 | default('') }}"
+  register: network_reg_default_route_ipv4
+  tags: [route, config, ipv4]
+
+- name: Configure default route IPv6
+  community.general.sysrc:
+    name: ipv6_defaultrouter
+    state: "{{ network_default_route_ipv6 is defined | ternary('present', 'absent') }}"
+    value: "{{ network_default_route_ipv6 | default('') }}"
+  register: network_reg_default_route_ipv6
+  tags: [route, config, ipv6]
+
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to activate new network settings
@@ -130,7 +146,9 @@
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
-    (network_reg_activate.changed | default(false) | bool)
+    (network_reg_activate.changed | default(false) | bool) or
+    (network_reg_default_route_ipv4.changed | default(false) | bool) or
+    (network_reg_default_route_ipv6.changed | default(false) | bool)
   tags: [reboot]
 
 - name: Disable packet filtering on bridge interfaces
