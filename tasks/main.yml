@@ -22,7 +22,11 @@
   community.general.sysrc:
     name: "vlans_{{ item }}"
     state: present
-    value: "{{ network_vlan_interfaces | default([]) | selectattr('parent', 'defined') | selectattr('parent', 'equalto', item) | map(attribute='tag') | join(' ') }}"
+    value: >
+      {{ network_vlan_interfaces | default([])
+      | selectattr('parent', 'defined')
+      | selectattr('parent', 'equalto', item)
+      | map(attribute='tag') | join(' ') }}
   loop: "{{ network_vlan_interfaces | default([]) | map(attribute='parent', default='') | reject('==', '') | unique | list }}"
   loop_control:
     label: "Configuring VLANs for parent: {{ item }}"
@@ -66,7 +70,12 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif %}addm {{ item.members | join(' addm ') }} stp {{ item.members | first }} up"
+    value: >
+      {% if item.ip4 is defined %}
+      {{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }}
+      {% endif %}
+      addm {{ item.members | join(' addm ') }}
+      stp {{ item.members | first }} up
   loop: "{{ network_bridge_interfaces | default([]) }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
