@@ -132,6 +132,30 @@
   register: network_reg_default_route_ipv6
   tags: [route, config, ipv6]
 
+- name: Configure system resolver
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+    content: |
+      {% if network_dns_resolver.domain is defined and network_dns_resolver.domain | length > 0 %}
+      domain {{ network_dns_resolver.domain }}
+      {% endif %}
+      {% if network_dns_resolver.search is defined and network_dns_resolver.search | length > 0 %}
+      search {{ network_dns_resolver.search }}
+      {% endif %}
+      {% if network_dns_resolver.nameservers is defined and network_dns_resolver.nameservers | length > 0 %}
+      {% for ns in network_dns_resolver.nameservers %}
+      nameserver {{ ns }}
+      {% endfor %}
+      {% endif %}
+      {% if network_dns_resolver.options is defined and network_dns_resolver.options | length > 0 %}
+      options {{ network_dns_resolver.options }}
+      {% endif %}
+  when: network_dns_resolver is defined
+  tags: [network, resolver, config]
+
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to activate new network settings
