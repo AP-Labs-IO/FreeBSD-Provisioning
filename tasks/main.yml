@@ -158,25 +158,9 @@
       options {{ network_dns_resolver.options }}
       {% endif %}
   when: network_dns_resolver is defined
-  register: network_reg_dns_resolver
-  tags: [network, resolver, config]
-
-- name: Disable dynamic resolver configuration rewrite
-  ansible.builtin.lineinfile:
-    path: /etc/resolvconf.conf
-    line: resolvconf=NO
-    state: present
-    create: true
-    owner: root
-    group: wheel
-    mode: "0644"
-  when: network_reg_dns_resolver.changed
-  tags: [network, resolver, config]
-
-- name: Apply new resolvconf configuration
-  ansible.builtin.command: resolvconf -u
-  when: network_reg_dns_resolver.changed
-  changed_when: true
+  notify:
+    - Disable dynamic resolver configuration rewrite
+    - Apply new resolvconf configuration
   tags: [network, resolver, config]
 
 - name: Reboot

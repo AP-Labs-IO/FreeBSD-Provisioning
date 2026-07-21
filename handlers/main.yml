@@ -1,0 +1,14 @@
+---
+- name: Disable dynamic resolver configuration rewrite
+  ansible.builtin.lineinfile:
+    path: /etc/resolvconf.conf
+    line: resolvconf=NO
+    state: present
+    create: true
+    owner: root
+    group: wheel
+    mode: "0644"
+
+- name: Apply new resolvconf configuration
+  ansible.builtin.command: resolvconf -u
+  changed_when: true
