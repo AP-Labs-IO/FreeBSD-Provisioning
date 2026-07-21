@@ -61,7 +61,7 @@
     src: "{{ boot_efi_partition }}"
     path: /boot/efi
     opts: rw,noauto
-    state: mounted
+    state: present
   tags: [efi, mount]
 
 - name: Check for stock swap devices
