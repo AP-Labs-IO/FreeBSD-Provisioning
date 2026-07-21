@@ -164,9 +164,9 @@
 - name: Disable dynamic resolver configuration rewrite
   ansible.builtin.lineinfile:
     path: /etc/resolvconf.conf
-    create: true
     line: resolvconf=NO
     state: present
+    create: true
     owner: root
     group: wheel
     mode: "0644"
