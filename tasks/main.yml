@@ -163,6 +163,10 @@
     - Apply new resolvconf configuration
   tags: [network, resolver, config]
 
+- name: Force execution of notified handlers
+  ansible.builtin.meta: flush_handlers
+  tags: [network, resolver, config]
+
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to activate new network settings
