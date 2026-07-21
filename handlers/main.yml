@@ -1,5 +1,5 @@
 ---
-- name: Disable dynamic resolver configuration rewrite
+- name: Disable dynamic DNS resolver reconfiguration
   ansible.builtin.lineinfile:
     path: /etc/resolvconf.conf
     line: resolvconf=NO

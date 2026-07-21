@@ -136,7 +136,7 @@
   register: network_reg_default_route_ipv6
   tags: [route, config, ipv6]
 
-- name: Configure system resolver
+- name: Configure DNS resolver
   ansible.builtin.copy:
     dest: /etc/resolv.conf
     owner: root
@@ -159,7 +159,7 @@
       {% endif %}
   when: network_dns_resolver is defined
   notify:
-    - Disable dynamic resolver configuration rewrite
+    - Disable dynamic DNS resolver reconfiguration
     - Apply new resolvconf configuration
   tags: [network, resolver, config]
 
