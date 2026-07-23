@@ -18,6 +18,30 @@
   register: network_reg_rename
   tags: [interfaces, rename, config]
 
+- name: Configure base interfaces IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}"
+    state: present
+    value: "{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4)) }}"
+  loop: "{{ network_base_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 }}"
+  when: item.ip4 is defined
+  register: network_reg_base_ip4
+  tags: [interfaces, base, ipv4, config]
+
+- name: Configure base interfaces IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}_ipv6"
+    state: present
+    value: "inet6 {{ item.ip6 }}"
+  loop: "{{ network_base_interfaces | default([]) }}"
+  loop_control:
+    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 }}"
+  when: item.ip6 is defined
+  register: network_reg_base_ip6
+  tags: [interfaces, base, ipv6, config]
+
 - name: Create VLAN interfaces
   community.general.sysrc:
     name: "vlans_{{ item }}"
@@ -102,6 +126,12 @@
       {%- else -%}
         []
       {%- endif -%}
+    base_interfaces: >-
+      {%- if network_base_interfaces is defined -%}
+        {{ network_base_interfaces | json_query('[].name') | to_json }}
+      {%- else -%}
+        []
+      {%- endif -%}
     vlan_interfaces: >-
       {%- if network_vlan_interfaces is defined -%}
         {{ network_vlan_interfaces | map(attribute='parent') | unique | list | to_json }}
@@ -114,7 +144,8 @@
       {%- else -%}
         []
       {%- endif -%}
-    target_interfaces: "{{ ((renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
+    preliminary_interfaces: "{{ ((renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
+    target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces | from_yaml) }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
@@ -175,6 +206,8 @@
     pre_reboot_delay: 5
   when: >
     (network_reg_rename.changed | default(false) | bool) or
+    (network_reg_base_ip4.changed | default(false) | bool) or
+    (network_reg_base_ip6.changed | default(false) | bool) or
     (network_reg_vlans_create.changed | default(false) | bool) or
     (network_reg_vlans_ip4.changed | default(false) | bool) or
     (network_reg_vlans_ip6.changed | default(false) | bool) or
