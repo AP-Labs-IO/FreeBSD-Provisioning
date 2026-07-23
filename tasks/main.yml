@@ -114,7 +114,7 @@
       {%- else -%}
         []
       {%- endif -%}
-    target_interfaces: "{{ (renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml) | unique | list }}"
+    target_interfaces: "{{ ((renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
