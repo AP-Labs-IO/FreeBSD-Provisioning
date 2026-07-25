@@ -54,7 +54,7 @@
   community.general.sysrc:
     name: "vlans_{{ item.parent }}"
     state: present
-    value: "{{ item.vlans | default([]) | map(attribute='tag') | list | join(' ') }}"
+    value: "{{ item.vlans | map(attribute='tag') | list | join(' ') }}"
   loop: "{{ network_vlan_interfaces | default([]) }}"
   loop_control:
     label: "Configuring VLANs for parent: {{ item.parent }}"
@@ -71,7 +71,7 @@
       {%- if network_vlan_interfaces is defined -%}
         [
           {% for row in network_vlan_interfaces %}
-            {% for vlan in row.vlans | default([]) %}
+            {% for vlan in row.vlans %}
               {
                 "parent": "{{ row.parent }}",
                 "tag": "{{ vlan.tag }}",
@@ -102,7 +102,7 @@
       {%- if network_vlan_interfaces is defined -%}
         [
           {% for row in network_vlan_interfaces %}
-            {% for vlan in row.vlans | default([]) %}
+            {% for vlan in row.vlans %}
               {
                 "parent": "{{ row.parent }}",
                 "tag": "{{ vlan.tag }}",
