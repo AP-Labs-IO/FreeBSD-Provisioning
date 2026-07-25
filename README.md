@@ -23,6 +23,7 @@ Role Variables
 | network_remove_stock_configuration | false         | Boolean toggle to to remove the node's stock network configuration. See `network_preserve_custom_configurations` below. |
 | network_renamed_interfaces         | []            | See `network_renamed_interfaces` below.                                                                                 |
 | network_base_interfaces            | []            | See `network_base_interfaces` below.                                                                                    |
+| network_vlan_interfaces            | []            | See `network_vlan_interfaces` below.                                                                                    |
 | network_disable_bridge_filtering   | true          | Boolean toggle to disable packet filtering on bridge interfaces                                                         |
 
 Dependencies

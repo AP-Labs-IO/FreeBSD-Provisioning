@@ -55,7 +55,7 @@
     name: "vlans_{{ item.parent }}"
     state: present
     value: "{{ item.vlans | map(attribute='tag') | list | join(' ') }}"
-  loop: "{{ network_vlan_interfaces | default([]) }}"
+  loop: "{{ network_vlan_interfaces }}"
   loop_control:
     label: "Configuring VLANs for parent: {{ item.parent }}"
   register: network_reg_vlans_create
@@ -68,7 +68,6 @@
     value: "{{ item.ip4 }}"
   vars:
     vlans_matrix: >-
-      {%- if network_vlan_interfaces is defined -%}
         [
           {% for row in network_vlan_interfaces %}
             {% for vlan in row.vlans %}
@@ -79,13 +78,11 @@
                           {{- ('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4)) -}}
                         {%- else -%}
                           up
-      {%- endif -%}"
+        {%- endif -%}"
               },
             {% endfor %}
           {% endfor %}
-        ]{%- else -%}
-        []
-      {%- endif -%}
+        ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 }}"
@@ -99,22 +96,19 @@
     value: "inet6 {{ item.ip6 }}"
   vars:
     vlans_matrix: >-
-      {%- if network_vlan_interfaces is defined -%}
         [
           {% for row in network_vlan_interfaces %}
             {% for vlan in row.vlans %}
               {
                 "parent": "{{ row.parent }}",
                 "tag": "{{ vlan.tag }}",
-      {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
+        {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
                 "ip6": "{{ vlan.ip6 }}"
-      {%- endif -%}
+        {%- endif -%}
               },
             {% endfor %}
           {% endfor %}
-        ]{%- else -%}
-        []
-      {%- endif -%}
+        ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 }}"
@@ -165,19 +159,14 @@
   vars:
     renamed_interfaces: "{{ network_renamed_interfaces | map(attribute='dst') | list }}"
     base_interfaces: "{{ network_base_interfaces | map(attribute='name') | list }}"
-    vlan_interfaces: >-
-      {%- if network_vlan_interfaces is defined -%}
-        {{ network_vlan_interfaces | map(attribute='parent') | list | to_json }}
-      {%- else -%}
-        []
-      {%- endif -%}
+    vlan_interfaces: "{{ network_vlan_interfaces | map(attribute='parent') | list }}"
     bridge_members: >-
       {%- if network_bridge_interfaces is defined -%}
         {{ network_bridge_interfaces | json_query('[].members') | flatten | to_json }}
       {%- else -%}
         []
       {%- endif -%}
-    preliminary_interfaces: "{{ (renamed_interfaces + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
+    preliminary_interfaces: "{{ (renamed_interfaces + vlan_interfaces + (bridge_members | from_yaml)) | unique | list }}"
     target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces) }}"
   loop_control:
     label: "Link state up: {{ item }}"
