@@ -167,7 +167,7 @@
     base_interfaces: "{{ network_base_interfaces | map(attribute='name') | list }}"
     vlan_interfaces: >-
       {%- if network_vlan_interfaces is defined -%}
-        {{ network_vlan_interfaces | map(attribute='parent') | unique | list | to_json }}
+        {{ network_vlan_interfaces | map(attribute='parent') | list | to_json }}
       {%- else -%}
         []
       {%- endif -%}
