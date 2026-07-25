@@ -69,6 +69,8 @@
       {{ bootstrap_ports_repository_name }} {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
+    owner: root
+    group: wheel
     mode: "0644"
   tags: [pkg, config]
 
