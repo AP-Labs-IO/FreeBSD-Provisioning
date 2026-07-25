@@ -1,3 +1,4 @@
 ---
 network_enable_rtsold: true
+network_remove_stock_configuration: false
 network_disable_bridge_filtering: true

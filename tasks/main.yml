@@ -7,6 +7,14 @@
   when: network_enable_rtsold
   tags: [rtsold, config]
 
+- name: Remove stock configuration
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: "(?i)^ifconfig_(?!({{ network_preserve_custom_configurations }}))"
+    state: absent
+  when: network_remove_stock_configuration
+  tags: [reset, config]
+
 - name: Rename interfaces
   community.general.sysrc:
     name: "ifconfig_{{ item.src }}_name"
