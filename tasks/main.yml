@@ -31,7 +31,7 @@
     name: "ifconfig_{{ item.name }}"
     state: present
     value: "{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4)) }}"
-  loop: "{{ network_base_interfaces | default([]) }}"
+  loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 }}"
   when: item.ip4 is defined
@@ -43,7 +43,7 @@
     name: "ifconfig_{{ item.name }}_ipv6"
     state: present
     value: "inet6 {{ item.ip6 }}"
-  loop: "{{ network_base_interfaces | default([]) }}"
+  loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 }}"
   when: item.ip6 is defined
@@ -164,12 +164,7 @@
   loop: "{{ target_interfaces | unique | list }}"
   vars:
     renamed_interfaces: "{{ network_renamed_interfaces | map(attribute='dst') | list }}"
-    base_interfaces: >-
-      {%- if network_base_interfaces is defined -%}
-        {{ network_base_interfaces | json_query('[].name') | to_json }}
-      {%- else -%}
-        []
-      {%- endif -%}
+    base_interfaces: "{{ network_base_interfaces | map(attribute='name') | list }}"
     vlan_interfaces: >-
       {%- if network_vlan_interfaces is defined -%}
         {{ network_vlan_interfaces | map(attribute='parent') | unique | list | to_json }}
@@ -183,7 +178,7 @@
         []
       {%- endif -%}
     preliminary_interfaces: "{{ (renamed_interfaces + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
-    target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces | from_yaml) }}"
+    target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces) }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
