@@ -20,7 +20,7 @@
     name: "ifconfig_{{ item.src }}_name"
     state: present
     value: "{{ item.dst }}"
-  loop: "{{ network_renamed_interfaces | default([]) }}"
+  loop: "{{ network_renamed_interfaces }}"
   loop_control:
     label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
   register: network_reg_rename
@@ -163,12 +163,7 @@
     value: "up"
   loop: "{{ target_interfaces | unique | list }}"
   vars:
-    renamed_interfaces: >-
-      {%- if network_renamed_interfaces is defined -%}
-        {{ network_renamed_interfaces | json_query('[].dst') | to_json }}
-      {%- else -%}
-        []
-      {%- endif -%}
+    renamed_interfaces: "{{ network_renamed_interfaces | map(attribute='dst') | list }}"
     base_interfaces: >-
       {%- if network_base_interfaces is defined -%}
         {{ network_base_interfaces | json_query('[].name') | to_json }}
@@ -187,7 +182,7 @@
       {%- else -%}
         []
       {%- endif -%}
-    preliminary_interfaces: "{{ ((renamed_interfaces | from_yaml) + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
+    preliminary_interfaces: "{{ (renamed_interfaces + (vlan_interfaces | from_yaml) + (bridge_members | from_yaml)) | unique | list }}"
     target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces | from_yaml) }}"
   loop_control:
     label: "Link state up: {{ item }}"
