@@ -44,15 +44,12 @@
 
 - name: Create VLAN interfaces
   community.general.sysrc:
-    name: "vlans_{{ item }}"
+    name: "vlans_{{ item.parent }}"
     state: present
-    value: "{{ network_vlan_interfaces | default([])
-      | selectattr('parent', 'defined')
-      | selectattr('parent', 'equalto', item)
-      | map(attribute='tag') | join(' ') }}"
-  loop: "{{ network_vlan_interfaces | default([]) | map(attribute='parent', default='') | reject('==', '') | unique | list }}"
+    value: "{{ item.vlans | default([]) | map(attribute='tag') | list | join(' ') }}"
+  loop: "{{ network_vlan_interfaces | default([]) }}"
   loop_control:
-    label: "Configuring VLANs for parent: {{ item }}"
+    label: "Configuring VLANs for parent: {{ item.parent }}"
   register: network_reg_vlans_create
   tags: [interfaces, vlan, config]
 
@@ -60,8 +57,29 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.parent }}_{{ item.tag }}"
     state: present
-    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4)) }}{%- else -%}up{% endif %}"
-  loop: "{{ network_vlan_interfaces | default([]) }}"
+    value: "{{ item.ip4 }}"
+  vars:
+    vlans_matrix: >-
+      {%- if network_vlan_interfaces is defined -%}
+        [
+          {% for row in network_vlan_interfaces %}
+            {% for vlan in row.vlans | default([]) %}
+              {
+                "parent": "{{ row.parent }}",
+                "tag": "{{ vlan.tag }}",
+                "ip4": "{%- if vlan.ip4 is defined -%}
+                          {{- ('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4)) -}}
+                        {%- else -%}
+                          up
+                        {%- endif -%}"
+              },
+            {% endfor %}
+          {% endfor %}
+        ]
+      {%- else -%}
+        []
+      {%- endif -%}
+  loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }}"
   register: network_reg_vlans_ip4
@@ -72,7 +90,26 @@
     name: "ifconfig_{{ item.parent }}_{{ item.tag }}_ipv6"
     state: present
     value: "inet6 {{ item.ip6 }}"
-  loop: "{{ network_vlan_interfaces | default([]) }}"
+  vars:
+    vlans_matrix: >-
+      {%- if network_vlan_interfaces is defined -%}
+        [
+          {% for row in network_vlan_interfaces %}
+            {% for vlan in row.vlans | default([]) %}
+              {
+                "parent": "{{ row.parent }}",
+                "tag": "{{ vlan.tag }}",
+                {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
+                "ip6": "{{ vlan.ip6 }}"
+                {%- endif -%}
+              },
+            {% endfor %}
+          {% endfor %}
+        ]
+      {%- else -%}
+        []
+      {%- endif -%}
+  loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }}"
   when: item.ip6 is defined

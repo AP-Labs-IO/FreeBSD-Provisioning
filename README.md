@@ -31,10 +31,11 @@ Dependencies
     * `src`: The original name of the interface.
     * `dst`: The desired name of the interface.
   * `network_vlan_interfaces`: List of dictionaries of VLAN interfaces to create, with attributes:
-    * `parent`: The parent of the new VLAN interface.
-    * `tag`: The VLAN tag for the new VLAN interface.
-    * `ip4`: Optional IPv4 configuration of the VLAN.
-    * `ip6`: Optional IPv6 configuration of the VLAN.
+    * `parent`: The common parent of a group of VLAN interfaces.
+    * `vlans`: List of child VLAN interfaces of a common parent, with attributes:
+      * `tag`: The VLAN tag for the new VLAN interface.
+      * `ip4`: Optional IPv4 configuration of the VLAN.
+      * `ip6`: Optional IPv6 configuration of the VLAN.
   * `network_bridge_interfaces`: List of dictionaries of network bridges to create, with attributes:
     * `name`: Desired name for the bridge.
     * `members`: Ordered list of bridge members. The first entry is configured as the `stp` member of the bridge.
