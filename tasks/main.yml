@@ -81,7 +81,7 @@
       {%- endif -%}
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }}"
+    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 }}"
   register: network_reg_vlans_ip4
   tags: [interfaces, vlan, ipv4, config]
 
@@ -111,7 +111,7 @@
       {%- endif -%}
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }}"
+    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 }}"
   when: item.ip6 is defined
   register: network_reg_vlans_ip6
   tags: [interfaces, vlan, ipv6, config]
