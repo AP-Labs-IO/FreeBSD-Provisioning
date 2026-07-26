@@ -21,6 +21,10 @@ Role Variables
 |----------------------------------  |---------------|-------------------------------------------------------------------------------------------------------------------------|
 | network_enable_rtsold              | true          | Boolean toggle to enable the Router Solicitation daemon                                                                 |
 | network_remove_stock_configuration | false         | Boolean toggle to to remove the node's stock network configuration. See `network_preserve_custom_configurations` below. |
+| network_renamed_interfaces         | []            | See `network_renamed_interfaces` below.                                                                                 |
+| network_base_interfaces            | []            | See `network_base_interfaces` below.                                                                                    |
+| network_vlan_interfaces            | []            | See `network_vlan_interfaces` below.                                                                                    |
+| network_bridge_interfaces          | []            | See `network_bridge_interfaces` below.                                                                                  |
 | network_disable_bridge_filtering   | true          | Boolean toggle to disable packet filtering on bridge interfaces                                                         |
 
 Dependencies
@@ -37,7 +41,7 @@ Dependencies
     * `src`: The original name of the interface.
     * `dst`: The desired name of the interface.
   * `network_vlan_interfaces`: List of dictionaries of VLAN interfaces to create, with attributes:
-    * `parent`: The common parent of a group of VLAN interfaces.
+    * `parent`: The common parent of a group of VLAN interfaces. This value is expected to be unique across all VLAN list entries.
     * `vlans`: List of child VLAN interfaces of a common parent, with attributes:
       * `tag`: The VLAN tag for the new VLAN interface.
       * `ip4`: Optional IPv4 configuration of the VLAN interface.
