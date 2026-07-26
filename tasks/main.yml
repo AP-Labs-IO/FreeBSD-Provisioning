@@ -12,7 +12,7 @@
     state: present
     value: "YES"
     path: /boot/loader.conf
-  loop: "{{ kernel_modules }}"
+  loop: "{{ boot_kernel_modules }}"
   register: boot_reg_modules
   tags: [kernel, config, modules]
 
@@ -23,7 +23,7 @@
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ kernel_tunables }}"
+  loop: "{{ boot_kernel_tunables }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
@@ -34,7 +34,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ system_settings }}"
+  loop: "{{ boot_system_settings }}"
   loop_control:
     label: "{{ item.key }} -> {{ item.value }}"
   register: boot_reg_custom_settings
@@ -67,7 +67,7 @@
 - name: Check for stock swap devices
   ansible.builtin.command: swapinfo
   register: boot_reg_active_stock_swaps
-  when: swap_devices is defined
+  when: boot_swap_devices is defined
   changed_when: false
   tags: [reset, swap]
 
@@ -77,7 +77,7 @@
   vars:
     device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
     active_devices: "{{ device_lines | map('split') | map('first') | list }}"
-    active_stock_swaps: "{{ active_devices | difference(swap_devices) }}"
+    active_stock_swaps: "{{ active_devices | difference(boot_swap_devices) }}"
   when: active_stock_swaps | default([]) | length > 0
   changed_when: true
   tags: [reset, swap]
@@ -85,9 +85,9 @@
 - name: Remove stock swap devices from fstab
   ansible.builtin.lineinfile:
     path: /etc/fstab
-    regexp: "^#?(?!({{ swap_devices | join('|') }})).+swap"
+    regexp: "^#?(?!({{ boot_swap_devices | join('|') }})).+swap"
     state: absent
-  when: swap_devices is defined
+  when: boot_swap_devices is defined
   tags: [reset, swap]
 
 - name: Configure custom swap devices
@@ -97,21 +97,21 @@
     path: none
     opts: sw
     state: present
-  loop: "{{ swap_devices }}"
-  when: swap_devices is defined
+  loop: "{{ boot_swap_devices }}"
+  when: boot_swap_devices is defined
   tags: [swap, mount]
 
 - name: Check active custom swap devices
   ansible.builtin.command: swapinfo
   register: boot_reg_check_swap
-  when: swap_devices is defined
+  when: boot_swap_devices is defined
   changed_when: false
   tags: [swap]
 
 - name: Activate inactive custom swap devices
   ansible.builtin.command: "swapon {{ item }}"
-  loop: "{{ swap_devices }}"
-  when: swap_devices is defined and item not in boot_reg_check_swap.stdout
+  loop: "{{ boot_swap_devices }}"
+  when: boot_swap_devices is defined and item not in boot_reg_check_swap.stdout
   changed_when: true
   tags: [swap]
 
