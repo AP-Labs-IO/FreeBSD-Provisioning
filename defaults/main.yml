@@ -4,4 +4,5 @@ network_remove_stock_configuration: false
 network_renamed_interfaces: []
 network_base_interfaces: []
 network_vlan_interfaces: []
+network_bridge_interfaces: []
 network_disable_bridge_filtering: true

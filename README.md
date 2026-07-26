@@ -24,6 +24,7 @@ Role Variables
 | network_renamed_interfaces         | []            | See `network_renamed_interfaces` below.                                                                                 |
 | network_base_interfaces            | []            | See `network_base_interfaces` below.                                                                                    |
 | network_vlan_interfaces            | []            | See `network_vlan_interfaces` below.                                                                                    |
+| network_bridge_interfaces          | []            | See `network_bridge_interfaces` below.                                                                                  |
 | network_disable_bridge_filtering   | true          | Boolean toggle to disable packet filtering on bridge interfaces                                                         |
 
 Dependencies
