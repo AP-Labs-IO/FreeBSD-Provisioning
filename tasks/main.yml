@@ -68,21 +68,21 @@
     value: "{{ item.ip4 }}"
   vars:
     vlans_matrix: >-
-        [
-          {% for row in network_vlan_interfaces %}
-            {% for vlan in row.vlans %}
-              {
-                "parent": "{{ row.parent }}",
-                "tag": "{{ vlan.tag }}",
-                "ip4": "{%- if vlan.ip4 is defined -%}
-                          {{- ('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4)) -}}
-                        {%- else -%}
-                          up
-        {%- endif -%}"
-              },
-            {% endfor %}
+      [
+        {% for row in network_vlan_interfaces %}
+          {% for vlan in row.vlans %}
+            {
+              "parent": "{{ row.parent }}",
+              "tag": "{{ vlan.tag }}",
+              "ip4": "{%- if vlan.ip4 is defined -%}
+                        {{- ('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4)) -}}
+                      {%- else -%}
+                        up
+      {%- endif -%}"
+            },
           {% endfor %}
-        ]
+        {% endfor %}
+      ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 }}"
@@ -96,19 +96,19 @@
     value: "inet6 {{ item.ip6 }}"
   vars:
     vlans_matrix: >-
-        [
-          {% for row in network_vlan_interfaces %}
-            {% for vlan in row.vlans %}
-              {
-                "parent": "{{ row.parent }}",
-                "tag": "{{ vlan.tag }}",
-        {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
-                "ip6": "{{ vlan.ip6 }}"
-        {%- endif -%}
-              },
-            {% endfor %}
+      [
+        {% for row in network_vlan_interfaces %}
+          {% for vlan in row.vlans %}
+            {
+              "parent": "{{ row.parent }}",
+              "tag": "{{ vlan.tag }}",
+      {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
+              "ip6": "{{ vlan.ip6 }}"
+      {%- endif -%}
+            },
           {% endfor %}
-        ]
+        {% endfor %}
+      ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 }}"
