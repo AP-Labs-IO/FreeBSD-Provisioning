@@ -17,7 +17,9 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-None.
+| Variable                    | Default value     | Description                             |
+|-----------------------------|-------------------|-----------------------------------------|
+| kernel_extra_runtime_state  | []                | See `kernel_extra_runtime_state` below. |
 
 Dependencies
 ------------
