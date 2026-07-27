@@ -66,7 +66,7 @@
   ansible.builtin.copy:
     dest: /usr/local/etc/pkg/repos/FreeBSD.conf
     content: |
-      {{ bootstrap_ports_repository_name }} {
+      {{ bootstrap_ports_repository_name }}: {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
     owner: root
