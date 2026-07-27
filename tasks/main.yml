@@ -130,7 +130,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }}{% endif %}
+    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif -%}
       addm {{ item.members | join(' addm ') }} stp {{ item.members | first }} up"
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
