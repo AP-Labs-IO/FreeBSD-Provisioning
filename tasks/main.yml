@@ -16,7 +16,6 @@
     pkgsite: FreeBSD-base
     name: "*"
     state: latest
-    cached: false
   when: patch_freebsd_15_or_newer
   tags: [patch]
 
