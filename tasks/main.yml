@@ -88,6 +88,7 @@
       - shells/bash-completion-freebsd
       - shells/bash-completion-zfs
     state: latest
+    use_globs: false
   tags: [packages]
 
 - name: Create admin accounts
