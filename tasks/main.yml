@@ -13,7 +13,7 @@
       - sysutils/tree
     state: latest
     use_globs: false
-  tags: [packages]
+  tags: [pkg]
 
 - name: Install Bastille configuration
   ansible.builtin.template:
