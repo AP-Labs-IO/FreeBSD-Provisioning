@@ -12,7 +12,6 @@
       - sysutils/htop
       - sysutils/tree
     state: latest
-    cached: false
   tags: [packages]
 
 - name: Install Bastille configuration
