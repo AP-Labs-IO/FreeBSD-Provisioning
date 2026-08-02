@@ -63,12 +63,16 @@
   tags: [pkg, config]
 
 - name: Configure 'latest' pkg ports repository
-  ansible.builtin.copy:
-    dest: /usr/local/etc/pkg/repos/FreeBSD.conf
-    content: |
+  ansible.builtin.blockinfile:
+    path: /usr/local/etc/pkg/repos/FreeBSD.conf
+    block: |
       {{ bootstrap_ports_repository_name }}: {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
+    insertafter: EOF
+    prepend_newline: true
+    append_newline: true
+    create: true
     owner: root
     group: wheel
     mode: "0644"
