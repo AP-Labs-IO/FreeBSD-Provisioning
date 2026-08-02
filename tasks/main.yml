@@ -12,6 +12,7 @@
       - sysutils/htop
       - sysutils/tree
     state: latest
+    use_globs: false
   tags: [packages]
 
 - name: Install Bastille configuration
