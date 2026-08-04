@@ -1,0 +1,14 @@
+# Defaults:
+DEFAULT -m {{ monitoring_smartd_alert_recipient }}
+
+# NVMe controller telemetry block:
+{% for controller in monitoring_nvme_controllers %}
+/dev/{{ controller.node }} -a -d removable -n never -W 2,{{ controller.info_temp | default(monitoring_nvme_info_temp, true) }},{{ controller.critic_temp | default(monitoring_nvme_critic_temp, true) }}
+{% endfor %}
+
+# Mechanical/SATA Disk telemetry block:
+{% for disk in monitoring_disks %}
+/dev/{{ disk.node }} -a -d removable -n never -W 2,{{ disk.info_temp | default(monitoring_disk_info_temp, true) }},{{ disk.critic_temp | default(monitoring_disk_critic_temp, true) }} -s S/../.././(00)
+/dev/{{ disk.node }} -a -d removable -n never -W 2,{{ disk.info_temp | default(monitoring_disk_info_temp, true) }},{{ disk.critic_temp | default(monitoring_disk_critic_temp, true) }} -s L/../({{ '%02d' | format(loop.index) }})/./(00)
+
+{% endfor %}

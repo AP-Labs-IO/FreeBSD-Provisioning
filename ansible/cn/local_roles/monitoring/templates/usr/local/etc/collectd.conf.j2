@@ -1,0 +1,113 @@
+Hostname "{{ ansible_facts['fqdn'] }}"
+BaseDir "/var/db/collectd"
+PluginDir "/usr/local/lib/collectd"
+Interval {{ monitoring_collectd_interval }}
+
+# ==============================================================================
+# ENGINE & BACKEND CONSTRAINTS
+# ==============================================================================
+# Protect system memory if the remote InfluxDB link drops
+WriteQueueLimitLow 50000
+WriteQueueLimitHigh 50000
+
+LoadPlugin syslog
+<Plugin syslog>
+    LogLevel err
+    NotifyLevel WARNING
+</Plugin>
+
+# ==============================================================================
+# SYSTEM & PERFORMANCE PLUGINS
+# ==============================================================================
+LoadPlugin memory
+LoadPlugin uptime
+LoadPlugin load
+LoadPlugin processes
+LoadPlugin swap
+
+LoadPlugin cpu
+<Plugin cpu>
+    ValuesPercentage true
+</Plugin>
+
+LoadPlugin aggregation
+<Plugin aggregation>
+    <Aggregation>
+        Plugin "cpu"
+        Type "percent"
+        GroupBy "Host"
+        GroupBy "TypeInstance"
+        CalculateNum false
+        CalculateSum true
+        CalculateAverage true
+        CalculateMinimum false
+        CalculateMaximum false
+        CalculateStddev false
+    </Aggregation>
+</Plugin>
+
+# ==============================================================================
+# HARDWARE METRICS LAYER
+# ==============================================================================
+LoadPlugin exec
+<Plugin exec>
+    Exec "nobody" "/usr/local/bin/ap-collectd-cputemp"
+</Plugin>
+
+LoadPlugin interface
+<Plugin interface>
+    # Ignore select interfaces
+    {% for iface in monitoring_collectd_ignore_interfaces %}
+    Interface "{{ iface }}"
+    {% endfor %}
+    Interface "/^usbus/"
+
+    IgnoreSelected true
+</Plugin>
+
+LoadPlugin disk
+<Plugin disk>
+    # Select only physical base hardware controllers
+    Disk "/^(ada|da|nvd|vtbd|md)[0-9]+$/"
+</Plugin>
+
+LoadPlugin df
+<Plugin df>
+    # Ignore select mountpoints
+    {% for mount in monitoring_collectd_ignore_mountpoints %}
+    Mountpoint "{{ mount }}"
+    {% endfor %}
+
+    # Exclude pseudo-filesystems and virtual loop layers
+    FSType "tmpfs"
+    FSType "devfs"
+    FSType "nullfs"
+    FSType "fdescfs"
+
+    IgnoreSelected true
+    LogOnce true
+</Plugin>
+
+# ==============================================================================
+# OPENZFS POOL TELEMETRY LAYER
+# ==============================================================================
+LoadPlugin zfs_arc
+
+# ==============================================================================
+# NETWORK METRICS STREAMING (GRAPHITE WIRE PROTOCOL VIA PORT 2003)
+# ==============================================================================
+LoadPlugin write_graphite
+<Plugin write_graphite>
+    <Node "{{ monitoring_collectd_graphite_host }}">
+        Host "{{ monitoring_collectd_graphite_host }}"
+        Port "{{ monitoring_collectd_graphite_port }}"
+        Protocol "tcp"
+        LogSendErrors true
+        Prefix "{{ monitoring_collectd_graphite_prefix }}"
+        Postfix ""
+        StoreRates true
+        AlwaysAppendDS false
+        EscapeCharacter "_"
+        SeparateInstances true
+    </Node>
+</Plugin>

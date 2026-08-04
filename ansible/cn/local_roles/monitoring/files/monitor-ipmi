@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PERCENT_USED=$(echo "$(/usr/local/bin/ipmitool sel info 2>/dev/null)" | awk -F: ' $1 ~ /^Percent Used/ { print int($2); }')
+if [ -n "$PERCENT_USED" ] && [ "$PERCENT_USED" -gt 90 ]
+then
+    /usr/local/bin/apprise \
+        --tag=ipmi \
+        --notification-type=WARNING \
+        --title="IPMI SEL Low Space Warning" \
+        --body="Motherboard SEL is ${PERCENT_USED}% full on $(hostname). Please run 'ipmitool sel clear'."
+fi
+
+CHASSIS_STATUS=$(/usr/local/bin/ipmitool chassis status 2>/dev/null | grep -i fault)
+if echo "$CHASSIS_STATUS" | grep -q 'true'
+then
+    /usr/local/bin/apprise \
+        --tag=ipmi \
+        --notification-type=CRITICAL \
+        --title="IPMI Hardware Chassis Fault" \
+        --body="Physical hardware chassis fault detected on $(hostname):\n$CHASSIS_STATUS"
+fi

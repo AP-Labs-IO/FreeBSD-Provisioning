@@ -1,0 +1,107 @@
+Monitoring
+==========
+
+Configure monitoring for a FreeBSD node.
+
+Requirements
+------------
+
+* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
+* An already bootstrapped FreeBSD environment, i.e.:
+  * With a Python runtime.
+  * With key-based SSH access.
+  * A functional `become` setup.
+
+The last set of requirements can be easily met by running the `ap_labs.bootstrap` as a precursor to this role.
+
+Role Variables
+--------------
+
+| Variable                               | Default value                                       | Description                                         |
+|----------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
+| monitoring_watchdogd_flags             | --pretimeout 10 --pretimeout-action log,printf      | See `monitoring_watchdogd_flags` below.             |
+| monitoring_smartd_poll_interval        | 300                                                 | See `monitoring_smartd_poll_interval` below.        |
+| monitoring_smartd_alert_recipient      | root                                                | See `monitoring_smartd_alert_recipient` below.      |
+| monitoring_nvme_controllers            | []                                                  | See `monitoring_nvme_controllers` below.            |
+| monitoring_nvme_info_temp              | 65                                                  | See `monitoring_nvme_info_temp` below.              |
+| monitoring_nvme_critic_temp            | 70                                                  | See `monitoring_nvme_critic_temp` below.            |
+| monitoring_disks                       | []                                                  | See `monitoring_disks` below.                       |
+| monitoring_disk_info_temp              | 45                                                  | See `monitoring_disk_info_temp` below.              |
+| monitoring_disk_critic_temp            | 50                                                  | See `monitoring_disk_critic_temp` below.            |
+| monitoring_collectd_interval           | 10                                                  | See `monitoring_collectd_interval` below.           |
+| monitoring_collectd_ignore_interfaces  | See `monitoring_collectd_ignore_interfaces` below.  | See `monitoring_collectd_ignore_interfaces` below.  |
+| monitoring_collectd_ignore_mountpoints | See `monitoring_collectd_ignore_mountpoints` below. | See `monitoring_collectd_ignore_mountpoints` below. |
+| monitoring_collectd_graphite_port      | 2003                                                | See `monitoring_collectd_graphite_port` below.      |
+| monitoring_collectd_graphite_prefix    | See `monitoring_collectd_graphite_prefix` below.    | See `monitoring_collectd_graphite_prefix` below.    |
+| monitoring_alert_targets               | []                                                  | See `monitoring_alert_targets` below.               |
+
+Dependencies
+------------
+
+* Bootstrap role.
+* Global variables provided by the consumer of the role:
+  * `monitoring_watchdogd_flags`: String listing the launch flags for the `watchdogd(8)` service.
+  * `monitoring_smartd_poll_interval`: Interger listing the `smartd(8)` disk polling interval.
+  * `monitoring_smartd_alert_recipient`: String listing the `smartd(8)` alerts email address recipient.
+  * `monitoring_nvme_controllers`: List of dictionaries describing the NVME controllers to monitor via `smartd(8)`, with attributes:
+    * `node`: String listing the node name of the target NVME controller, e.g. `nvme0`.
+    * `info_temp`: Optional integer listing the target NVME controller's `information` temperature threshold, defaulting to the value of the `monitoring_nvme_info_temp` variable.
+    * `critic_temp`: Optional integer listing the target NVME controller's `critical` temperature threshold, defaulting to the value of the `monitoring_nvme_critic_temp` variable.
+  * `monitoring_nvme_info_temp`: The default `information` temperature threshold for NVME controllers.
+  * `monitoring_nvme_critic_temp`: The default `critical` temperature threshold for NVME controllers.
+  * `monitoring_disks`: List of dictionaries describing the disks to monitor via `smartd(8)`, with attributes:
+    * `node`: String listing the node name of the target disk to monitor via `smartd(8)`, e.g. `ada0` or `vtbd1`.
+    * `info_temp`: Optional integer listing the target disk's `information` temperature threshold, defaulting to the value of the `monitoring_disk_info_temp` variable.
+    * `critic_temp`: Optional integer listing the target disk's `critical` temperature threshold, defaulting to the value of the `monitoring_disk_critic_temp` variable.
+  * `monitoring_disk_info_temp`: The default `information` temperature threshold for disks.
+  * `monitoring_disk_critic_temp`: The default `critical` temperature threshold for disks.
+  * `monitoring_collectd_interval`: Integer listing the default `collectd(8)` metrics collection interval.
+  * `monitoring_collectd_ignore_interfaces`: List of strings listing the network interfaces to ignore from `collectd(8)` metrics collection, defaulting to:
+    * `lo0`
+    * `ipfw0`
+    * `pflog0`
+    * `pfsync0`
+    * `plip0`
+    * `epair`
+    * `bridge`
+  * `monitoring_collectd_ignore_mountpoints`: List of strings listing the mountpoints to ignore from `collectd(8)` metrics collection, defaulting to:
+    * `/usr/src`
+    * `/usr/ports`
+    * `/var/run`
+  * `monitoring_collectd_graphite_host`: Mandatory string listing the Graphite host where `collectd(8)` metrics are sent.
+  * `monitoring_collectd_graphite_port`: Integer listing the Graphite port of the `monitoring_collectd_graphite_host` target.
+  * `monitoring_collectd_graphite_prefix`: Graphite metrics prefix, defaulting to the target node's first inventory group, or the literal `standalone` string if the node does not belong to any inventory group.
+  * `monitoring_alert_targets`: List of dictionaries describing the Apprise notification targets, with attributes:
+    * `url`: String holding any supported Apprise URL.
+    * `config`: Optional dictionary with keys and values appropriate for the target Apprise URL.
+    * `tags`: List of strings holding the Apprise tags that apply to the target URL.
+
+Example Playbook
+----------------
+
+```yaml
+---
+- name: Bootstrap Node
+  hosts: all
+  become: false
+  gather_facts: false
+  vars: { ansible_user: root }
+  roles:
+    - { role: bootstrap, tags: [bootstrap] }
+
+- name: Configure Monitoring
+  hosts: all
+  become: true
+  roles:
+    - { role: monitoring, tags: [monitoring] }
+```
+
+License
+--------
+
+All Rights Reserved. Proprietary and Confidential.
+
+Author Information
+------------------
+
+Juan Manuel Palacios (<jmpalacios@gmail.com>).

@@ -1,0 +1,29 @@
+---
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to load new monitoring configuration
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+
+- name: Reload syslogd
+  ansible.builtin.service:
+    name: syslogd
+    state: reloaded
+
+- name: Restart blocklistd
+  ansible.builtin.service:
+    name: blocklistd
+    enabled: true
+    state: restarted
+
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: Restart pf
+  ansible.builtin.service:
+    name: pf
+    enabled: true
+    state: restarted

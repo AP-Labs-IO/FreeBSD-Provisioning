@@ -1,0 +1,23 @@
+#!/bin/sh
+
+HOSTNAME="${COLLECTD_HOSTNAME:-$(hostname)}"
+INTERVAL=${COLLECTD_INTERVAL:-10}
+
+
+oids=$(sysctl -aN dev.cpu 2>/dev/null | grep -E 'temperature$' | sort)
+if [ -z "$oids" ]
+then
+    exit 0
+fi
+
+while sleep $INTERVAL
+do
+    i=0
+    for oid in $oids
+    do
+        temp=$(sysctl -n "$oid" | tr -d 'C')
+        echo "PUTVAL \"$HOSTNAME/cpu-${i}/temperature\" interval=$INTERVAL N:$temp"
+
+        i=$((i + 1))
+    done
+done
