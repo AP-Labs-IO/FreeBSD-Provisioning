@@ -12,7 +12,7 @@
     pattern: nfscl
     enabled: true
     state: started
-  tags: [client]
+  tags: [client, service]
 
 - name: Mount NFS shares
   ansible.posix.mount:
