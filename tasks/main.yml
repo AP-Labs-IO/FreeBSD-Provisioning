@@ -26,7 +26,7 @@
     name: sshd
     enabled: true
     state: started
-  tags: [ssh]
+  tags: [ssh, service]
 
 - name: Add root SSH key
   ansible.posix.authorized_key:
