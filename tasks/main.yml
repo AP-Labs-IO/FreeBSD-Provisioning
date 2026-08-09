@@ -115,3 +115,10 @@
     label: "{{ item.name }} ({{ item.key_type }})"
   no_log: "{{ bootstrap_disable_sensitive_logging }}"
   tags: [admins, ssh, keys]
+
+- name: Create local cron jobs directory
+  ansible.builtin.file:
+    path: /usr/local/etc/cron.d
+    state: directory
+    mode: "0755"
+  tags: [cron, config]
