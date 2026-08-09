@@ -72,4 +72,4 @@
     owner: root
     group: wheel
     mode: "0755"
-  tags: [deployments]
+  tags: [deployments, script]
