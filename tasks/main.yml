@@ -21,6 +21,13 @@
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
   tags: [config]
 
+- name: Set hostname
+  community.general.sysrc:
+    name: hostname
+    state: present
+    value: "{{ ansible_facts['hostname'] }}"
+  tags: [hostname, config]
+
 - name: Start sshd
   ansible.builtin.service:
     name: sshd
