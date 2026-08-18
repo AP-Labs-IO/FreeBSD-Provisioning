@@ -1,0 +1,59 @@
+{% macro ssh_connect_block() %}
+    connect:
+      type: ssh+stdinserver
+      host: {{ zfs_replication_target_host }}
+      user: {{ zfs_replication_user }}
+      port: 22
+      identity_file: /home/{{ zfs_replication_user }}/.ssh/{{ zfs_replication_key_basename }}
+      options:
+        - StrictHostKeyChecking=yes
+{%- endmacro %}
+global:
+  logging:
+    - type: stdout
+      level: info
+      format: human
+      time: false
+
+jobs:
+  - name: hourly
+    type: push
+{{ ssh_connect_block() }}
+    filesystems:
+{% for dataset in zfs_hourly_snapshots_datasets %}
+      "{{ dataset }}": true
+{% endfor %}
+    snapshotting:
+      type: periodic
+      prefix: hourly_
+      interval: 1h
+    pruning:
+      keep_sender:
+        - type: last_n
+          regex: "^hourly_"
+          count: 24
+      keep_receiver:
+        - type: last_n
+          regex: "^hourly_"
+          count: 24
+
+  - name: nightly
+    type: push
+{{ ssh_connect_block() }}
+    filesystems:
+{% for dataset in zfs_nightly_snapshots_datasets %}
+      "{{ dataset }}": true
+{% endfor %}
+    snapshotting:
+      type: periodic
+      prefix: nightly_
+      interval: 24h
+    pruning:
+      keep_sender:
+        - type: last_n
+          regex: "^nightly_"
+          count: 31
+      keep_receiver:
+        - type: last_n
+          regex: "^nightly_"
+          count: 31

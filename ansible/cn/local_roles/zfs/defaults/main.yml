@@ -1,0 +1,5 @@
+---
+zfs_encryption_keys_directory: /root/.zfskeys
+zfs_encryption_datasets: []
+
+zfs_pools_scrub_schedules: []

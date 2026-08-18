@@ -1,0 +1,30 @@
+#!/bin/sh
+
+HOSTNAME=$(hostname)
+
+zpool list -H -o name,cap | while read -r pool capacity
+do
+    capacity=$(echo "$capacity" | tr -d '%')
+    if [ $capacity -ge 90 ]
+    then
+        /usr/local/bin/apprise \
+            --tag=zfs \
+            --notification-type=WARNING \
+            --title="ZFS Pool Critically Full: $pool ($capacity)" \
+            --body="CRITICAL: Pool '$pool' usage has breached the maximum 90% threshold on $HOSTNAME.\nCurrent allocation size: $capacity."
+    elif [ $capacity -ge 80 ]
+    then
+        /usr/local/bin/apprise \
+            --tag=zfs \
+            --notification-type=WARNING \
+            --title="ZFS Pool Usage Warning: $pool ($capacity)" \
+            --body="WARNING: Pool '$pool' usage has crossed the 80% watermark on $HOSTNAME.\nCurrent allocation size: $capacity."
+    elif [ $capacity -ge 70 ]
+    then
+        /usr/local/bin/apprise \
+            --tag=zfs \
+            --notification-type=INFO \
+            --title="ZFS Pool Usage Notice: $pool ($capacity)" \
+            --body="Notice: Pool '$pool' usage has crossed the 70% watermark on $HOSTNAME.\nCurrent allocation size: $capacity."
+    fi
+done

@@ -1,0 +1,30 @@
+---
+- name: Load ZFS encryption keys
+  ansible.builtin.service:
+    name: zfskeys
+    state: started
+  changed_when: true
+  listen: Import encrypted ZFS datasets
+
+- name: Mount all available ZFS datasets
+  ansible.builtin.service:
+    name: zfs
+    state: started
+  listen: Import encrypted ZFS datasets
+
+- name: Restart devd
+  ansible.builtin.service:
+    name: devd
+    enabled: true
+    state: restarted
+
+- name: Restart zrepl
+  ansible.builtin.service:
+    name: zrepl
+    enabled: true
+    state: restarted
+
+- name: Reload syslogd
+  ansible.builtin.service:
+    name: syslogd
+    state: reloaded

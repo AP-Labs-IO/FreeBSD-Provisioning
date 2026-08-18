@@ -1,0 +1,44 @@
+#!/bin/sh
+
+
+HOSTNAME=$(hostname)
+
+STATUS_JSON=$(/usr/local/bin/zrepl status --mode raw 2>/dev/null)
+if [ -z "$STATUS_JSON" ]
+then
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="zrepl daemon offline on $HOSTNAME" \
+        --body="Error: The zrepl daemon process is stopped or unreachable."
+    exit 1
+fi
+
+PARSED_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+    [.Jobs[] | select(.type == "push") | {
+        snap: (if (.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "") then .push.Snapshotting.Periodic.Error else null end),
+        repl: (if (.push.Replication.WaitReconnectError != null and .push.Replication.WaitReconnectError != "") then .push.Replication.WaitReconnectError.Err else null end)
+    }] | .[] | to_entries | .[] | select(.value != null and .value != "") | "\(.key):\(.value)"
+' 2>/dev/null)
+if [ -n "$PARSED_ERRORS" ]
+then
+    ALARM_SNAP=$(echo "$PARSED_ERRORS" | awk -F'snap:' '$0 ~ /^snap:/ { print "Error: " $2; }')
+    if [ -n "$ALARM_SNAP" ]
+    then
+        /usr/local/bin/apprise \
+            --tag=replication \
+            --notification-type=FAILURE \
+            --title="ZFS snapshotting failure on $HOSTNAME" \
+            --body="Warning: ZFS snapshotting errors:\n$ALARM_SNAP"
+    fi
+
+    ALARM_REPL=$(echo "$PARSED_ERRORS" | awk -F'repl:' '$0 ~ /^repl:/ { print "Error: " $2; }')
+    if [ -n "$ALARM_REPL" ]
+    then
+        /usr/local/bin/apprise \
+            --tag=replication \
+            --notification-type=FAILURE \
+            --title="ZFS replication failure on $HOSTNAME" \
+            --body="Warning: ZFS replication errors:\n$ALARM_REPL"
+    fi
+fi

@@ -1,0 +1,35 @@
+---
+- name: Create replication target dataset
+  community.general.zfs:
+    name: "{{ zfs_replication_target_dataset }}"
+    state: present
+  tags: [replication, dataset]
+
+- name: Configure ZFS delegation
+  community.general.zfs_delegate_admin:
+    name: "{{ zfs_replication_target_dataset }}"
+    users:
+      - "{{ zfs_replication_user }}"
+    permissions: "{{ zfs_replication_target_delegated_permissions | join(',') }}"
+    state: present
+  tags: [snapshotting, replication, delegation]
+
+- name: Install replication SSH public key
+  ansible.posix.authorized_key:
+    user: "{{ zfs_replication_user }}"
+    key_options: 'command="/usr/local/bin/zrepl stdinserver {{ hostvars[host]["ansible_facts"]["hostname"] }}",restrict'
+    key: "{{ hostvars[host]['zfs_reg_replication_pubkey']['content'] | b64decode }}"
+  loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
+  loop_control:
+    loop_var: host
+  tags: [replication, ssh, config]
+
+- name: Install zrepl configuration
+  ansible.builtin.template:
+    src: usr/local/etc/zrepl/zrepl_target.yml.j2
+    dest: /usr/local/etc/zrepl/zrepl.yml
+    owner: root
+    group: wheel
+    mode: "0644"
+  notify: Restart zrepl
+  tags: [replication, config]

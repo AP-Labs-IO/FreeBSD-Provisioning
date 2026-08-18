@@ -1,0 +1,46 @@
+---
+- name: Create replication user
+  ansible.builtin.user:
+    name: "{{ zfs_replication_user }}"
+    comment: ZFS replication user
+    shell: /bin/sh
+  tags: [replication, user]
+
+- name: Install packages
+  community.general.pkgng:
+    name: "{{ item }}"
+    state: latest
+    use_globs: false
+  loop:
+    - filesystems/zrepl
+  tags: [pkg]
+
+- name: Configure zrepl flags
+  community.general.sysrc:
+    name: "zrepl_{{ item.flag }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - flag: user
+      value: "{{ zfs_replication_user }}"
+    - flag: group
+      value: "{{ zfs_replication_group }}"
+  loop_control:
+    label: "zrepl_{{ item.flag }} -> {{ item.value }}"
+  tags: [watchdog, config]
+
+- name: Create zrepl config directory
+  ansible.builtin.file:
+    path: /usr/local/etc/zrepl
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [snapshotting, replication, config]
+
+- name: Remove zrepl's syslog configuration
+  ansible.builtin.file:
+    path: /usr/local/etc/syslog.d/zrepl.conf
+    state: absent
+  notify: Reload syslogd
+  tags: [snapshotting, replication, config]

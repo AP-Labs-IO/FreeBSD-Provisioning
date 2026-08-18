@@ -1,0 +1,118 @@
+---
+- name: Start zfsd
+  ansible.builtin.service:
+    name: zfsd
+    enabled: true
+    state: started
+  tags: [zfsd, service]
+
+- name: Create ZFS encryption keys directory
+  ansible.builtin.file:
+    path: "{{ zfs_encryption_keys_directory }}"
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0700"
+  tags: [encryption, keys]
+
+- name: Copy ZFS encryption keys
+  ansible.builtin.copy:
+    dest: "{{ zfs_encryption_keys_directory }}/{{ item.dataset | replace('/', '_') }}.key"
+    owner: root
+    group: wheel
+    mode: "0400"
+    content: "{{ item.key }}"
+  loop: "{{ zfs_encryption_datasets }}"
+  no_log: true
+  tags: [encryption, keys]
+
+- name: Enable zfskeys service
+  community.general.sysrc:
+    name: zfskeys_enable
+    state: present
+    value: "YES"
+  notify: Import encrypted ZFS datasets
+  tags: [encryption, keys]
+
+- name: Disable periodic-based zpool scrubbing
+  community.general.sysrc:
+    name: daily_scrub_zfs_enable
+    state: present
+    value: "NO"
+    path: /usr/local/etc/periodic.conf
+  tags: [zpool, scrub, periodic, config]
+
+- name: Install cron-based zpool scrub jobs
+  ansible.builtin.cron:
+    name: "{{ item.pool }} pool scrub"
+    cron_file: "/usr/local/etc/cron.d/scrub-{{ item.pool }}"
+    day: "{{ item.day_of_month }}"
+    hour: "{{ item.hour }}"
+    minute: "{{ item.minute }}"
+    user: root
+    job: "/sbin/zpool scrub {{ item.pool }}"
+  loop: "{{ zfs_pools_scrub_schedules }}"
+  tags: [zpool, scrub, cron, config]
+
+- name: Create local devd directory
+  ansible.builtin.file:
+    path: /usr/local/etc/devd
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [devd, config]
+
+- name: Install devd ZFS alerting rules
+  ansible.builtin.copy:
+    src: devd-zfs.conf
+    dest: /usr/local/etc/devd/zfs.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+  notify: Restart devd
+  tags: [devd, config, alerts]
+
+- name: Install zpool capacity monitoring script
+  ansible.builtin.copy:
+    src: monitor-zpools
+    dest: /usr/local/bin/ap-monitor-zpools
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [zpool, capacity, script]
+
+- name: Install zpool capacity alert job
+  ansible.builtin.cron:
+    name: Zpool capacity check
+    cron_file: /usr/local/etc/cron.d/alert-zpools
+    minute: 0
+    user: root
+    job: /usr/local/bin/ap-monitor-zpools
+  tags: [zpool, capacity, alert, cron]
+
+- name: Import snapshotting & replication common tasks
+  ansible.builtin.import_tasks: zrepl_common.yml
+  tags: [snapshotting, replication, config, common]
+
+- name: Import snapshotting & replication source tasks
+  ansible.builtin.import_tasks: zrepl_source.yml
+  tags: [snapshotting, replication, config, source]
+
+- name: Install snapshotting & replication monitoring script
+  ansible.builtin.copy:
+    src: monitor-replication
+    dest: /usr/local/bin/ap-monitor-replication
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [snapshotting, replication, monitoring, script]
+
+- name: Install snapshotting & replication monitoring alert job
+  ansible.builtin.cron:
+    name: ZFS snapshotting & replication monitoring alert
+    cron_file: /usr/local/etc/cron.d/alert-replication
+    minute: "*/15"
+    user: root
+    job: /usr/local/bin/ap-monitor-replication
+  tags: [snapshotting, replication, monitoring, cron]
