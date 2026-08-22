@@ -141,7 +141,7 @@
 
       /usr/local/bin/apprise \
         --tag smartd \
-        --notification-type CRITICAL \
+        --notification-type WARNING \
         --title "$SMARTD_SUBJECT" \
         --body "$SMARTD_FULLMESSAGE"
   tags: [apprise, alert, smartd]

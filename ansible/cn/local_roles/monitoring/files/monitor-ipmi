@@ -15,7 +15,7 @@ if echo "$CHASSIS_STATUS" | grep -q 'true'
 then
     /usr/local/bin/apprise \
         --tag=ipmi \
-        --notification-type=CRITICAL \
+        --notification-type=WARNING \
         --title="IPMI Hardware Chassis Fault" \
         --body="Physical hardware chassis fault detected on $(hostname):\n$CHASSIS_STATUS"
 fi
