@@ -106,10 +106,10 @@
     user: root
     job:
       "/usr/local/bin/apprise \
-        --tag system_reboot \
-        --notification-type INFO \
-        --title '{{ ansible_facts['fqdn'] }} - Bootup notification' \
-        --body '{{ ansible_facts['fqdn'] }}: bootup complete.'"
+        --tag=system_reboot \
+        --notification-type=INFO \
+        --title='{{ ansible_facts['fqdn'] }} - Bootup notification' \
+        --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
   tags: [apprise, alert, boot, cron]
 
 - name: Install IPMI monitoring script
@@ -140,10 +140,10 @@
       #!/bin/sh
 
       /usr/local/bin/apprise \
-        --tag smartd \
-        --notification-type WARNING \
-        --title "$SMARTD_SUBJECT" \
-        --body "$SMARTD_FULLMESSAGE"
+        --tag=smartd \
+        --notification-type=WARNING \
+        --title="$SMARTD_SUBJECT" \
+        --body="$SMARTD_FULLMESSAGE"
   tags: [apprise, alert, smartd]
 
 - name: Install SSH login failure alert script
