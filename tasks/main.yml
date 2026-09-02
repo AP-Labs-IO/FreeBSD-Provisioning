@@ -158,11 +158,10 @@
   loop: "{{ target_interfaces | unique | list }}"
   vars:
     renamed_interfaces: "{{ network_renamed_interfaces | map(attribute='dst') | list }}"
-    base_interfaces: "{{ network_base_interfaces | map(attribute='name') | list }}"
     vlan_parents: "{{ network_vlan_interfaces | map(attribute='parent') | list }}"
     bridge_members: "{{ network_bridge_interfaces | map(attribute='members') | flatten | list }}"
     preliminary_interfaces: "{{ (renamed_interfaces + vlan_parents + bridge_members) | unique | list }}"
-    target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces) }}"
+    target_interfaces: "{{ preliminary_interfaces | difference(network_base_interfaces | map(attribute='name') | list) }}"
   loop_control:
     label: "Link state up: {{ item }}"
   register: network_reg_activate
