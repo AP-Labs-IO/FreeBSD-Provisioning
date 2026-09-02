@@ -116,7 +116,7 @@
   register: network_reg_vlans_ip6
   tags: [interfaces, vlan, ipv6, config]
 
-- name: Configure cloned interfaces
+- name: Create cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
     state: "{{ (cloned_interfaces | length > 0) | ternary('present', 'absent') }}"
