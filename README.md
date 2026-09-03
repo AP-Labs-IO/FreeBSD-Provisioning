@@ -1,5 +1,5 @@
 Admins
-=========
+======
 
 Configure root & administrator users.
 
