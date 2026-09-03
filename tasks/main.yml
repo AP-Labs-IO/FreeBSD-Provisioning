@@ -16,6 +16,7 @@
     pkgsite: FreeBSD-base
     name: "*"
     state: latest
+  register: patch_reg_patches
   when: patch_freebsd_15_or_newer
   tags: [patch]
 
