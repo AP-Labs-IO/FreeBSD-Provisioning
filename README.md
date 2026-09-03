@@ -1,5 +1,5 @@
 Bastille
-=========
+========
 
 Configure FreeBSD nodes to host Bastille jails.
 
