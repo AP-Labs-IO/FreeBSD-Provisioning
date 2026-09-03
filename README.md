@@ -1,5 +1,5 @@
 Kernel
-=========
+======
 
 Configure runtime kernel parameters, as documented by `sysctl(8)`.
 
