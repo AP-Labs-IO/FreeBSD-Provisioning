@@ -1,5 +1,5 @@
 Boot
-=========
+====
 
 Configure boot-time settings, such as kernel modules and tunables, as documented by `loader(8)` & `rc.conf(5)`.
 
