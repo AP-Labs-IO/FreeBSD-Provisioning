@@ -1,5 +1,5 @@
 Network
-=========
+=======
 
 Configure network related settings such as cloned interfaces, IPv4 & IPv6 settings, etc., as documented by `rc.conf(5)`.
 
