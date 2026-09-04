@@ -40,6 +40,11 @@ Dependencies
   * `network_renamed_interfaces`: List of dictionaries of network interfaces to rename, with attributes:
     * `src`: The original name of the interface.
     * `dst`: The desired name of the interface.
+  * `network_base_interfaces`:
+    * `name`: Desired name for the interface.
+    * `mtu`: Optional MTU setting for the interface.
+    * `ip4`: Optional IPv4 configuration of the VLAN interface.
+    * `ip6`: Optional IPv6 configuration of the VLAN interface.
   * `network_vlan_interfaces`: List of dictionaries of VLAN interfaces to create, with attributes:
     * `parent`: The common parent of a group of VLAN interfaces. This value is expected to be unique across all VLAN list entries.
     * `vlans`: List of child VLAN interfaces of a common parent, with attributes:
