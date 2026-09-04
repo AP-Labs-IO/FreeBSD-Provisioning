@@ -171,7 +171,7 @@
     value: "inet6 {{ item.ip6 }}"
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.name }}"
+    label: "Configuring bridge IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
   register: network_reg_bridges_ip6
   tags: [interfaces, bridge, ipv6, config]
