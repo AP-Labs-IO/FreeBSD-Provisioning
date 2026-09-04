@@ -30,11 +30,21 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4)) }}"
+    value: >1-
+      {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4))) -%}
+      {%- else -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
   loop_control:
-    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 }}"
-  when: item.ip4 is defined
+    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
+  when: (item.name is defined) or (item.ip4 is defined) or (item.mtu is defined)
   register: network_reg_base_ip4
   tags: [interfaces, base, ipv4, config]
 
@@ -74,11 +84,16 @@
             {
               "parent": "{{ row.parent }}",
               "tag": "{{ vlan.tag }}",
-              "ip4": "{%- if vlan.ip4 is defined -%}
-                        {{- ('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4)) -}}
+              "ip4": "{% set tokens = [] %}
+                      {%- if vlan.ip4 is defined and vlan.ip4 | length > 0 -%}
+                        {% set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) %}
                       {%- else -%}
-                        up
-      {%- endif -%}"
+                        {%- set _ = tokens.append('up') -%}
+                      {%- endif -%}
+                      {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
+                        {%- set _ = tokens.append('mtu ' ~ vlan.mtu) -%}
+                      {%- endif -%}
+                      {{- tokens | join(' ') -}}"
             },
           {% endfor %}
         {% endfor %}
@@ -116,7 +131,7 @@
   register: network_reg_vlans_ip6
   tags: [interfaces, vlan, ipv6, config]
 
-- name: Configure cloned interfaces
+- name: Create cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
     state: "{{ (cloned_interfaces | length > 0) | ternary('present', 'absent') }}"
@@ -130,8 +145,19 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "{% if item.ip4 is defined %}{{ ('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4)) }} {% endif -%}
-      addm {{ item.members | join(' addm ') }} stp {{ item.members | first }} up"
+    value: >1-
+      {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet ' ~ item.ip4)) -%}
+      {%- endif -%}
+      {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+      {%- endif -%}
+      {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
@@ -149,24 +175,6 @@
   when: item.ip6 is defined
   register: network_reg_bridges_ip6
   tags: [interfaces, bridge, ipv6, config]
-
-- name: Activate interfaces
-  community.general.sysrc:
-    name: "ifconfig_{{ item | replace('.', '_') }}"
-    state: present
-    value: "up"
-  loop: "{{ target_interfaces | unique | list }}"
-  vars:
-    renamed_interfaces: "{{ network_renamed_interfaces | map(attribute='dst') | list }}"
-    base_interfaces: "{{ network_base_interfaces | map(attribute='name') | list }}"
-    vlan_interfaces: "{{ network_vlan_interfaces | map(attribute='parent') | list }}"
-    bridge_members: "{{ network_bridge_interfaces | map(attribute='members') | flatten | list }}"
-    preliminary_interfaces: "{{ (renamed_interfaces + vlan_interfaces + bridge_members) | unique | list }}"
-    target_interfaces: "{{ preliminary_interfaces | difference(base_interfaces) }}"
-  loop_control:
-    label: "Link state up: {{ item }}"
-  register: network_reg_activate
-  tags: [interfaces, link, config]
 
 - name: Configure default route IPv4
   community.general.sysrc:
