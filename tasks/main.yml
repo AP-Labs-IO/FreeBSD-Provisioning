@@ -100,7 +100,7 @@
       ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 }}"
+    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 | default('up') }}"
   register: network_reg_vlans_ip4
   tags: [interfaces, vlan, ipv4, config]
 
