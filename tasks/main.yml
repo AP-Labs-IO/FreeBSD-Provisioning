@@ -30,17 +30,17 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: >-
-      {% set tokens = [] %}
-      {% if item.ip4 is defined and item.ip4 | length > 0 %}
-        {% set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4))) %}
-      {% else %}
-        {% set _ = tokens.append('up') %}
-      {% endif %}
-      {% if item.mtu is defined and item.mtu | string | length > 0 %}
-        {% set _ = tokens.append('mtu ' ~ item.mtu) %}
-      {% endif %}
-      {{ tokens | join(' ') }}
+    value: >1-
+      {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4))) -%}
+      {%- else -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
@@ -145,19 +145,19 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: >-
-      {%- set tokens = [] %}
-      {% if item.ip4 is defined and item.ip4 | length > 0 %}
-        {% set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet ' ~ item.ip4)) %}
-      {% endif %}
-      {% set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) %}
-      {% if item.mtu is defined and item.mtu | string | length > 0 %}
-        {% set _ = tokens.append('mtu ' ~ item.mtu) %}
-      {% endif %}
-      {% if item.ip4 is not defined or 'DHCP' not in item.ip4 %}
-        {% set _ = tokens.append('up') %}
-      {% endif %}
-      {{ tokens | join(' ') }}
+    value: >1-
+      {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet ' ~ item.ip4)) -%}
+      {%- endif -%}
+      {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+      {%- endif -%}
+      {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
