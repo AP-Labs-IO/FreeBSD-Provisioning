@@ -55,7 +55,7 @@
     value: "inet6 {{ item.ip6 }}"
   loop: "{{ network_base_interfaces }}"
   loop_control:
-    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 }}"
+    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
   register: network_reg_base_ip6
   tags: [interfaces, base, ipv6, config]
@@ -126,7 +126,7 @@
       ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 }}"
+    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
   register: network_reg_vlans_ip6
   tags: [interfaces, vlan, ipv6, config]
