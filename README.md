@@ -50,6 +50,15 @@ Example Playbook
     - { role: nfs_shares, tags: [nfs_shares] }
 ```
 
+Execution
+---------
+
+Run the master orchestration playbook against your target inventory environment:
+
+```sh
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags nfs_shares playbook.yml
+```
+
 License
 --------
 
