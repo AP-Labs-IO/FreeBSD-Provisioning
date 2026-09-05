@@ -45,6 +45,15 @@ Example Playbook
     - { role: patch, tags: [patch] }
 ```
 
+Execution
+---------
+
+Run the master orchestration playbook against your target inventory environment:
+
+```sh
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags patch playbook.yml
+```
+
 License
 -------
 
