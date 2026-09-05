@@ -42,6 +42,15 @@ Example Playbook
     - { role: bootstrap, tags: [bootstrap] }
 ```
 
+Execution
+---------
+
+Run the master orchestration playbook against your target inventory environment:
+
+```sh
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
+```
+
 License
 --------
 
