@@ -106,7 +106,7 @@
     user: root
     job:
       "/usr/local/bin/apprise \
-        --tag=system_reboot \
+        --tag=reboot \
         --notification-type=INFO \
         --title='{{ ansible_facts['fqdn'] }} - Bootup notification' \
         --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
