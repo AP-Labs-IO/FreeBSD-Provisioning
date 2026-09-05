@@ -86,7 +86,7 @@
   register: kernel_reg_check_mac_do
   when: kernel_mac_do_rules is defined
   changed_when: false
-  failed_when: false
+  failed_when: kernel_reg_check_mac_do.rc < 0
   tags: [kernel, mac_do, config]
 
 - name: Set mac_do(4) rules
