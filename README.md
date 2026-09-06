@@ -22,6 +22,7 @@ Dependencies
 * Global variables provided by the consumer of the role:
   * `admins`: List of administrator users to create, each being a dictionary with attributes:
     * `name`: The administrator's username.
+    * `uid`: Optional UID of the user.
     * `comment`: The administrator's full name.
     * `shell`: Full path to the chosen administrator's shell.
     * `password`: `ansible-vault` encrypted password.

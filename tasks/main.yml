@@ -101,6 +101,7 @@
 - name: Create admin accounts
   ansible.builtin.user:
     name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
     comment: "{{ item.comment }}"
     groups: wheel
     append: true
