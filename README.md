@@ -27,7 +27,7 @@ Dependencies
     * `shell`: Full path to the chosen administrator's shell.
     * `password`: `ansible-vault` encrypted password.
     * `salt`: Plain-text password salt.
-    * `key_type`: SSH key type.
+    * `key_type`: Optional SSH key type.
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Playbook
