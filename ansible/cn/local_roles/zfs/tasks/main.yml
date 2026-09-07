@@ -75,8 +75,8 @@
 
 - name: Install zpool capacity monitoring script
   ansible.builtin.copy:
-    src: monitor-zpools
-    dest: /usr/local/bin/ap-monitor-zpools
+    src: monitor-zpool-capacity
+    dest: /usr/local/bin/ap-monitor-zpool-capacity
     owner: root
     group: wheel
     mode: "0755"
@@ -84,11 +84,11 @@
 
 - name: Install zpool capacity alert job
   ansible.builtin.cron:
-    name: Zpool capacity check
-    cron_file: /usr/local/etc/cron.d/alert-zpools
+    name: Zpool capacity alert
+    cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
     minute: 0
     user: root
-    job: /usr/local/bin/ap-monitor-zpools
+    job: /usr/local/bin/ap-monitor-zpool-capacity
   tags: [zpool, capacity, alert, cron]
 
 - name: Import snapshotting & replication common tasks
