@@ -105,6 +105,12 @@ Run the master orchestration playbook against your target inventory environment:
 ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring playbook.yml
 ```
 
+Install the jail monitoring infrastructure once the target jails have been deployed:
+
+```sh
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring --tags jail-monitoring playbook.yml
+```
+
 License
 --------
 
