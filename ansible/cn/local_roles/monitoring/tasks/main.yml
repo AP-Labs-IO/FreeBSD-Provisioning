@@ -48,6 +48,7 @@
     owner: root
     group: wheel
     mode: "0644"
+  notify: Restart smartd
   tags: [smartd, config]
 
 - name: Configure smartd flags
@@ -55,14 +56,8 @@
     name: smartd_flags
     state: present
     value: "-q never -i {{ monitoring_smartd_poll_interval }}"
+  notify: Restart smartd
   tags: [smartd]
-
-- name: Start smartd
-  ansible.builtin.service:
-    name: smartd
-    enabled: true
-    state: started
-  tags: [smartd, service]
 
 - name: Install collectd configuration
   ansible.builtin.template:

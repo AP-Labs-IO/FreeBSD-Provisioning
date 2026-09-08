@@ -6,6 +6,12 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
 
+- name: Restart smartd
+  ansible.builtin.service:
+    name: smartd
+    enabled: true
+    state: restarted
+
 - name: Reload syslogd
   ansible.builtin.service:
     name: syslogd
