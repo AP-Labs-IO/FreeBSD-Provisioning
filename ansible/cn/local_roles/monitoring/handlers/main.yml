@@ -6,9 +6,21 @@
     reboot_timeout: 600
     pre_reboot_delay: 5
 
+- name: Restart watchdogd
+  ansible.builtin.service:
+    name: watchdogd
+    enabled: true
+    state: restarted
+
 - name: Restart smartd
   ansible.builtin.service:
     name: smartd
+    enabled: true
+    state: restarted
+
+- name: Restart collectdmon
+  ansible.builtin.service:
+    name: collectdmon
     enabled: true
     state: restarted
 
