@@ -107,6 +107,22 @@
         --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
   tags: [apprise, alert, boot, cron]
 
+- name: Install smartd alerts hook
+  ansible.builtin.copy:
+    dest: /usr/local/etc/smartd_warning.d/10-apprise-notify.sh
+    owner: root
+    group: wheel
+    mode: "0755"
+    content: |
+      #!/bin/sh
+
+      /usr/local/bin/apprise \
+        --tag=smartd \
+        --notification-type=WARNING \
+        --title="$SMARTD_SUBJECT" \
+        --body="$SMARTD_FULLMESSAGE"
+  tags: [apprise, alert, smartd]
+
 - name: Install IPMI monitoring script
   ansible.builtin.copy:
     src: monitor-ipmi
@@ -124,22 +140,6 @@
     user: root
     job: /usr/local/bin/ap-monitor-ipmi
   tags: [apprise, alert, ipmi, cron]
-
-- name: Install smartd alerts hook
-  ansible.builtin.copy:
-    dest: /usr/local/etc/smartd_warning.d/10-apprise-notify.sh
-    owner: root
-    group: wheel
-    mode: "0755"
-    content: |
-      #!/bin/sh
-
-      /usr/local/bin/apprise \
-        --tag=smartd \
-        --notification-type=WARNING \
-        --title="$SMARTD_SUBJECT" \
-        --body="$SMARTD_FULLMESSAGE"
-  tags: [apprise, alert, smartd]
 
 - name: Install SSH login failure alert script
   ansible.builtin.copy:
