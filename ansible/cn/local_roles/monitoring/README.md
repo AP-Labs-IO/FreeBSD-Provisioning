@@ -108,7 +108,7 @@ ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitor
 Install the jail monitoring infrastructure once the target jails have been deployed:
 
 ```sh
-ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring --tags jail-monitoring playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring-jailed playbook.yml
 ```
 
 License

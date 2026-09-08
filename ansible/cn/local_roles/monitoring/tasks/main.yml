@@ -219,22 +219,3 @@
     user: root
     job: /usr/local/bin/ap-monitor-services
   tags: [apprise, alert, services, cron]
-
-- name: Install jails monitoring infrastructure
-  tags: [jail-monitoring, never]
-  block:
-    - name: Install jails monitoring script
-      ansible.builtin.copy:
-        src: monitor-jails
-        dest: /usr/local/bin/ap-monitor-jails
-        owner: root
-        group: wheel
-        mode: "0755"
-
-    - name: Install jails monitoring alert job
-      ansible.builtin.cron:
-        name: Jails monitoring alert
-        cron_file: /usr/local/etc/cron.d/alert-jails
-        minute: "*/5"
-        user: root
-        job: /usr/local/bin/ap-monitor-jails
