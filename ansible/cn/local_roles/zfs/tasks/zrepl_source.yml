@@ -1,5 +1,5 @@
 ---
-- name: Configure ZFS delegation
+- name: Configure ZFS delegation for replication
   community.general.zfs_delegate_admin:
     name: "{{ item }}"
     users:

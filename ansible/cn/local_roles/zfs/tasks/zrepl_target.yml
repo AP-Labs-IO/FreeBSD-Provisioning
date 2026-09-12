@@ -5,7 +5,7 @@
     state: present
   tags: [replication, dataset]
 
-- name: Configure ZFS delegation
+- name: Configure ZFS delegation for replication
   community.general.zfs_delegate_admin:
     name: "{{ zfs_replication_target_dataset }}"
     users:
