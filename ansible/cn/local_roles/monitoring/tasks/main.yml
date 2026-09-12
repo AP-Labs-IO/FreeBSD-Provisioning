@@ -148,6 +148,15 @@
     mode: "0755"
   tags: [apprise, alert, ssh, security]
 
+- name: Create local syslog configuration directory
+  ansible.builtin.file:
+    path: /usr/local/etc/syslog.d
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [syslog, config]
+
 - name: Configure syslog SSH login failure alerts
   ansible.builtin.copy:
     dest: /usr/local/etc/syslog.d/ssh.conf
