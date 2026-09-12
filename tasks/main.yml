@@ -51,10 +51,6 @@
   notify: Restart sshd
   tags: [ssh, config]
 
-- name: Flush handlers
-  ansible.builtin.meta: flush_handlers
-  tags: [ssh]
-
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
