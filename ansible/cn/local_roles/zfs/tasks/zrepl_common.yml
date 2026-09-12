@@ -2,6 +2,7 @@
 - name: Create replication user
   ansible.builtin.user:
     name: "{{ zfs_replication_user.name }}"
+    uid: "{{ zfs_replication_user.uid }}"
     comment: ZFS replication user
     shell: /bin/sh
   tags: [replication, user]
