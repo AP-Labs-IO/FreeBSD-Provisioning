@@ -29,6 +29,7 @@
     - net-im/py-apprise
     - net-mgmt/collectd5
     - net-mgmt/iftop
+    - security/gnupg
     - sysutils/freeipmi
     - sysutils/ipmitool
     - sysutils/smartmontools
@@ -52,6 +53,15 @@
     value: "-q never -i {{ monitoring_smartd_poll_interval }}"
   notify: Restart smartd
   tags: [smartd]
+
+- name: Install smartd drivedb update job
+  ansible.builtin.cron:
+    name: smartd drivedb update
+    cron_file: /usr/local/etc/cron.d/smartd-drivedb-update
+    special_time: weekly
+    user: root
+    job: /usr/local/sbin/update-smart-drivedb
+  tags: [smartd, drivedb, update, cron]
 
 - name: Install collectd configuration
   ansible.builtin.template:
