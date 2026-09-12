@@ -1,7 +1,7 @@
 ---
 - name: Create replication user
   ansible.builtin.user:
-    name: "{{ zfs_replication_user }}"
+    name: "{{ zfs_replication_user.name }}"
     comment: ZFS replication user
     shell: /bin/sh
   tags: [replication, user]
@@ -22,9 +22,9 @@
     value: "{{ item.value }}"
   loop:
     - flag: user
-      value: "{{ zfs_replication_user }}"
+      value: "{{ zfs_replication_user.name }}"
     - flag: group
-      value: "{{ zfs_replication_group }}"
+      value: "{{ zfs_replication_user.group }}"
   loop_control:
     label: "zrepl_{{ item.flag }} -> {{ item.value }}"
   tags: [watchdog, config]

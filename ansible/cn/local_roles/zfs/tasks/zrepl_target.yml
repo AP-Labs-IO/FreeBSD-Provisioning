@@ -9,14 +9,14 @@
   community.general.zfs_delegate_admin:
     name: "{{ zfs_replication_target_dataset }}"
     users:
-      - "{{ zfs_replication_user }}"
+      - "{{ zfs_replication_user.name }}"
     permissions: "{{ zfs_replication_target_delegated_permissions | join(',') }}"
     state: present
   tags: [snapshotting, replication, delegation]
 
 - name: Install replication SSH public key
   ansible.posix.authorized_key:
-    user: "{{ zfs_replication_user }}"
+    user: "{{ zfs_replication_user.name }}"
     key_options: 'command="/usr/local/bin/zrepl stdinserver {{ hostvars[host]["ansible_facts"]["hostname"] }}",restrict'
     key: "{{ hostvars[host]['zfs_reg_replication_pubkey']['content'] | b64decode }}"
   loop: "{{ groups['all'] | difference([inventory_hostname]) }}"

@@ -10,7 +10,7 @@
   community.general.zfs_delegate_admin:
     name: "{{ item }}"
     users:
-      - "{{ zfs_replication_user }}"
+      - "{{ zfs_replication_user.name }}"
     permissions: "{{ zfs_replication_source_delegated_permissions | join(',') }}"
     state: present
   loop: "{{ (zfs_hourly_snapshots_datasets | default([])) + (zfs_nightly_snapshots_datasets | default([])) }}"
@@ -18,26 +18,26 @@
 
 - name: Create replication user SSH directory
   ansible.builtin.file:
-    path: "/home/{{ zfs_replication_user }}/.ssh"
+    path: "/home/{{ zfs_replication_user.name }}/.ssh"
     state: directory
-    owner: "{{ zfs_replication_user }}"
-    group: "{{ zfs_replication_group }}"
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
     mode: "0700"
   tags: [replication, ssh]
 
 - name: Generate replication SSH key
   community.crypto.openssh_keypair:
-    path: "/home/{{ zfs_replication_user }}/.ssh/{{ zfs_replication_key_basename }}"
+    path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
     type: ed25519
-    comment: "{{ zfs_replication_user }}@{{ ansible_facts['fqdn'] }}"
-    owner: "{{ zfs_replication_user }}"
-    group: "{{ zfs_replication_group }}"
+    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
     mode: "0400"
   tags: [replication, ssh, key]
 
 - name: Retrieve replication SSH public key
   ansible.builtin.slurp:
-    src: "/home/{{ zfs_replication_user }}/.ssh/{{ zfs_replication_key_basename }}.pub"
+    src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
   register: zfs_reg_replication_pubkey
   tags: [replication, ssh, key]
 
@@ -53,7 +53,7 @@
 
 - name: Create replication user SSH directory
   ansible.builtin.file:
-    path: "/home/{{ zfs_replication_user }}/.ssh"
+    path: "/home/{{ zfs_replication_user.name }}/.ssh"
     state: directory
     mode: "0700"
   tags: [ssh]
@@ -61,8 +61,8 @@
 - name: Copy replication host SSH public keys
   ansible.builtin.copy:
     src: "known_hosts_{{ zfs_replication_target_host }}"
-    dest: "/home/{{ zfs_replication_user }}/.ssh/known_hosts"
-    owner: "{{ zfs_replication_user }}"
-    group: "{{ zfs_replication_group }}"
+    dest: "/home/{{ zfs_replication_user.name }}/.ssh/known_hosts"
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
     mode: "0600"
   tags: [ssh, replication, host, keys]
