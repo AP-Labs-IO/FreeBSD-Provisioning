@@ -1,4 +1,11 @@
 ---
+- name: Create replication source datasets
+  community.general.zfs:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ (zfs_hourly_snapshots_datasets | default([])) + (zfs_nightly_snapshots_datasets | default([])) }}"
+  tags: [replication, datasets]
+
 - name: Configure ZFS delegation for replication
   community.general.zfs_delegate_admin:
     name: "{{ item }}"
