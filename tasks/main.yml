@@ -28,13 +28,6 @@
     value: "{{ ansible_facts['fqdn'] }}"
   tags: [hostname, config]
 
-- name: Start sshd
-  ansible.builtin.service:
-    name: sshd
-    enabled: true
-    state: started
-  tags: [ssh, service]
-
 - name: Add root SSH key
   ansible.posix.authorized_key:
     user: root
