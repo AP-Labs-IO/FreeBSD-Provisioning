@@ -51,15 +51,6 @@
   notify: Restart zrepl
   tags: [snapshotting, replication, config]
 
-- name: Create replication user SSH directory
-  ansible.builtin.file:
-    path: "/home/{{ zfs_replication_user.name }}/.ssh"
-    state: directory
-    owner: "{{ zfs_replication_user.name }}"
-    group: "{{ zfs_replication_user.group }}"
-    mode: "0700"
-  tags: [ssh]
-
 - name: Copy replication host SSH public keys
   ansible.builtin.copy:
     src: "known_hosts_{{ zfs_replication_target_host }}"
