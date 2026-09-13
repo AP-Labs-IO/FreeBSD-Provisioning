@@ -39,15 +39,6 @@
     label: "zrepl_{{ item.flag }} -> {{ item.value }}"
   tags: [watchdog, config]
 
-- name: Create zrepl config directory
-  ansible.builtin.file:
-    path: /usr/local/etc/zrepl
-    state: directory
-    owner: root
-    group: wheel
-    mode: "0755"
-  tags: [snapshotting, replication, config]
-
 - name: Remove zrepl's syslog configuration
   ansible.builtin.file:
     path: /usr/local/etc/syslog.d/zrepl.conf
