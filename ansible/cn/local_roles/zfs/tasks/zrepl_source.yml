@@ -1,4 +1,29 @@
 ---
+- name: Generate replication SSH key
+  community.crypto.openssh_keypair:
+    path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
+    type: ed25519
+    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
+    mode: "0400"
+  tags: [replication, ssh, key]
+
+- name: Retrieve replication SSH public key
+  ansible.builtin.slurp:
+    src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
+  register: zfs_reg_replication_pubkey
+  tags: [replication, ssh, key]
+
+- name: Copy replication host SSH public keys
+  ansible.builtin.copy:
+    src: "known_hosts_{{ zfs_replication_target_host }}"
+    dest: "/home/{{ zfs_replication_user.name }}/.ssh/known_hosts"
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
+    mode: "0600"
+  tags: [ssh, replication, host, keys]
+
 - name: Create replication source datasets
   community.general.zfs:
     name: "{{ item }}"
@@ -16,22 +41,6 @@
   loop: "{{ (zfs_hourly_snapshots_datasets | default([])) + (zfs_nightly_snapshots_datasets | default([])) }}"
   tags: [snapshotting, replication, delegation]
 
-- name: Generate replication SSH key
-  community.crypto.openssh_keypair:
-    path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
-    type: ed25519
-    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
-    owner: "{{ zfs_replication_user.name }}"
-    group: "{{ zfs_replication_user.group }}"
-    mode: "0400"
-  tags: [replication, ssh, key]
-
-- name: Retrieve replication SSH public key
-  ansible.builtin.slurp:
-    src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
-  register: zfs_reg_replication_pubkey
-  tags: [replication, ssh, key]
-
 - name: Install zrepl configuration
   ansible.builtin.template:
     src: usr/local/etc/zrepl/zrepl_source.yml.j2
@@ -41,12 +50,3 @@
     mode: "0644"
   notify: Restart zrepl
   tags: [snapshotting, replication, config]
-
-- name: Copy replication host SSH public keys
-  ansible.builtin.copy:
-    src: "known_hosts_{{ zfs_replication_target_host }}"
-    dest: "/home/{{ zfs_replication_user.name }}/.ssh/known_hosts"
-    owner: "{{ zfs_replication_user.name }}"
-    group: "{{ zfs_replication_user.group }}"
-    mode: "0600"
-  tags: [ssh, replication, host, keys]
