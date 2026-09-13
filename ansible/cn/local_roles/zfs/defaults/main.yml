@@ -1,4 +1,6 @@
 ---
+zfs_data_pools: []
+
 zfs_encryption_keys_directory: /root/.zfskeys
 zfs_encryption_datasets: []
 

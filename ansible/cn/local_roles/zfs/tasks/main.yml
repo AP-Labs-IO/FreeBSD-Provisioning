@@ -6,6 +6,31 @@
     state: started
   tags: [zfsd, service]
 
+- name: Query active pools
+  ansible.builtin.command: zpool list -H -o name
+  register: nas_reg_active_pools
+  changed_when: false
+  failed_when: false
+  tags: [data, pools]
+
+- name: Import data pools
+  ansible.builtin.command: "zpool import {{ item }}"
+  loop: "{{ zfs_data_pools }}"
+  when: item not in nas_reg_active_pools.stdout_lines
+  register: nas_reg_pool_import
+  changed_when: true
+  tags: [data, pools]
+
+- name: Create data pools legacy mountpoint links
+  ansible.builtin.file:
+    src: "/{{ item }}"
+    dest: "/mnt/{{ item }}"
+    state: link
+    owner: root
+    group: wheel
+  loop: "{{ zfs_data_pools }}"
+  tags: [data, pools, mountpoint, legacy]
+
 - name: Create ZFS encryption keys directory
   ansible.builtin.file:
     path: "{{ zfs_encryption_keys_directory }}"
