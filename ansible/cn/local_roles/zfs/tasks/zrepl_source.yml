@@ -1,4 +1,13 @@
 ---
+- name: Create replication user SSH directory
+  ansible.builtin.file:
+    path: "/home/{{ zfs_replication_user.name }}/.ssh"
+    state: directory
+    owner: "{{ zfs_replication_user.name }}"
+    group: "{{ zfs_replication_user.group }}"
+    mode: "0700"
+  tags: [replication, ssh]
+
 - name: Generate replication SSH key
   community.crypto.openssh_keypair:
     path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
