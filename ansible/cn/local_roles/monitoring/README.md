@@ -1,7 +1,7 @@
 Monitoring
 ==========
 
-Configure monitoring for a FreeBSD node.
+Configure monitoring on a FreeBSD node.
 
 Requirements
 ------------
