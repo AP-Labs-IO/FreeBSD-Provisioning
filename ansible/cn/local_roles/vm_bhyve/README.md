@@ -1,7 +1,7 @@
 VM Bhyve
 ========
 
-Configure FreeBSD nodes to host vm-bhyve VMs.
+Configure FreeBSD nodes to host vm-bhyve(8) managed VMs.
 
 Requirements
 ------------
