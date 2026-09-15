@@ -38,7 +38,7 @@
         {%- set _ = tokens.append('up') -%}
       {%- endif -%}
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
-        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
       {%- endif -%}
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
@@ -90,7 +90,7 @@
                         {%- set _ = tokens.append('up') -%}
                       {%- endif -%}
                       {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
-                        {%- set _ = tokens.append('mtu ' ~ vlan.mtu) -%}
+                        {%- set _ = tokens.append('mtu %s' | format(vlan.mtu)) -%}
                       {%- endif -%}
                       {{- tokens | join(' ') | trim -}}"
             }{% if not loop.last or not loop.parentloop.last %},{% endif %}
@@ -147,11 +147,11 @@
     value: >1-
       {%- set tokens = [] -%}
       {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
-        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet ' ~ item.ip4)) -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4))) -%}
       {%- endif -%}
       {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
-        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
       {%- endif -%}
       {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
         {%- set _ = tokens.append('up') -%}
