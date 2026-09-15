@@ -55,6 +55,8 @@
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
     state: directory
+    owner: root
+    group: wheel
     mode: "0755"
   tags: [pkg, config]
 
@@ -91,6 +93,8 @@
   ansible.builtin.file:
     path: /usr/local/etc/cron.d
     state: directory
+    owner: root
+    group: wheel
     mode: "0755"
   tags: [cron, config]
 
