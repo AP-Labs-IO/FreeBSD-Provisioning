@@ -122,4 +122,5 @@
   loop_control:
     label: "{{ item.name }} ({{ item.key_type }})"
   when: item.key_type is defined
+  no_log: "{{ bootstrap_disable_sensitive_logging }}"
   tags: [admins, ssh, keys]
