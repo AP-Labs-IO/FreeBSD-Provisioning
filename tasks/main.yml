@@ -44,7 +44,6 @@
   loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
-  when: (item.name is defined) or (item.ip4 is defined) or (item.mtu is defined)
   register: network_reg_base_ip4
   tags: [interfaces, base, ipv4, config]
 
