@@ -225,11 +225,11 @@
   notify:
     - Disable dynamic DNS resolver reconfiguration
     - Apply new resolvconf configuration
-  tags: [network, resolver, config]
+  tags: [resolver, config]
 
 - name: Force execution of notified handlers
   ansible.builtin.meta: flush_handlers
-  tags: [network, resolver, config]
+  tags: [resolver, config]
 
 - name: Reboot
   ansible.builtin.reboot:
