@@ -22,11 +22,11 @@ Dependencies
 * Global variables provided by the consumer of the role:
   * `admins`: List of administrator users to create, each being a dictionary with attributes:
     * `name`: The administrator's username.
-    * `uid`: Optional UID of the user.
+    * `uid`: Optional UID of the administrator, defaulting to the next available `uid`.
     * `comment`: The administrator's full name.
     * `shell`: Full path to the chosen administrator's shell.
-    * `password`: `ansible-vault` encrypted password.
-    * `salt`: Plain-text password salt.
+    * `password`: `ansible-vault` encrypted password for the administrator.
+    * `salt`: Password salt in plain-text form.
     * `key_type`: Optional SSH key type.
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
