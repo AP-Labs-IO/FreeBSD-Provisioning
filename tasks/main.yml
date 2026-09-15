@@ -83,9 +83,9 @@
             {
               "parent": "{{ row.parent }}",
               "tag": "{{ vlan.tag }}",
-              "ip4": "{% set tokens = [] %}
+              "ip4": "{%- set tokens = [] -%}
                       {%- if vlan.ip4 is defined and vlan.ip4 | length > 0 -%}
-                        {% set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) %}
+                        {%- set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) -%}
                       {%- else -%}
                         {%- set _ = tokens.append('up') -%}
                       {%- endif -%}
