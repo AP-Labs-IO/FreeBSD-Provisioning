@@ -92,7 +92,7 @@
                       {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
                         {%- set _ = tokens.append('mtu ' ~ vlan.mtu) -%}
                       {%- endif -%}
-                      {{- tokens | join(' ') -}}"
+                      {{- tokens | join(' ') | trim -}}"
             }{% if not loop.last or not loop.parentloop.last %},{% endif %}
           {% endfor %}
         {% endfor %}
