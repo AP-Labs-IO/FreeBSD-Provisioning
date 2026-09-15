@@ -40,6 +40,9 @@
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
         {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
       {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
+      {%- endif -%}
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
   loop_control:
@@ -91,6 +94,9 @@
                       {%- endif -%}
                       {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
                         {%- set _ = tokens.append('mtu %s' | format(vlan.mtu)) -%}
+                      {%- endif -%}
+                      {%- if vlan.opts is defined and vlan.opts | string | length > 0 -%}
+                        {%- set _ = tokens.append('%s' | format(vlan.opts)) -%}
                       {%- endif -%}
                       {{- tokens | join(' ') | trim -}}"
             }{% if not loop.last or not loop.parentloop.last %},{% endif %}
@@ -155,6 +161,9 @@
       {%- endif -%}
       {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
         {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
       {%- endif -%}
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_bridge_interfaces }}"
