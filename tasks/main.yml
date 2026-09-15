@@ -38,13 +38,15 @@
         {%- set _ = tokens.append('up') -%}
       {%- endif -%}
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
-        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
+      {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
       {%- endif -%}
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
-  when: (item.name is defined) or (item.ip4 is defined) or (item.mtu is defined)
   register: network_reg_base_ip4
   tags: [interfaces, base, ipv4, config]
 
@@ -84,17 +86,20 @@
             {
               "parent": "{{ row.parent }}",
               "tag": "{{ vlan.tag }}",
-              "ip4": "{% set tokens = [] %}
+              "ip4": "{%- set tokens = [] -%}
                       {%- if vlan.ip4 is defined and vlan.ip4 | length > 0 -%}
-                        {% set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) %}
+                        {%- set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) -%}
                       {%- else -%}
                         {%- set _ = tokens.append('up') -%}
                       {%- endif -%}
                       {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
-                        {%- set _ = tokens.append('mtu ' ~ vlan.mtu) -%}
+                        {%- set _ = tokens.append('mtu %s' | format(vlan.mtu)) -%}
                       {%- endif -%}
-                      {{- tokens | join(' ') -}}"
-            },
+                      {%- if vlan.opts is defined and vlan.opts | string | length > 0 -%}
+                        {%- set _ = tokens.append('%s' | format(vlan.opts)) -%}
+                      {%- endif -%}
+                      {{- tokens | join(' ') | trim -}}"
+            }{% if not loop.last or not loop.parentloop.last %},{% endif %}
           {% endfor %}
         {% endfor %}
       ]
@@ -148,14 +153,17 @@
     value: >1-
       {%- set tokens = [] -%}
       {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
-        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet ' ~ item.ip4)) -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4))) -%}
       {%- endif -%}
       {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
-        {%- set _ = tokens.append('mtu ' ~ item.mtu) -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
       {%- endif -%}
       {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
         {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
       {%- endif -%}
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_bridge_interfaces }}"
@@ -217,11 +225,19 @@
   notify:
     - Disable dynamic DNS resolver reconfiguration
     - Apply new resolvconf configuration
-  tags: [network, resolver, config]
+  tags: [resolver, config]
+
+- name: Record FQDN & hostname loopback mapping
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: |
+      127.0.0.1 {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }}
+    insertafter: "^127.0.0.1"
+  tags: [resolver, config]
 
 - name: Force execution of notified handlers
   ansible.builtin.meta: flush_handlers
-  tags: [network, resolver, config]
+  tags: [resolver, config]
 
 - name: Reboot
   ansible.builtin.reboot:
