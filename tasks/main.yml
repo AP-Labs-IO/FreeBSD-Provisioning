@@ -231,7 +231,7 @@
   ansible.builtin.blockinfile:
     path: /etc/hosts
     block: |
-      127.0.0.1 {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }}
+      127.0.0.1 {{ ansible_facts['nodename'] }} {{ ansible_facts['hostname'] }}
     insertafter: "^127.0.0.1"
   tags: [resolver, config]
 
