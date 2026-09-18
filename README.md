@@ -11,9 +11,10 @@ Requirements
 Role Variables
 --------------
 
-| Variable                            | Default value | Description                                                                      |
-|-------------------------------------|---------------|----------------------------------------------------------------------------------|
-| bootstrap_disable_sensitive_logging | false         | Boolean that dictates whether task output considered sensitive is logged or not. |
+| Variable                            | Default value       | Description                                                                      |
+|-------------------------------------|---------------------|----------------------------------------------------------------------------------|
+| bootstrap_disable_sensitive_logging | false               | Boolean that dictates whether task output considered sensitive is logged or not. |
+| bootstrap_toor_shell                | /usr/local/bin/bash | toor's shell.                                                                    |
 
 Dependencies
 ------------

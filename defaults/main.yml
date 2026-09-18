@@ -1,2 +1,3 @@
 ---
 bootstrap_disable_sensitive_logging: false
+bootstrap_toor_shell: /usr/local/bin/bash

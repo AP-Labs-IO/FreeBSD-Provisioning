@@ -109,6 +109,18 @@
     use_globs: false
   tags: [pkg]
 
+- name: Query toor's shell
+  ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
+  register: bootstrap_reg_toor_shell
+  changed_when: false
+  tags: [root, toor, shell]
+
+- name: Set toor's shell
+  ansible.builtin.command: "chsh -s {{ bootstrap_toor_shell }} toor"
+  when: bootstrap_toor_shell not in bootstrap_reg_toor_shell.stdout
+  changed_when: true
+  tags: [root, toor, shell]
+
 - name: Create local cron jobs directory
   ansible.builtin.file:
     path: /usr/local/etc/cron.d
