@@ -12,7 +12,7 @@
   community.crypto.openssh_keypair:
     path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
     type: ed25519
-    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
+    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['nodename'] }}"
     owner: "{{ zfs_replication_user.name }}"
     group: "{{ zfs_replication_user.group }}"
     mode: "0400"
