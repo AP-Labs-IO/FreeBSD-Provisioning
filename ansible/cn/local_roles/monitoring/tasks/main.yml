@@ -21,19 +21,18 @@
 
 - name: Install monitoring packages
   community.general.pkgng:
-    name: "{{ item }}"
+    name:
+      - net/ifstat
+      - net-im/py-apprise
+      - net-mgmt/collectd5
+      - net-mgmt/iftop
+      - security/gnupg
+      - sysutils/freeipmi
+      - sysutils/ipmitool
+      - sysutils/smartmontools
+      - textproc/jq
     state: latest
     use_globs: false
-  loop:
-    - net/ifstat
-    - net-im/py-apprise
-    - net-mgmt/collectd5
-    - net-mgmt/iftop
-    - security/gnupg
-    - sysutils/freeipmi
-    - sysutils/ipmitool
-    - sysutils/smartmontools
-    - textproc/jq
   tags: [pkg]
 
 - name: Install smartd configuration
