@@ -1,7 +1,7 @@
 Bootstrap
 =========
 
-Bootstraps a fresh FreeBSD installation with latest Python, Bash, Bash shell completion, and admin accounts (full with SSH keys).
+Bootstraps a fresh FreeBSD installation for SSH key based Ansible management via a designated Ansible user.
 
 Requirements
 ------------
