@@ -51,6 +51,26 @@
   notify: Restart sshd
   tags: [ssh, config]
 
+- name: Create Ansible user
+  ansible.builtin.user:
+    name: "{{ bootstrap_ansible_user.name }}"
+    uid: "{{ bootstrap_ansible_user.uid | default(omit) }}"
+    comment: "{{ bootstrap_ansible_user.comment }}"
+    groups: wheel
+    append: true
+    shell: "{{ bootstrap_ansible_user.shell | default('/bin/sh') }}"
+    password: "{{ bootstrap_ansible_user.password | ansible.builtin.password_hash(hashtype='sha512', salt=bootstrap_ansible_user.salt) }}"
+    update_password: on_create
+  no_log: "{{ bootstrap_disable_sensitive_logging }}"
+  tags: [ansible, user]
+
+- name: Add Ansible user SSH key
+  ansible.posix.authorized_key:
+    user: "{{ bootstrap_ansible_user.name }}"
+    key: "{{ lookup('ansible.builtin.file', 'keys/' + bootstrap_ansible_user.name + '_' + bootstrap_ansible_user.key_type + '.pub') }}"
+  no_log: "{{ bootstrap_disable_sensitive_logging }}"
+  tags: [ansible, user, ssh, key]
+
 - name: Create pkg repos directory
   ansible.builtin.file:
     path: /usr/local/etc/pkg/repos
@@ -97,30 +117,3 @@
     group: wheel
     mode: "0755"
   tags: [cron, config]
-
-- name: Create admin accounts
-  ansible.builtin.user:
-    name: "{{ item.name }}"
-    uid: "{{ item.uid | default(omit) }}"
-    comment: "{{ item.comment }}"
-    groups: wheel
-    append: true
-    shell: "{{ item.shell }}"
-    password: "{{ item.password | ansible.builtin.password_hash(hashtype='sha512', salt=item.salt) }}"
-    update_password: on_create
-  loop: "{{ admins }}"
-  loop_control:
-    label: "{{ item.name }}"
-  no_log: "{{ bootstrap_disable_sensitive_logging }}"
-  tags: [admins, accounts]
-
-- name: Add admin SSH keys
-  ansible.posix.authorized_key:
-    user: "{{ item.name }}"
-    key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
-  loop: "{{ admins }}"
-  loop_control:
-    label: "{{ item.name }} ({{ item.key_type }})"
-  when: item.key_type is defined
-  no_log: "{{ bootstrap_disable_sensitive_logging }}"
-  tags: [admins, ssh, keys]

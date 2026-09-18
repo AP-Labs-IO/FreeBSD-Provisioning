@@ -20,7 +20,7 @@ Dependencies
 
 * SSH key of type `ed25519` located at the the top-level `files/keys/root_ed25519.pub` path.
 * Global variables provided by the consumer of the role:
-  * `admins`: List of administrator users to create, each being a dictionary with attributes:
+  * `bootstrap_ansible_user`: Dictionary with attributes:
     * `name`: The administrator's username.
     * `uid`: Optional UID of the administrator, defaulting to the next available `uid`.
     * `comment`: The administrator's full name.
