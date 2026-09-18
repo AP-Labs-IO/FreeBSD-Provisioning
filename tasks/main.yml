@@ -25,7 +25,7 @@
   community.general.sysrc:
     name: hostname
     state: present
-    value: "{{ ansible_facts['fqdn'] }}"
+    value: "{{ ansible_facts['nodename'] }}"
   tags: [hostname, config]
 
 - name: Add root SSH key
