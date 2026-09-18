@@ -1,3 +1,8 @@
 ---
 bootstrap_disable_sensitive_logging: false
+bootstrap_core_packages:
+  - shells/bash
+  - shells/bash-completion
+  - shells/bash-completion-freebsd
+  - shells/bash-completion-zfs
 bootstrap_toor_shell: /usr/local/bin/bash

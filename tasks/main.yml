@@ -99,12 +99,7 @@
 - name: Install core packages
   community.general.pkgng:
     pkgsite: "{{ bootstrap_ports_repository_name }}"
-    name:
-      - lang/python3
-      - shells/bash
-      - shells/bash-completion
-      - shells/bash-completion-freebsd
-      - shells/bash-completion-zfs
+    name: "{{ ['lang/python3'] + bootstrap_core_packages }}"
     state: latest
     use_globs: false
   tags: [pkg]

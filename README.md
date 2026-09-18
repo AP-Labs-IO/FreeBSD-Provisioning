@@ -11,10 +11,11 @@ Requirements
 Role Variables
 --------------
 
-| Variable                            | Default value       | Description                                                                      |
-|-------------------------------------|---------------------|----------------------------------------------------------------------------------|
-| bootstrap_disable_sensitive_logging | false               | Boolean that dictates whether task output considered sensitive is logged or not. |
-| bootstrap_toor_shell                | /usr/local/bin/bash | toor's shell.                                                                    |
+| Variable                            | Default value                        | Description                                                                      |
+|-------------------------------------|--------------------------------------|----------------------------------------------------------------------------------|
+| bootstrap_disable_sensitive_logging | false                                | Boolean that dictates whether task output considered sensitive is logged or not. |
+| bootstrap_toor_shell                | /usr/local/bin/bash                  | toor's shell.                                                                    |
+| bootstrap_core_packages             | See `bootstrap_core_packages` below. | See `bootstrap_core_packages` below.                                             |
 
 Dependencies
 ------------
@@ -29,6 +30,11 @@ Dependencies
     * `password`: `ansible-vault` encrypted password for the administrator.
     * `salt`: Password salt in plain-text form.
     * `key_type`: Optional SSH key type.
+  * `bootstrap_core_packages`: List of "core" packages to install early, including the chosen shell for the `toor` user. Default:
+    * `shells/bash`
+    * `shells/bash-completion`
+    * `shells/bash-completion-freebsd`
+    * `shells/bash-completion-zfs`
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Playbook
