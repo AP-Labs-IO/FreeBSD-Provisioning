@@ -1,4 +1,4 @@
-Hostname "{{ ansible_facts['fqdn'] }}"
+Hostname "{{ ansible_facts['nodename'] }}"
 BaseDir "/var/db/collectd"
 PluginDir "/usr/local/lib/collectd"
 Interval {{ monitoring_collectd_interval }}
