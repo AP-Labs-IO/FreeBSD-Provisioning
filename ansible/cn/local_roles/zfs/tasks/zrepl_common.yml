@@ -16,11 +16,10 @@
 
 - name: Install packages
   community.general.pkgng:
-    name: "{{ item }}"
+    name:
+      - filesystems/zrepl
     state: latest
     use_globs: false
-  loop:
-    - filesystems/zrepl
   tags: [pkg]
 
 - name: Configure zrepl flags
