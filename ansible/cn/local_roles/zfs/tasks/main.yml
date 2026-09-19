@@ -17,7 +17,6 @@
   ansible.builtin.command: "zpool import {{ item }}"
   loop: "{{ zfs_data_pools }}"
   when: item not in nas_reg_active_pools.stdout_lines
-  register: nas_reg_pool_import
   changed_when: true
   tags: [data, pools]
 
