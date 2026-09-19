@@ -116,6 +116,16 @@
   changed_when: true
   tags: [root, toor, shell]
 
+- name: Copy root shell configuration files
+  ansible.builtin.copy:
+    src: "shell/{{ item.src }}"
+    dest: "/root/{{ item.dst }}"
+    owner: root
+    group: wheel
+    mode: "0640"
+  loop: "{{ shell_config_files }}"
+  tags: [root, shell, config]
+
 - name: Create local cron jobs directory
   ansible.builtin.file:
     path: /usr/local/etc/cron.d
