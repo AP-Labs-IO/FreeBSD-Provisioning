@@ -1,0 +1,15 @@
+---
+users_disable_sensitive_logging: true
+
+users_home_prefix: /home
+
+users_accounts: []
+users_groups: []
+users_extra_group_memberships: []
+
+users_minuid: 1000
+users_maxuid: 9999
+users_mingid: 1000
+users_maxgid: 9999
+
+users_mail_aliases: []

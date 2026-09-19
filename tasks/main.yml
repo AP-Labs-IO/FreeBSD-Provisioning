@@ -1,14 +1,132 @@
 ---
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    comment: "{{ item.comment }}"
+    shell: "{{ item.shell | default('/bin/sh') }}"
+    password: "{{ item.password | ansible.builtin.password_hash(hashtype='sha512', salt=item.salt) }}"
+    update_password: on_create
+    home: >-
+      {%- if item.home is defined -%} {{ item.home }}{%- else -%} {{ users_home_prefix }}/{{ item.name }}{%- endif -%}
+    create_home: "{{ (item.home is defined and item.home == '/nonexistent') | ternary(false, true) }}"
+  loop: "{{ users_accounts }}"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: "{{ users_disable_sensitive_logging }}"
+  notify: Remove /nonexistent directory
+  tags: [accounts]
+
 - name: Copy shell configuration files
   ansible.builtin.copy:
     src: "shell/{{ item.1.src }}"
-    dest: "{{ (item.0 == 'root') | ternary('/root', '/home/' + item.0) }}/{{ item.1.dst }}"
-    owner: "{{ item.0 }}"
-    group: "{{ (item.0 == 'root') | ternary('wheel', item.0) }}"
+    dest: "{{ dest }}"
+    owner: "{{ item.0.name }}"
+    group: "{{ item.0.name }}"
     mode: "0640"
-  loop: "{{ usernames | product(shell_config_files) | list }}"
+  loop: "{{ users_accounts_sanitized | product(shell_config_files) | list }}"
   loop_control:
-    label: "User: {{ item.0 }} -> File: {{ item.1.dst }}"
+    label: "User: {{ item.0.name }} -> File: {{ item.1.dst }}"
   vars:
-    usernames: "{{ ['root'] + (admins | map(attribute='name') | list | default([])) }}"
-  tags: [root, admins, shell, config]
+    users_accounts_json: >-
+      [
+        {% for user in users_accounts %}
+          { "name": "{{ user.name }}", "home": "{{ user.home | default('') }}" }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    users_accounts_sanitized: "{{ users_accounts_json | from_json }}"
+    dest: >-
+      {%- if item.0.home is defined and item.0.home | length > 0 -%}
+      {{ item.0.home }}/{{ item.1.dst }}
+      {%- else -%}
+      {{ users_home_prefix }}/{{ item.0.name }}/{{ item.1.dst }}
+      {%- endif -%}
+  when: item.0.home | length == 0 or item.0.home != '/nonexistent'
+  tags: [shell, config]
+
+- name: Add SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('ansible.builtin.file', 'keys/' + item.name + '_' + item.key_type + '.pub') }}"
+  loop: "{{ users_accounts }}"
+  loop_control:
+    label: "{{ item.name }} ({{ item.key_type | default('none') }})"
+  no_log: "{{ users_disable_sensitive_logging }}"
+  when: item.key_type is defined
+  tags: [ssh, keys]
+
+- name: Create groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default(omit) }}"
+  loop: "{{ users_groups }}"
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [groups]
+
+- name: Add users to extra groups
+  ansible.builtin.user:
+    name: "{{ item.user }}"
+    groups: "{{ item.groups | join(',') }}"
+    append: true
+  loop: "{{ users_extra_group_memberships }}"
+  loop_control:
+    label: "Adding {{ item.user }} to groups: {{ item.groups | join(', ') }}"
+  notify: Remove /nonexistent directory
+  tags: [users, extra, groups]
+
+- name: Install pw(8) configuration
+  ansible.builtin.template:
+    src: etc/pw.conf.j2
+    dest: /etc/pw.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+  tags: [pw, config]
+
+- name: Stop sendmail
+  ansible.builtin.service:
+    name: sendmail
+    state: stopped
+  tags: [mail, sendmail]
+
+- name: Disable sendmail
+  community.general.sysrc:
+    name: sendmail_enable
+    state: present
+    value: NONE
+  tags: [mail, sendmail]
+
+- name: Install dma configuration
+  ansible.builtin.template:
+    src: etc/dma/dma.conf.j2
+    dest: /etc/dma/dma.conf
+    owner: root
+    group: mail
+    mode: "0640"
+  tags: [mail, dma, config]
+
+- name: Install dma credentials
+  ansible.builtin.copy:
+    dest: /etc/dma/auth.conf
+    owner: root
+    group: mail
+    mode: "0640"
+    content: |
+      # User|Smarthost:Password
+      {{ users_smarthost_username }}|{{ users_smarthost_hostname }}:{{ users_smarthost_password }}
+  no_log: "{{ users_disable_sensitive_logging }}"
+  tags: [mail, dma, config]
+
+- name: Configure mail aliases
+  ansible.builtin.blockinfile:
+    path: /etc/mail/aliases
+    block: |
+      {% for item in users_mail_aliases %}
+      {{ item.user }}: {{ item.email }}
+      {% endfor %}
+    insertafter: EOF
+    prepend_newline: true
+    append_newline: true
+  notify: Recompile mail aliases database
+  tags: [mail, aliases]
