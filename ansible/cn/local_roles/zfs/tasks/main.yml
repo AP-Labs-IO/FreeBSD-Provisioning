@@ -8,7 +8,7 @@
 
 - name: Query active pools
   ansible.builtin.command: zpool list -H -o name
-  register: nas_reg_active_pools
+  register: zfs_reg_active_pools
   changed_when: false
   failed_when: false
   tags: [data, pools]
@@ -16,7 +16,7 @@
 - name: Import data pools
   ansible.builtin.command: "zpool import {{ item }}"
   loop: "{{ zfs_data_pools }}"
-  when: item not in nas_reg_active_pools.stdout_lines
+  when: item not in zfs_reg_active_pools.stdout_lines
   changed_when: true
   tags: [data, pools]
 
