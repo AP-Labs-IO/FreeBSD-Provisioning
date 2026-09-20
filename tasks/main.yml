@@ -64,13 +64,13 @@
       description: Drop TCP packets with SYN+FIN bits set
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  tags: [kernel, config]
+  tags: [config]
 
 - name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
   register: kernel_reg_check_randompids
   changed_when: false
-  tags: [kernel, pid]
+  tags: [pid]
 
 - name: Set PID randomization
   ansible.posix.sysctl:
@@ -79,7 +79,7 @@
     value: 1
   when: kernel_reg_check_randompids.stdout | trim | int < 1
   changed_when: true
-  tags: [kernel, config, pid]
+  tags: [config, pid]
 
 - name: Check if mac_do kernel module is loaded
   ansible.builtin.command: kldstat -q -m mac_do
@@ -87,7 +87,7 @@
   when: kernel_mac_do_rules is defined
   changed_when: false
   failed_when: kernel_reg_check_mac_do.rc < 0
-  tags: [kernel, mac_do, config]
+  tags: [mac_do, config]
 
 - name: Set mac_do(4) rules
   ansible.posix.sysctl:
@@ -95,7 +95,7 @@
     state: present
     value: "{{ kernel_mac_do_rules }}"
   when: kernel_reg_check_mac_do.rc == 0
-  tags: [kernel, mac_do, config]
+  tags: [mac_do, config]
 
 - name: Configure extra kernel state
   ansible.posix.sysctl:
@@ -105,4 +105,4 @@
   loop: "{{ kernel_extra_runtime_state }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  tags: [kernel, config]
+  tags: [config]
