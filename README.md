@@ -1,7 +1,7 @@
-Kernel
-======
+Runtime
+=======
 
-Configure runtime kernel parameters, as documented by `sysctl(8)`.
+Configure runtime kernel state & settings, as documented by `sysctl(8)`.
 
 Requirements
 ------------
@@ -17,17 +17,17 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable                    | Default value     | Description                             |
-|-----------------------------|-------------------|-----------------------------------------|
-| kernel_extra_runtime_state  | []                | See `kernel_extra_runtime_state` below. |
+| Variable               |  Default value    | Description                         |
+|------------------------|-------------------|-------------------------------------|
+| runtime_extra_settings | []                | See `runtime_extra_settings` below. |
 
 Dependencies
 ------------
 
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
-  * `kernel_mac_do_rules`: String with the desired `mac_do(4)` configuration.
-  * `kernel_extra_runtime_state`: List of dictionaries with attributes:
+  * `runtime_mac_do_rules`: String with the desired `mac_do(4)` configuration.
+  * `runtime_extra_settings`: List of dictionaries with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value of `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Description of the effect of setting `key` to `value` via `sysctl(8)`.
@@ -45,11 +45,11 @@ Example Playbook
   roles:
     - { role: bootstrap, tags: [bootstrap] }
 
-- name: Configure Kernel Parameters
+- name: Configure runtime state
   hosts: all
   become: true
   roles:
-    - { role: kernel, tags: [kernel }
+    - { role: runtime, tags: [runtime }
 ```
 
 Execution
@@ -58,7 +58,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
-ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags kernel playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags runtime playbook.yml
 ```
 
 License

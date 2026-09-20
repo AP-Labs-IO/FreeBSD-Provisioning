@@ -68,7 +68,7 @@
 
 - name: Check if PIDs are randomized
   ansible.builtin.command: sysctl -n kern.randompid
-  register: kernel_reg_check_randompids
+  register: runtime_reg_check_randompids
   changed_when: false
   tags: [pid]
 
@@ -77,24 +77,24 @@
     name: kern.randompid
     state: present
     value: 1
-  when: kernel_reg_check_randompids.stdout | trim | int < 1
+  when: runtime_reg_check_randompids.stdout | trim | int < 1
   changed_when: true
   tags: [config, pid]
 
 - name: Check if mac_do kernel module is loaded
   ansible.builtin.command: kldstat -q -m mac_do
-  register: kernel_reg_check_mac_do
-  when: kernel_mac_do_rules is defined
+  register: runtime_reg_check_mac_do
+  when: runtime_mac_do_rules is defined
   changed_when: false
-  failed_when: kernel_reg_check_mac_do.rc < 0
+  failed_when: runtime_reg_check_mac_do.rc < 0
   tags: [mac_do, config]
 
 - name: Set mac_do(4) rules
   ansible.posix.sysctl:
     name: security.mac.do.rules
     state: present
-    value: "{{ kernel_mac_do_rules }}"
-  when: kernel_reg_check_mac_do.rc == 0
+    value: "{{ runtime_mac_do_rules }}"
+  when: runtime_reg_check_mac_do.rc == 0
   tags: [mac_do, config]
 
 - name: Configure extra kernel state
@@ -102,7 +102,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ kernel_extra_runtime_state }}"
+  loop: "{{ runtime_extra_settings }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [config]
