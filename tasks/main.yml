@@ -16,7 +16,7 @@
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ boot_kernel_tunables }}"
+  loop: "{{ boot_loader_settings }}"
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
@@ -27,7 +27,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ boot_system_settings }}"
+  loop: "{{ boot_rc_settings }}"
   loop_control:
     label: "{{ item.key }} -> {{ item.value }}"
   register: boot_reg_custom_settings

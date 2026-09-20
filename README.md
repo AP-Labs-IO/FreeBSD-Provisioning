@@ -20,8 +20,8 @@ Role Variables
 | Variable             | Default value     | Description                                |
 |----------------------|-------------------|--------------------------------------------|
 | boot_kernel_modules  | []                | See `boot_kernel_modules` below.           |
-| boot_kernel_tunables | []                | See `boot_kernel_tunables` below.          |
-| boot_system_settings | []                | See `boot_system_settings` below.          |
+| boot_loader_settings | []                | See `boot_loader_settings` below.          |
+| boot_rc_settings     | []                | See `boot_rc_settings` below.              |
 | boot_enable_moused   | true              | Boolean toggle to enable the mouse daemon. |
 | boot_efi_partition   | /dev/gpt/efiboot0 | EFI partition.                             |
 
@@ -31,11 +31,11 @@ Dependencies
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `boot_kernel_modules`: List of strings with the names of the kernel modules to load.
-  * `boot_kernel_tunables`: List of dictionaries with attributes:
+  * `boot_loader_settings`: List of dictionaries with attributes:
     * `key`: Name of the boot-time kernel tunable to set via `sysctl(8)`.
     * `value`: Value of `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Description of the effect of setting `key` to `value` via `sysctl(8)`.
-  * `boot_system_settings`: List of dictionaries of `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:
+  * `boot_rc_settings`: List of dictionaries of `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:
     * `key`: Name of the `rc.conf(5)` setting.
     * `value`: Desired value for the corresponding `key`.
   * `boot_swap_devices`: List of strings, each expected to point to the full path of a swap device to activate.
