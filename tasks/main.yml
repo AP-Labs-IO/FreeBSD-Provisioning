@@ -9,7 +9,7 @@
   register: boot_reg_modules
   tags: [kernel, config, modules]
 
-- name: Configure boot-time kernel tunables
+- name: Configure loader settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -22,7 +22,7 @@
   register: boot_reg_tunables
   tags: [kernel, config, tunables]
 
-- name: Configure custom system settings
+- name: Configure rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
