@@ -35,21 +35,21 @@
   no_log: "{{ bootstrap_disable_sensitive_logging }}"
   tags: [ssh, keys]
 
-- name: Disable password-based SSH authentication
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "(?i)^#?PasswordAuthentication"
-    line: PasswordAuthentication no
+- name: Configure SSH
   notify: Restart sshd
   tags: [ssh, config]
+  block:
+    - name: Disable password-based SSH authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "(?i)^#?PasswordAuthentication"
+        line: PasswordAuthentication no
 
-- name: Enable key-based only SSH authentication for root
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: "(?i)^#?PermitRootLogin"
-    line: PermitRootLogin prohibit-password
-  notify: Restart sshd
-  tags: [ssh, config]
+    - name: Enable key-based only SSH authentication for root
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "(?i)^#?PermitRootLogin"
+        line: PermitRootLogin prohibit-password
 
 - name: Create Ansible user
   ansible.builtin.user:
