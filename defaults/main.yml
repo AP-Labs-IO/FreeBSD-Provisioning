@@ -1,0 +1,8 @@
+---
+host_tuning_performance_cx_lowest: Cmax
+host_tuning_economy_cx_lowest: Cmax
+host_tuning_cpu_package_level_power_control: 0
+
+host_tuning_storage_pm_enabled: true
+host_tuning_storage_pm_ata_devices: []
+host_tuning_storage_pm_ata_devices_idle_seconds: 0

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# PROVIDE: storage_pm
+# REQUIRE: FILESYSTEMS
+
+. /etc/rc.subr
+
+name="storage_pm"
+rcvar="storage_pm_enable"
+start_cmd="storage_pm_start"
+
+storage_pm_start() {
+    echo "Applying storage power management configuration..."
+    /usr/local/sbin/ap-storage-pm
+}
+
+load_rc_config $name
+run_rc_command "$1"

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+{% for device in host_tuning_storage_pm_ata_devices %}
+/sbin/camcontrol idle {{ device.node }} -t {{ device.idle_seconds | default(host_tuning_storage_pm_ata_devices_idle_seconds) }}
+
+{% if device.apm_level is defined and device.apm_level %}
+/sbin/camcontrol apm {{ device.node }} -l {{ device.apm_level }}
+{% else %}
+/sbin/camcontrol apm {{ device.node }}
+{% endif %}
+
+{% if device.aam_level is defined %}
+  {%- if device.aam_level != 'skip' -%}
+/sbin/camcontrol aam {{ device.node }} -l {{ device.aam_level }}
+  {%- endif -%}
+{% else %}
+/sbin/camcontrol cmd {{ device.node }} -a "EF C2 00 00 00 00 00 00 00 00 00 00"
+{% endif %}
+{% endfor %}
