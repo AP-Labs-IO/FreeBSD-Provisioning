@@ -193,15 +193,17 @@
   notify: Restart sshd
   tags: [ssh, config, blocklistd, security]
 
-- name: Install pf blocklistd rules
-  ansible.builtin.copy:
-    src: pf.conf
-    dest: /etc/pf.conf
-    owner: root
-    group: wheel
-    mode: "0644"
+- name: Configure pf
   notify: Restart pf
   tags: [monitoring, security, firewall]
+  block:
+    - name: Install pf blocklistd rules
+      ansible.builtin.copy:
+        src: pf.conf
+        dest: /etc/pf.conf
+        owner: root
+        group: wheel
+        mode: "0644"
 
 - name: Install services monitoring script
   ansible.builtin.copy:
