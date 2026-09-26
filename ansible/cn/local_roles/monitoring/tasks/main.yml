@@ -35,23 +35,23 @@
     use_globs: false
   tags: [pkg]
 
-- name: Install smartd configuration
-  ansible.builtin.template:
-    src: usr/local/etc/smartd.conf.j2
-    dest: /usr/local/etc/smartd.conf
-    owner: root
-    group: wheel
-    mode: "0644"
-  notify: Restart smartd
-  tags: [smartd, config]
-
-- name: Configure smartd flags
-  community.general.sysrc:
-    name: smartd_flags
-    state: present
-    value: "-q never -i {{ monitoring_smartd_poll_interval }}"
+- name: Configure smartd
   notify: Restart smartd
   tags: [smartd]
+  block:
+    - name: Install smartd configuration
+      ansible.builtin.template:
+        src: usr/local/etc/smartd.conf.j2
+        dest: /usr/local/etc/smartd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Configure smartd flags
+      community.general.sysrc:
+        name: smartd_flags
+        state: present
+        value: "-q never -i {{ monitoring_smartd_poll_interval }}"
 
 - name: Install smartd drivedb update job
   ansible.builtin.cron:
@@ -167,23 +167,23 @@
   notify: Reload syslogd
   tags: [syslog, alert, ssh, security]
 
-- name: Install blocklistd configuration
-  ansible.builtin.copy:
-    src: blocklistd.conf
-    dest: /usr/local/etc/blocklistd.conf
-    owner: root
-    group: wheel
-    mode: "0644"
+- name: Configure blocklistd
   notify: Restart blocklistd
   tags: [blocklistd, config, security]
+  block:
+    - name: Install blocklistd configuration
+      ansible.builtin.copy:
+        src: blocklistd.conf
+        dest: /usr/local/etc/blocklistd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
 
-- name: Configure blocklistd flags
-  community.general.sysrc:
-    name: blocklistd_flags
-    state: present
-    value: "-c /usr/local/etc/blocklistd.conf"
-  notify: Restart blocklistd
-  tags: [blocklistd, config, security]
+    - name: Configure blocklistd flags
+      community.general.sysrc:
+        name: blocklistd_flags
+        state: present
+        value: "-c /usr/local/etc/blocklistd.conf"
 
 - name: Enable SSH blocklistd integration
   ansible.builtin.lineinfile:
