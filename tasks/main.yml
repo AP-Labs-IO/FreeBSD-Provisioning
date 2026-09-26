@@ -104,5 +104,5 @@
     value: "{{ item.value }}"
   loop: "{{ runtime_extra_settings }}"
   loop_control:
-    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [config]
