@@ -110,7 +110,7 @@
 
 - name: Reboot
   ansible.builtin.reboot:
-    msg: Rebooting to load new kernel modules and/or tunables
+    msg: Rebooting to load new settings
     connect_timeout: 5
     reboot_timeout: 600
     pre_reboot_delay: 5
