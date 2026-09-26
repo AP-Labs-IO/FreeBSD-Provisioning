@@ -32,7 +32,7 @@ Dependencies
 * Global variables provided by the consumer of the role:
   * `boot_kernel_modules`: List of strings with the names of the kernel modules to load.
   * `boot_loader_settings`: List of dictionaries with attributes:
-    * `key`: Name of the boot-time kernel tunable to set via `sysctl(8)`.
+    * `key`: Name of the loader setting to set via `sysctl(8)`.
     * `value`: Value of `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Description of the effect of setting `key` to `value` via `sysctl(8)`.
   * `boot_rc_settings`: List of dictionaries of early `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:

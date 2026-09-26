@@ -20,7 +20,7 @@
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   register: boot_reg_loader
-  tags: [kernel, config, tunables]
+  tags: [kernel, config, loader]
 
 - name: Configure early rc(8) settings
   community.general.sysrc:
