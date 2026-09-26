@@ -22,6 +22,14 @@
   register: boot_reg_loader
   tags: [kernel, config, loader]
 
+- name: Configure keymap
+  community.general.sysrc:
+    name: keymap
+    state: present
+    value: "{{ boot_keymap }}"
+  register: boot_reg_keymap
+  tags: [keymap, config]
+
 - name: Configure early rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
@@ -117,5 +125,6 @@
   when: >
     (boot_reg_modules.changed | default(false) | bool) or
     (boot_reg_loader.changed | default(false) | bool) or
+    (boot_reg_keymap.changed | default(false) | bool) or
     (boot_reg_custom_settings.changed | default(false) | bool)
   tags: [reboot]

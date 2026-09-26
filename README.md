@@ -35,6 +35,7 @@ Dependencies
     * `key`: Name of the loader setting to set via `sysctl(8)`.
     * `value`: Value of `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Description of the effect of setting `key` to `value` via `sysctl(8)`.
+  * `boot_keymap`: Desired keyboard map.
   * `boot_rc_settings`: List of dictionaries of early `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:
     * `key`: Name of the `rc.conf(5)` setting.
     * `value`: Desired value for the corresponding `key`.
