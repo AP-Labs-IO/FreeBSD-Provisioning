@@ -58,4 +58,4 @@
     group: wheel
     mode: "0644"
   notify: Restart zrepl
-  tags: [snapshotting, replication, config]
+  tags: [zrepl, config]

@@ -20,7 +20,7 @@
       - filesystems/zrepl
     state: latest
     use_globs: false
-  tags: [pkg]
+  tags: [zrepl, pkg]
 
 - name: Configure zrepl flags
   community.general.sysrc:
@@ -34,11 +34,11 @@
       value: "{{ zfs_replication_user.group }}"
   loop_control:
     label: "zrepl_{{ item.flag }} -> {{ item.value }}"
-  tags: [watchdog, config]
+  tags: [zrepl, config]
 
 - name: Remove zrepl's syslog configuration
   ansible.builtin.file:
     path: /usr/local/etc/syslog.d/zrepl.conf
     state: absent
   notify: Reload syslogd
-  tags: [snapshotting, replication, config]
+  tags: [zrepl, config]

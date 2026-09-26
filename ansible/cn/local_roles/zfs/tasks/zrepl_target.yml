@@ -32,4 +32,4 @@
     group: wheel
     mode: "0644"
   notify: Restart zrepl
-  tags: [replication, config]
+  tags: [zrepl, config]
