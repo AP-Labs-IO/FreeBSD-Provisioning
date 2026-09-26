@@ -22,7 +22,7 @@
   register: boot_reg_tunables
   tags: [kernel, config, tunables]
 
-- name: Configure rc(8) settings
+- name: Configure early rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
