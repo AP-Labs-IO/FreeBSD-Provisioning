@@ -197,10 +197,28 @@
   notify: Restart pf
   tags: [monitoring, security, firewall]
   block:
+    - name: Create pf local config directory
+      ansible.builtin.file:
+        path: /usr/local/etc/pf.conf.d
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
     - name: Install pf blocklistd rules
       ansible.builtin.copy:
-        src: pf.conf
-        dest: /etc/pf.conf
+        src: pf.conf.d/blocklistd.conf
+        dest: /usr/local/etc/pf.conf.d/blocklistd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Include pf blocklistd configuration
+      ansible.builtin.lineinfile:
+        path: /etc/pf.conf
+        line: include "/usr/local/etc/pf.conf.d/blocklistd.conf"
+        state: present
+        create: true
         owner: root
         group: wheel
         mode: "0644"
