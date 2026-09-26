@@ -18,7 +18,7 @@
     reload: false
   loop: "{{ boot_loader_settings }}"
   loop_control:
-    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   register: boot_reg_tunables
   tags: [kernel, config, tunables]
 
