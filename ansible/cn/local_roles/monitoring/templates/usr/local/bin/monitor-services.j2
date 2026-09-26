@@ -3,7 +3,7 @@
 HOSTNAME=$(hostname)
 
 
-for svc in watchdogd smartd collectd
+for svc in {{ monitoring_services }}
 do
     if ! service "$svc" status >/dev/null 2>&1
     then

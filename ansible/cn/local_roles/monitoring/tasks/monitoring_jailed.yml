@@ -1,7 +1,7 @@
 ---
 - name: Install jails monitoring script
-  ansible.builtin.copy:
-    src: monitor-jails
+  ansible.builtin.template:
+    src: usr/local/bin/monitor-jails.j2
     dest: /usr/local/bin/ap-monitor-jails
     owner: root
     group: wheel

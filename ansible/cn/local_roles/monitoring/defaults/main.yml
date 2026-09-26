@@ -29,3 +29,6 @@ monitoring_collectd_graphite_port: 2003
 monitoring_collectd_graphite_prefix: "{{ (group_names | difference(['all', 'ungrouped']) | first | default('standalone')) }}."
 
 monitoring_alert_targets: []
+
+monitoring_services: watchdogd smartd collectd
+monitoring_jails: nfs-server samba-server

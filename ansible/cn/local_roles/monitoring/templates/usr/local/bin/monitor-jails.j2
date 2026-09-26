@@ -3,7 +3,7 @@
 HOSTNAME=$(hostname)
 
 
-for jail in nfs-server samba-server
+for jail in {{ monitoring_jails }}
 do
     status=$(bastille list -uj $jail 2>/dev/null | jq length)
     if [ ${status:-0} -lt 1 ]

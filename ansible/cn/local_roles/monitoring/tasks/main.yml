@@ -224,8 +224,8 @@
         mode: "0644"
 
 - name: Install services monitoring script
-  ansible.builtin.copy:
-    src: monitor-services
+  ansible.builtin.template:
+    src: usr/local/bin/monitor-services.j2
     dest: /usr/local/bin/ap-monitor-services
     owner: root
     group: wheel
