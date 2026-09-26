@@ -29,7 +29,7 @@
     value: "{{ item.value }}"
   loop: "{{ boot_rc_settings }}"
   loop_control:
-    label: "{{ item.key }} -> {{ item.value }}"
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   register: boot_reg_custom_settings
   tags: [rc, config]
 
