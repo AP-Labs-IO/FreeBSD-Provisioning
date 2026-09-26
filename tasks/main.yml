@@ -102,7 +102,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ runtime_extra_settings }}"
+  loop: "{{ runtime_extra_kernel_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [config]

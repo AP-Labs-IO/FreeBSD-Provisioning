@@ -17,9 +17,9 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable               |  Default value    | Description                         |
-|------------------------|-------------------|-------------------------------------|
-| runtime_extra_settings | []                | See `runtime_extra_settings` below. |
+| Variable                      |  Default value    | Description                                |
+|-------------------------------|-------------------|--------------------------------------------|
+| runtime_extra_kernel_settings | []                | See `runtime_extra_kernel_settings` below. |
 
 Dependencies
 ------------
@@ -27,7 +27,7 @@ Dependencies
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `runtime_mac_do_rules`: String with the desired `mac_do(4)` configuration.
-  * `runtime_extra_settings`: List of dictionaries with attributes:
+  * `runtime_extra_kernel_settings`: List of dictionaries with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value of `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Description of the effect of setting `key` to `value` via `sysctl(8)`.
