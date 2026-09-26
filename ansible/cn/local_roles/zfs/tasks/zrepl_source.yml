@@ -49,13 +49,3 @@
     state: present
   loop: "{{ (zfs_hourly_snapshots_datasets | default([])) + (zfs_nightly_snapshots_datasets | default([])) }}"
   tags: [snapshotting, replication, delegation]
-
-- name: Install zrepl configuration
-  ansible.builtin.template:
-    src: usr/local/etc/zrepl/zrepl_source.yml.j2
-    dest: /usr/local/etc/zrepl/zrepl.yml
-    owner: root
-    group: wheel
-    mode: "0644"
-  notify: Restart zrepl
-  tags: [zrepl, config]
