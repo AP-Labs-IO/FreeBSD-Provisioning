@@ -1,7 +1,7 @@
 Boot
 ====
 
-Configure boot-time settings, such as kernel modules and tunables, as documented by `loader(8)` & `rc.conf(5)`.
+Configure boot-time settings, such as kernel modules, loader settings, and tunables, as documented by `loader(8)` & `rc.conf(5)`.
 
 Requirements
 ------------
