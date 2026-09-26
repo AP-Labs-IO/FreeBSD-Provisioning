@@ -19,7 +19,7 @@
   loop: "{{ boot_loader_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_tunables
+  register: boot_reg_loader
   tags: [kernel, config, tunables]
 
 - name: Configure early rc(8) settings
@@ -116,6 +116,6 @@
     pre_reboot_delay: 5
   when: >
     (boot_reg_modules.changed | default(false) | bool) or
-    (boot_reg_tunables.changed | default(false) | bool) or
+    (boot_reg_loader.changed | default(false) | bool) or
     (boot_reg_custom_settings.changed | default(false) | bool)
   tags: [reboot]
