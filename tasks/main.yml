@@ -30,6 +30,21 @@
   register: boot_reg_keymap
   tags: [keymap, config]
 
+- name: Configure timezone
+  tags: [timezone, config]
+  block:
+    - name: Query current timezone
+      ansible.builtin.slurp:
+        src: /var/db/zoneinfo
+      register: boot_reg_current_tz
+      failed_when: false
+
+    - name: Set timezone
+      ansible.builtin.command: "/usr/sbin/tzsetup -s {{ boot_timezone }}"
+      when: boot_timezone != (boot_reg_current_tz.content | default('') | b64decode | trim)
+      register: boot_reg_timezone
+      changed_when: true
+
 - name: Configure early rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
@@ -126,5 +141,6 @@
     (boot_reg_modules.changed | default(false) | bool) or
     (boot_reg_loader.changed | default(false) | bool) or
     (boot_reg_keymap.changed | default(false) | bool) or
+    (boot_reg_timezone.changed | default(false) | bool) or
     (boot_reg_custom_settings.changed | default(false) | bool)
   tags: [reboot]
