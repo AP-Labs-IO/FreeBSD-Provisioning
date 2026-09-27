@@ -60,8 +60,9 @@
         value: "{{ microcode_firmware_file }}"
         path: /boot/loader.conf
       vars:
+        cpu_vendor_string: "{{ ansible_facts['processor'] | join(' ') }}"
         microcode_firmware_file: >-
-          {{ ('Intel' in ansible_facts['processor']) | ternary('/boot/firmware/intel-ucode.bin', '/boot/firmware/amd-ucode.bin') }}
+          {{ ('Intel' in cpu_vendor_string) | ternary('/boot/firmware/intel-ucode.bin', '/boot/firmware/amd-ucode.bin') }}
       register: host_tuning_reg_microcode_firmware
       tags: [loader]
 
