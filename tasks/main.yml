@@ -53,7 +53,7 @@
   loop: "{{ boot_rc_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_custom_settings
+  register: boot_reg_rc_settings
   tags: [rc, config]
 
 - name: Start ntpd
@@ -142,5 +142,5 @@
     (boot_reg_loader.changed | default(false) | bool) or
     (boot_reg_keymap.changed | default(false) | bool) or
     (boot_reg_timezone.changed | default(false) | bool) or
-    (boot_reg_custom_settings.changed | default(false) | bool)
+    (boot_reg_rc_settings.changed | default(false) | bool)
   tags: [reboot]
