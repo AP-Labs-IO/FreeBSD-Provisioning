@@ -140,3 +140,88 @@
     user: root
     job: /usr/local/bin/ap-monitor-replication
   tags: [snapshotting, replication, monitoring, cron]
+
+- name: Configure base boot-time settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: vfs.zfs.vdev.async_write_max_active
+      value: "{{ zfs_vdev_async_write_max_active }}"
+      description: Set per vdev maximum async write I/O operations
+    - key: vfs.zfs.vdev.async_write_min_active
+      value: "{{ zfs_vdev_async_write_min_active }}"
+      description: Set per vdev minimum async write I/O operations
+    - key: vm.lowmem_period
+      value: "{{ zfs_lowmem_callback_period }}"
+      description: Set low memory callback period
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  register: zfs_reg_base_boot_settings
+  tags: [config, boot-time]
+
+- name: Configure extra boot-time settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop: "{{ zfs_boot_extra_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  register: zfs_reg_extra_boot_settings
+  tags: [config, boot-time]
+
+- name: Configure base runtime settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: vfs.zfs.arc.max
+      value: "{{ arc_max_bytes }}"
+      description: Set maximum ARC size
+    - key: vfs.zfs.arc.min
+      value: "{{ arc_min_bytes }}"
+      description: Set minimum ARC size
+    - key: vfs.timestamp_precision
+      value: "{{ zfs_file_timestamp_precision }}"
+      description: Set file timestamp precision
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  vars:
+    GB_to_bytes: "{{ 1024 * 1024 * 1024 }}"
+    total_mem_gb: "{{ (ansible_facts['memtotal_mb'] | float) / 1024.0 }}"
+    arc_max_gb: >-
+      {{ (total_mem_gb - (zfs_services_memory_allocation | float) - (zfs_host_memory_reservation | float))
+          if ((zfs_services_memory_allocation | float) > 0 or (zfs_host_memory_reservation | float) > 0)
+          else 0
+      }}
+    arc_max_bytes: "{{ ((arc_max_gb | float) * (GB_to_bytes | int)) | int }}"
+    arc_min_bytes: "{{ ((arc_max_bytes | int) * (zfs_arc_min_multiplier | float)) | int }}"
+  tags: [config, runtime]
+
+- name: Configure extra runtime settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ zfs_runtime_extra_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [config, runtime]
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to load new settings
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (zfs_reg_base_boot_settings.changed | default(false) | bool) or
+    (zfs_reg_extra_boot_settings.changed | default(false) | bool)
+  tags: [reboot]
