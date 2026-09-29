@@ -215,6 +215,14 @@
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [config, runtime]
 
+- name: Install packages
+  community.general.pkgng:
+    name:
+      - sysutils/zfs-stats
+    state: latest
+    use_globs: false
+  tags: [zrepl, pkg]
+
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to load new settings
