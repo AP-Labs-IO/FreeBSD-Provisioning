@@ -57,6 +57,27 @@ Dependencies
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -103,6 +124,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml -i inventory/replication.yml --tags bootstrap --tags monitoring --tags zfs playbook.yml
 ```
 
