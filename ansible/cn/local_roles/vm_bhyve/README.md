@@ -32,6 +32,27 @@ Dependencies
   * `vm_bhyve_passthrough_devices`: List of PCI devices to reserve for PCI passthrough via the `pptdevs` `loader.conf(5)` variable, in standard `bus/slot/function` notation.
   * `vm_bhyve_startup_vms`: List of VMs to autostart up on system boot.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -58,6 +79,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags vm-bhyve playbook.yml
 ```
 
