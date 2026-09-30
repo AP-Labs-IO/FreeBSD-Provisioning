@@ -136,7 +136,7 @@
     special_time: daily
     user: root
     job: /usr/local/bin/ap-monitor-ipmi
-  tags: [apprise, alert, ipmi, cron]
+  tags: [apprise, ipmi, cron]
 
 - name: Install SSH login failure alert script
   ansible.builtin.copy:
@@ -239,4 +239,4 @@
     minute: "*/5"
     user: root
     job: /usr/local/bin/ap-monitor-services
-  tags: [apprise, alert, services, cron]
+  tags: [apprise, services, cron]
