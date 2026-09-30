@@ -3,7 +3,7 @@
 HOSTNAME=$(hostname)
 
 
-for svc in {{ monitoring_services }}
+for svc in {{ monitoring_base_services }}
 do
     if ! service "$svc" status >/dev/null 2>&1
     then
