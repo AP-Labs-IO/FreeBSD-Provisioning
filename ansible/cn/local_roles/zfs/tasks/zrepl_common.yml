@@ -22,31 +22,32 @@
     use_globs: false
   tags: [zrepl, pkg]
 
-- name: Install zrepl configuration
-  ansible.builtin.template:
-    src: usr/local/etc/zrepl/zrepl_{{ type }}.yml.j2
-    dest: /usr/local/etc/zrepl/zrepl.yml
-    owner: root
-    group: wheel
-    mode: "0644"
-  vars:
-    type: "{{ ('replication' in groups and inventory_hostname in groups['replication']) | ternary('target', 'source') }}"
+- name: Configure zrepl
+  tags: [zrepl, config]
   notify: Restart zrepl
-  tags: [zrepl, config]
+  block:
+    - name: Install zrepl configuration
+      ansible.builtin.template:
+        src: usr/local/etc/zrepl/zrepl_{{ type }}.yml.j2
+        dest: /usr/local/etc/zrepl/zrepl.yml
+        owner: root
+        group: wheel
+        mode: "0644"
+      vars:
+        type: "{{ ('replication' in groups and inventory_hostname in groups['replication']) | ternary('target', 'source') }}"
 
-- name: Configure zrepl flags
-  community.general.sysrc:
-    name: "zrepl_{{ item.flag }}"
-    state: present
-    value: "{{ item.value }}"
-  loop:
-    - flag: user
-      value: "{{ zfs_replication_user.name }}"
-    - flag: group
-      value: "{{ zfs_replication_user.group }}"
-  loop_control:
-    label: "zrepl_{{ item.flag }} -> {{ item.value }}"
-  tags: [zrepl, config]
+    - name: Configure zrepl flags
+      community.general.sysrc:
+        name: "zrepl_{{ item.flag }}"
+        state: present
+        value: "{{ item.value }}"
+      loop:
+        - flag: user
+          value: "{{ zfs_replication_user.name }}"
+        - flag: group
+          value: "{{ zfs_replication_user.group }}"
+      loop_control:
+        label: "zrepl_{{ item.flag }} -> {{ item.value }}"
 
 - name: Remove zrepl's syslog configuration
   ansible.builtin.file:
