@@ -11,8 +11,9 @@ Requirements
   * With a Python runtime.
   * With key-based SSH access.
   * A functional `become` setup.
+* The `net-im/py-apprise` tool with a working configuration.
 
-The last set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one.
+The bootstrap set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the local `monitoring` role.
 
 Role Variables
 --------------
@@ -69,6 +70,11 @@ Example Playbook
   roles:
     - { role: bootstrap, tags: [bootstrap] }
 
+- name: Configure Monitoring
+  hosts: all:!replication
+  roles:
+    - { role: monitoring, tags: [monitoring] }
+
 - name: Configure ZFS Services
   hosts: all:!replication
   become: true
@@ -97,7 +103,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
-ansible-playbook -v --diff -i inventory/$env.yml -i inventory/replication.yml --tags bootstrap --tags zfs playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml -i inventory/replication.yml --tags bootstrap --tags monitoring --tags zfs playbook.yml
 ```
 
 License
