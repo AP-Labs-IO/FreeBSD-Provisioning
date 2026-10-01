@@ -227,7 +227,7 @@
         mode: "0644"
 
 - name: Configure base services monitoring
-  tags: [apprise, services]
+  tags: [apprise, base-services]
   block:
     - name: Install base services monitoring script
       ansible.builtin.template:
