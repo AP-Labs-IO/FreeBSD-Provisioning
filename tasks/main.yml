@@ -227,15 +227,6 @@
     - Apply new resolvconf configuration
   tags: [resolver, config]
 
-- name: Record FQDN & hostname loopback mapping
-  ansible.builtin.blockinfile:
-    path: /etc/hosts
-    block: |
-      127.0.0.1 {{ ansible_facts['nodename'] }} {{ ansible_facts['hostname'] }}
-      ::1 {{ ansible_facts['nodename'] }} {{ ansible_facts['hostname'] }}
-    insertafter: "^127.0.0.1"
-  tags: [resolver, config]
-
 - name: Force execution of notified handlers
   ansible.builtin.meta: flush_handlers
   tags: [resolver, config]
