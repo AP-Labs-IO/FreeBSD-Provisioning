@@ -35,6 +35,7 @@ Role Variables
 | monitoring_collectd_graphite_prefix    | See `monitoring_collectd_graphite_prefix` below.    | See `monitoring_collectd_graphite_prefix` below.    |
 | monitoring_alert_targets               | []                                                  | See `monitoring_alert_targets` below.               |
 | monitoring_jails                       | ""                                                  | Space-separated list of jails to monitor.           |
+| monitoring_extra_services              | ""                                                  | Space-separated list of extra services to monitor.  |
 
 Dependencies
 ------------
@@ -132,6 +133,12 @@ Install the jail monitoring infrastructure once the target jails have been deplo
 
 ```sh
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-jails playbook.yml
+```
+
+Install the extra services monitoring infrastructure once the target services have been deployed:
+
+```sh
+-> ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-extra-services playbook.yml
 ```
 
 License
