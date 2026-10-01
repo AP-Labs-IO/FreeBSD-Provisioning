@@ -30,4 +30,4 @@ monitoring_collectd_graphite_prefix: "{{ (group_names | difference(['all', 'ungr
 
 monitoring_alert_targets: []
 
-monitoring_jails: nfs-server samba-server
+monitoring_jails: ""

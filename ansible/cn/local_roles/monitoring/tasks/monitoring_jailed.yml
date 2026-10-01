@@ -1,5 +1,6 @@
 ---
 - name: Configure jails monitoring
+  when: (monitoring_jails | trim) | length > 0
   tags: [apprise, jails]
   block:
     - name: Install jails monitoring script

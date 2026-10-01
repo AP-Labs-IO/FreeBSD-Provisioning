@@ -34,7 +34,7 @@ Role Variables
 | monitoring_collectd_graphite_port      | 2003                                                | See `monitoring_collectd_graphite_port` below.      |
 | monitoring_collectd_graphite_prefix    | See `monitoring_collectd_graphite_prefix` below.    | See `monitoring_collectd_graphite_prefix` below.    |
 | monitoring_alert_targets               | []                                                  | See `monitoring_alert_targets` below.               |
-| monitoring_jails                       | nfs-server samba-server                             | List of jails to monitor.                           |
+| monitoring_jails                       | ""                                                  | Space-separated list of jails to monitor.           |
 
 Dependencies
 ------------
