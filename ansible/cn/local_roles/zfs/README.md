@@ -50,6 +50,10 @@ Dependencies
     * `uid`: Optional UID of the user, defaulting to the next available UID.
     * `name`: The user's main group.
     * `gid`: Optional GID of the group, defaulting to the next available GID.
+  * `zfs_replication_target_host`: FQDN of the host to target for replication.
+  * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
+  * `zfs_hourly_snapshots_datasets`: List of ZFS datasets to include in the hourly snapshotting and replication schedule.
+  * `zfs_nightly_snapshots_datasets`: List of ZFS datasets to include in the nightly snapshotting and replication schedule.
   * `zfs_boot_extra_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
     * `key`: Name of the boot-time ZFS setting to set in `/boot/loader.conf` via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
