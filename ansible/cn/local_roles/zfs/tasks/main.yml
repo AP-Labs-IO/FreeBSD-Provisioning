@@ -176,14 +176,14 @@
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   vars:
-    GB_to_bytes: "{{ 1024 * 1024 * 1024 }}"
+    gb_to_bytes: "{{ 1024 * 1024 * 1024 }}"
     total_mem_gb: "{{ (ansible_facts['memtotal_mb'] | float) / 1024.0 }}"
     arc_max_gb: >-
       {{ (total_mem_gb - (zfs_services_memory_allocation | float) - (zfs_host_memory_reservation | float))
           if ((zfs_services_memory_allocation | float) > 0 or (zfs_host_memory_reservation | float) > 0)
           else 0
       }}
-    arc_max_bytes: "{{ ((arc_max_gb | float) * (GB_to_bytes | int)) | int }}"
+    arc_max_bytes: "{{ ((arc_max_gb | float) * (gb_to_bytes | int)) | int }}"
     arc_min_bytes: "{{ ((arc_max_bytes | int) * (zfs_arc_min_multiplier | float)) | int }}"
   tags: [config, runtime]
 
