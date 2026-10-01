@@ -103,7 +103,7 @@
     dest: /etc/dma/dma.conf
     owner: root
     group: mail
-    mode: "0640"
+    mode: "0644"
   tags: [mail, dma, config]
 
 - name: Install dma credentials
