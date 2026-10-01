@@ -23,7 +23,7 @@
     dest: "{{ dest }}"
     owner: "{{ item.0.name }}"
     group: "{{ item.0.name }}"
-    mode: "0640"
+    mode: "0644"
   loop: "{{ users_accounts_sanitized | product(shell_config_files) | list }}"
   loop_control:
     label: "User: {{ item.0.name }} -> File: {{ item.1.dst }}"
