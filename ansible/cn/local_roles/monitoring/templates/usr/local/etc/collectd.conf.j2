@@ -57,9 +57,9 @@ LoadPlugin exec
 LoadPlugin interface
 <Plugin interface>
     # Ignore select interfaces
-    {% for iface in monitoring_collectd_ignore_interfaces %}
+{% for iface in monitoring_collectd_ignore_interfaces %}
     Interface "{{ iface }}"
-    {% endfor %}
+{% endfor %}
     Interface "/^usbus/"
 
     IgnoreSelected true
@@ -74,9 +74,9 @@ LoadPlugin disk
 LoadPlugin df
 <Plugin df>
     # Ignore select mountpoints
-    {% for mount in monitoring_collectd_ignore_mountpoints %}
+{% for mount in monitoring_collectd_ignore_mountpoints %}
     Mountpoint "{{ mount }}"
-    {% endfor %}
+{% endfor %}
 
     # Exclude pseudo-filesystems and virtual loop layers
     FSType "tmpfs"
