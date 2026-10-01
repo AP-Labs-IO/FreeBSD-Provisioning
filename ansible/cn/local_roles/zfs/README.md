@@ -45,6 +45,11 @@ Dependencies
   * `zfs_pools_scrub_schedules`: A list of dictionaries describing the the ZFS pools to scrub and their corresponding cron schedules, with attributes:
     * `pool`: The name of the ZFS pool.
     * Cron calendar options compatible with Ansible's `ansible.builtin.cron` module.
+  * `zfs_replication_user`: Dictionary describing the user who will perform replication, with attributes:
+    * `name`: The user's username.
+    * `uid`: Optional UID of the user, defaulting to the next available UID.
+    * `name`: The user's main group.
+    * `gid`: Optional GID of the group, defaulting to the next available GID.
   * `zfs_boot_extra_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
     * `key`: Name of the boot-time ZFS setting to set in `/boot/loader.conf` via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.

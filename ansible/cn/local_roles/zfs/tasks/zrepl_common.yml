@@ -2,13 +2,13 @@
 - name: Create replication group
   ansible.builtin.group:
     name: "{{ zfs_replication_user.group }}"
-    gid: "{{ zfs_replication_user.gid }}"
+    gid: "{{ zfs_replication_user.gid | default(omit) }}"
   tags: [replication, group]
 
 - name: Create replication user
   ansible.builtin.user:
     name: "{{ zfs_replication_user.name }}"
-    uid: "{{ zfs_replication_user.uid }}"
+    uid: "{{ zfs_replication_user.uid | default(omit) }}"
     comment: ZFS replication user
     groups: "{{ zfs_replication_user.group }}"
     shell: /bin/sh

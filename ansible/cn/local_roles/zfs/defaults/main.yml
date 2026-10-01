@@ -6,6 +6,10 @@ zfs_encryption_datasets: []
 
 zfs_pools_scrub_schedules: []
 
+zfs_replication_user:
+  name: replicator
+  group: replicator
+
 zfs_vdev_async_write_max_active: 5
 zfs_vdev_async_write_min_active: 1
 zfs_lowmem_callback_period: 0
