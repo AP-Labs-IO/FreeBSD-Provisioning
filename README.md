@@ -42,6 +42,31 @@ Dependencies
     * `value`: Desired value for the corresponding `key`.
   * `boot_swap_devices`: List of strings, each expected to point to the full path of a swap device to activate.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: boot
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/boot.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -68,6 +93,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags boot playbook.yml
 ```
 
