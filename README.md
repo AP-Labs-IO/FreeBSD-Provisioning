@@ -68,7 +68,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
-ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags boot playbook.yml
+-> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags boot playbook.yml
 ```
 
 License
