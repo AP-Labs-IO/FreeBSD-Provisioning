@@ -40,7 +40,7 @@
   loop: "{{ zfs_replication_datasets }}"
   tags: [replication, datasets]
 
-- name: Configure ZFS delegation for replication
+- name: Configure source ZFS delegation for replication
   community.general.zfs_delegate_admin:
     name: "{{ item }}"
     users:
