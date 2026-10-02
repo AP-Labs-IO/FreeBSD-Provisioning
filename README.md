@@ -21,7 +21,7 @@ Role Variables
 |----------------------|-------------------|--------------------------------------------|
 | boot_kernel_modules  | []                | See `boot_kernel_modules` below.           |
 | boot_loader_settings | []                | See `boot_loader_settings` below.          |
-| boot_rc_settings     | []                | See `boot_rc_settings` below.              |
+| boot_extra_rc_settings | []              | See `boot_extra_rc_settings` below.        |
 | boot_enable_moused   | true              | Boolean toggle to enable the mouse daemon. |
 | boot_efi_partition   | /dev/gpt/efiboot0 | EFI partition.                             |
 
@@ -37,7 +37,7 @@ Dependencies
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
   * `boot_keymap`: Desired keyboard map.
   * `boot_timezone`: Desired timezone.
-  * `boot_rc_settings`: List of dictionaries of early `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:
+  * `boot_extra_rc_settings`: List of dictionaries of early `rc.conf(5)` settings to configure via `sysrc(8)`, with attributes:
     * `key`: Name of the `rc.conf(5)` setting.
     * `value`: Desired value for the corresponding `key`.
   * `boot_swap_devices`: List of strings, each expected to point to the full path of a swap device to activate.

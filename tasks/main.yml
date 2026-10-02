@@ -45,15 +45,15 @@
       register: boot_reg_timezone
       changed_when: true
 
-- name: Configure early rc(8) settings
+- name: Configure extra early rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ boot_rc_settings }}"
+  loop: "{{ boot_extra_rc_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_rc_settings
+  register: boot_reg_extra_rc_settings
   tags: [rc, config]
 
 - name: Start ntpd
@@ -142,5 +142,5 @@
     (boot_reg_loader.changed | default(false) | bool) or
     (boot_reg_keymap.changed | default(false) | bool) or
     (boot_reg_timezone.changed | default(false) | bool) or
-    (boot_reg_rc_settings.changed | default(false) | bool)
+    (boot_reg_extra_rc_settings.changed | default(false) | bool)
   tags: [reboot]
