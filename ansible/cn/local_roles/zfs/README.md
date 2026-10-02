@@ -27,12 +27,12 @@ Role Variables
 | zfs_vdev_async_write_max_active              | 5                | Maximum async write I/O operations per vdev.                               |
 | zfs_vdev_async_write_min_active              | 1                | Minimum async write I/O operations per vdev.                               |
 | zfs_lowmem_callback_period                   | 0                | Low memory callback period.                                                |
-| zfs_boot_extra_settings                      | []               | See `zfs_boot_extra_settings` below.                                       |
+| zfs_extra_boot_settings                      | []               | See `zfs_extra_boot_settings` below.                                       |
 | zfs_services_memory_allocation               | 0                | See `zfs_services_memory_allocation` below.                                |
 | zfs_host_memory_reservation                  | 0                | See `zfs_host_memory_reservation` below.                                   |
 | zfs_arc_min_multiplier                       | 0.25             | See `zfs_arc_min_multiplier` below.                                        |
 | zfs_file_timestamp_precision                 | 3                | File timestamp precision, according to `sysctl -d vfs.timestamp_precision` |
-| zfs_runtime_extra_settings                   | []               | See `zfs_runtime_extra_settings` below.                                    |
+| zfs_extra_runtime_settings                   | []               | See `zfs_extra_runtime_settings` below.                                    |
 
 Dependencies
 ------------
@@ -54,14 +54,14 @@ Dependencies
   * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
   * `zfs_hourly_snapshots_datasets`: List of ZFS datasets to include in the hourly snapshotting and replication schedule.
   * `zfs_nightly_snapshots_datasets`: List of ZFS datasets to include in the nightly snapshotting and replication schedule.
-  * `zfs_boot_extra_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
+  * `zfs_extra_boot_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
     * `key`: Name of the boot-time ZFS setting to set in `/boot/loader.conf` via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
   * `zfs_services_memory_allocation`: Amount of memory in GiB consumed by hosted services to be exclude from the ARC, defaulting to `0`. See `zfs_host_memory_reservation` below for further explanations.
   * `zfs_host_memory_reservation`: Amount of memory in GiB to reserve for miscellaneous host operations and to be excluded from the ARC, defaulting to `0`. If both this variable and `zfs_services_memory_allocation` are `0`, the corresponding `vfs.zfs.arc.max` & `vfs.zfs.arc.min` `sysctl(8)` settings are left at their corresponding defaults (`0` in each case), which enables OpenZFS' dynamic ARC management.
   * `zfs_arc_min_multiplier`: Fraction, in the range from `0` to `1`, of the resulting `vfs.zfs.arc.max` `sysctl(8)` setting, i.e. `host total memory - zfs_services_memory_allocation - zfs_host_memory_reservation`, used to compute the amount of memory to assign to `vfs.zfs.arc.min`. This variable has no effect if both `zfs_host_memory_reservation` & `zfs_host_memory_reservation` are `0`.
-  * `zfs_runtime_extra_settings`: List of dictionaries of extra runtime ZFS tuning settings, with attributes:
+  * `zfs_extra_runtime_settings`: List of dictionaries of extra runtime ZFS tuning settings, with attributes:
     * `key`: Name of the runtime ZFS setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.

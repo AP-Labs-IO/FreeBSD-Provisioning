@@ -13,10 +13,10 @@ zfs_replication_user:
 zfs_vdev_async_write_max_active: 5
 zfs_vdev_async_write_min_active: 1
 zfs_lowmem_callback_period: 0
-zfs_boot_extra_settings: []
+zfs_extra_boot_settings: []
 
 zfs_services_memory_allocation: 0
 zfs_host_memory_reservation: 0
 zfs_arc_min_multiplier: 0.25
 zfs_file_timestamp_precision: 3
-zfs_runtime_extra_settings: []
+zfs_extra_runtime_settings: []

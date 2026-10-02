@@ -152,7 +152,7 @@
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ zfs_boot_extra_settings }}"
+  loop: "{{ zfs_extra_boot_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   register: zfs_reg_extra_boot_settings
@@ -192,7 +192,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ zfs_runtime_extra_settings }}"
+  loop: "{{ zfs_extra_runtime_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [config, runtime]
