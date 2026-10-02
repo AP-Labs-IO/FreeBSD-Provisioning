@@ -31,6 +31,31 @@ Dependencies
 * Global variables provided by the consumer of the role:
   * `bastille_releases`: List of strings with the names of the FreeBSD releases that Bastille should bootstrap.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: bastille
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bastille.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -57,6 +82,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags bastille playbook.yml
 ```
 
