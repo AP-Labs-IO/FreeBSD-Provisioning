@@ -22,23 +22,23 @@ PARSED_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
 ' 2>/dev/null)
 if [ -n "$PARSED_ERRORS" ]
 then
-    ALARM_SNAP=$(echo "$PARSED_ERRORS" | awk -F'snap:' '$0 ~ /^snap:/ { print "Error: " $2; }')
-    if [ -n "$ALARM_SNAP" ]
+    SNAPSHOTTING_ERRORS=$(echo "$PARSED_ERRORS" | awk -F'snap:' '$0 ~ /^snap:/ { print "Error: " $2; }')
+    if [ -n "$SNAPSHOTTING_ERRORS" ]
     then
         /usr/local/bin/apprise \
             --tag=replication \
             --notification-type=FAILURE \
             --title="ZFS snapshotting failure on $HOSTNAME" \
-            --body="Warning: ZFS snapshotting errors:\n$ALARM_SNAP"
+            --body="Warning: ZFS snapshotting errors:\n$SNAPSHOTTING_ERRORS"
     fi
 
-    ALARM_REPL=$(echo "$PARSED_ERRORS" | awk -F'repl:' '$0 ~ /^repl:/ { print "Error: " $2; }')
-    if [ -n "$ALARM_REPL" ]
+    REPLICATION_ERRORS=$(echo "$PARSED_ERRORS" | awk -F'repl:' '$0 ~ /^repl:/ { print "Error: " $2; }')
+    if [ -n "$REPLICATION_ERRORS" ]
     then
         /usr/local/bin/apprise \
             --tag=replication \
             --notification-type=FAILURE \
             --title="ZFS replication failure on $HOSTNAME" \
-            --body="Warning: ZFS replication errors:\n$ALARM_REPL"
+            --body="Warning: ZFS replication errors:\n$REPLICATION_ERRORS"
     fi
 fi
