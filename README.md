@@ -17,13 +17,13 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable             | Default value     | Description                                |
-|----------------------|-------------------|--------------------------------------------|
-| boot_kernel_modules  | []                | See `boot_kernel_modules` below.           |
-| boot_loader_settings | []                | See `boot_loader_settings` below.          |
-| boot_extra_rc_settings | []              | See `boot_extra_rc_settings` below.        |
-| boot_enable_moused   | true              | Boolean toggle to enable the mouse daemon. |
-| boot_efi_partition   | /dev/gpt/efiboot0 | EFI partition.                             |
+| Variable               | Default value     | Description                                |
+|------------------------|-------------------|--------------------------------------------|
+| boot_kernel_modules    | []                | See `boot_kernel_modules` below.           |
+| boot_loader_settings   | []                | See `boot_loader_settings` below.          |
+| boot_extra_rc_settings | []                | See `boot_extra_rc_settings` below.        |
+| boot_enable_moused     | true              | Boolean toggle to enable the mouse daemon. |
+| boot_efi_partition     | /dev/gpt/efiboot0 | EFI partition.                             |
 
 Dependencies
 ------------
