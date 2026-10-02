@@ -50,7 +50,7 @@ Dependencies
     * `uid`: Optional UID of the user, defaulting to the next available UID.
     * `name`: The user's main group.
     * `gid`: Optional GID of the group, defaulting to the next available GID.
-  * `zfs_replication_target_host`: FQDN of the host to target for replication.
+  * `zfs_replication_target_host`: FQDN of the host to target for replication. This role expects a file by the name of `known_hosts_{{ zfs_replication_target_host }}` to be present at the root of the project's `files` directory, holding the replication target host's SSH public keys.
   * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
   * `zfs_hourly_snapshots_datasets`: List of ZFS datasets to include in the hourly snapshotting and replication schedule.
   * `zfs_nightly_snapshots_datasets`: List of ZFS datasets to include in the nightly snapshotting and replication schedule.
