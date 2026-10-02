@@ -37,6 +37,31 @@ Dependencies
     * `apm_level`: Optional integer for the corresponding device's `apm`, i.e. "Advanced Power Management" level, according to `camcontrol(8)`, defaulting to a disabled `apm` when missing.
     * `aam_level`: Optional integer for the corresponding device's `aam`, i.e. "Automatic Acoustic Managemet" level, according to `camcontrol(8)`, defaulting to a disabled `aam` when missing. The special string value of `skip` fully skips attempting to set the `aam` to any value for a device that may not support the feature.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: boot
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/host_tuning.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -63,6 +88,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags host_tuning playbook.yml
 ```
 
