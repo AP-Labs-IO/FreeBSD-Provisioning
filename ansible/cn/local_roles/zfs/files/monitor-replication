@@ -17,7 +17,10 @@ fi
 PARSED_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
     [.Jobs[] | select(.type == "push") | {
         snap: (if (.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "") then .push.Snapshotting.Periodic.Error else null end),
-        repl: (if (.push.Replication.WaitReconnectError != null and .push.Replication.WaitReconnectError != "") then .push.Replication.WaitReconnectError.Err else null end)
+        repl: [
+            (if (.push.Replication.WaitReconnectError != null) then .push.Replication.WaitReconnectError.Err else null end),
+            (.push.Replication.Attempts[]?.Filesystems[]?.PlanError? | select(. != null) | .Err)
+        ] | map(select(. != null and . != "")) | if length > 0 then join("\n") else null end
     }] | .[] | to_entries | .[] | select(.value != null and .value != "") | "\(.key):\(.value)"
 ' 2>/dev/null)
 if [ -n "$PARSED_ERRORS" ]
