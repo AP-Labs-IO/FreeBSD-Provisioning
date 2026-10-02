@@ -14,34 +14,34 @@ then
     exit 1
 fi
 
-PARSED_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
-    [.Jobs[] | select(.type == "push") | {
-        snap: (if (.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "") then .push.Snapshotting.Periodic.Error else null end),
-        repl: [
-            (if (.push.Replication.WaitReconnectError != null) then .push.Replication.WaitReconnectError.Err else null end),
-            (.push.Replication.Attempts[]?.Filesystems[]?.PlanError? | select(. != null) | .Err)
-        ] | map(select(. != null and . != "")) | if length > 0 then join("\n") else null end
-    }] | .[] | to_entries | .[] | select(.value != null and .value != "") | "\(.key):\(.value)"
+SNAPSHOTTING_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+    [ .Jobs[] | select(.type == "push")
+      | select(.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "")
+      | .push.Snapshotting.Periodic.Error
+    ] | unique | join("\n")
 ' 2>/dev/null)
-if [ -n "$PARSED_ERRORS" ]
+if [ -n "$SNAPSHOTTING_ERRORS" ]
 then
-    SNAPSHOTTING_ERRORS=$(echo "$PARSED_ERRORS" | awk -F'snap:' '$0 ~ /^snap:/ { print "Error: " $2; }')
-    if [ -n "$SNAPSHOTTING_ERRORS" ]
-    then
-        /usr/local/bin/apprise \
-            --tag=replication \
-            --notification-type=FAILURE \
-            --title="ZFS snapshotting failure on $HOSTNAME" \
-            --body="Warning: ZFS snapshotting errors:\n$SNAPSHOTTING_ERRORS"
-    fi
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="ZFS snapshotting failure on $HOSTNAME" \
+        --body="Warning: ZFS snapshotting errors:\n$SNAPSHOTTING_ERRORS"
+fi
 
-    REPLICATION_ERRORS=$(echo "$PARSED_ERRORS" | awk -F'repl:' '$0 ~ /^repl:/ { print "Error: " $2; }')
-    if [ -n "$REPLICATION_ERRORS" ]
-    then
-        /usr/local/bin/apprise \
-            --tag=replication \
-            --notification-type=FAILURE \
-            --title="ZFS replication failure on $HOSTNAME" \
-            --body="Warning: ZFS replication errors:\n$REPLICATION_ERRORS"
-    fi
+REPLICATION_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+    [ .Jobs[] | select(.type == "push") | .push.Replication | select(. != null) | (
+        [
+          (if (.WaitReconnectError != null) then .WaitReconnectError.Err else null end),
+          (.Attempts[]?.Filesystems[]?.PlanError? | select(. != null) | .Err)
+        ] | map(select(. != null and . != ""))[]
+    ) ] | unique | join("\n")
+' 2>/dev/null)
+if [ -n "$REPLICATION_ERRORS" ]
+then
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="ZFS replication failure on $HOSTNAME" \
+        --body="Warning: ZFS replication errors:\n$REPLICATION_ERRORS"
 fi
