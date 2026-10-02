@@ -1,4 +1,4 @@
 ---
 - name: Configure storage power management
-  ansible.builtin.command: /usr/local/sbin/ap-storage-pm
+  ansible.builtin.command: "{{ host_tuning_installation_path }}/storage-pm"
   changed_when: true

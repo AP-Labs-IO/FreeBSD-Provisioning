@@ -1,4 +1,25 @@
 ---
+- name: Configure installation path
+  tags: [installation-path]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: host_tuning_reg_local_base
+      changed_when: false
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        host_tuning_installation_path: >-
+          {{ host_tuning_reg_local_base.stdout }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ host_tuning_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
 - name: Disable powerd
   community.general.sysrc:
     name: powerd_enable
@@ -74,7 +95,7 @@
     - name: Install storage power management script
       ansible.builtin.template:
         src: templates/usr/local/sbin/storage-pm.j2
-        dest: /usr/local/sbin/ap-storage-pm
+        dest: "{{ host_tuning_installation_path }}/storage-pm"
         owner: root
         group: wheel
         mode: "0755"
@@ -82,7 +103,7 @@
 
     - name: Install storage power management rc(8) service script
       ansible.builtin.template:
-        src: files/storage_pm
+        src: templates/etc/rc.d/storage_pm.j2
         dest: /usr/local/etc/rc.d/storage_pm
         owner: root
         group: wheel

@@ -11,7 +11,7 @@ start_cmd="storage_pm_start"
 
 storage_pm_start() {
     echo "Applying storage power management configuration..."
-    /usr/local/sbin/ap-storage-pm
+    {{ host_tuning_installation_path }}/storage-pm
 }
 
 load_rc_config $name

@@ -19,12 +19,18 @@ Role Variables
 
 | Variable                                        | Default value | Description                                                                                                                                                  |
 |-------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host_tuning_installation_directory              | libexec       | Installation directory.                                                                                                                                      |
+| host_tuning_namespace                           | ap-labs       | Installation subdirectory.                                                                                                                                   |
 | host_tuning_performance_cx_lowest               | Cmax          | CPU AC power idle state                                                                                                                                      |
 | host_tuning_economy_cx_lowest                   | Cmax          | CPU non-AC power idle state                                                                                                                                  |
 | host_tuning_cpu_package_level_power_control     | 0             | Whether CPU power settings are controlled at the CPU package level or not, according to the `machdep.hwpstate_pkg_ctrl` `sysctl(8)`.                         |
 | host_tuning_storage_pm_enabled                  | true          | Whether storage devices power management should be configured.                                                                                               |
 | host_tuning_storage_pm_ata_devices              | []            | See `host_tuning_storage_pm_ata_devices` below.                                                                                                              |
 | host_tuning_storage_pm_ata_devices_idle_seconds | 0             | Default idle seconds for storage devices in `host_tuning_storage_pm_ata_devices` that don't customize their own idle parameter, according to `camcontrol(8)` |
+
+As a first step, the role queries the target node's "local base", i.e. the result of `sysctl -n user.localbase`, and uses that plus the `host_tuning_installation_directory` & `host_tuning_namespace` variables above, and the role's name, to construct the full path where scripts will be installed.
+
+In a default setup, this construction results in an installation path of `/usr/local/libexec/ap-labs/host_tuning`.
 
 Dependencies
 ------------

@@ -1,4 +1,7 @@
 ---
+host_tuning_namespace: ap-labs
+host_tuning_installation_directory: libexec
+
 host_tuning_performance_cx_lowest: Cmax
 host_tuning_economy_cx_lowest: Cmax
 host_tuning_cpu_package_level_power_control: 0
