@@ -13,6 +13,11 @@ zfs_pools_capacity_monitoring_schedule:
 zfs_replication_monitoring_schedule:
   minute: "*/15"
 
+zfs_zpool_capacity_thresholds:
+  notice: 70
+  warning: 80
+  critical: 90
+
 zfs_replication_user:
   name: replicator
   group: replicator

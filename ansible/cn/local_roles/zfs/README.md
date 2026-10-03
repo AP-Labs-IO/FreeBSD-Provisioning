@@ -28,6 +28,7 @@ Role Variables
 | zfs_pools_scrub_schedules                    | []               | See `zfs_pools_scrub_schedules` below.                                     |
 | zfs_pools_capacity_monitoring_schedule       | minute: 0        | See `zfs_pools_capacity_monitoring_schedule` below.                        |
 | zfs_replication_monitoring_schedule          | minute: "*/15"   | See `zfs_replication_monitoring_schedule` below.                           |
+| zfs_zpool_capacity_thresholds                | See `zfs_zpool_capacity_thresholds` below. | See `zfs_zpool_capacity_thresholds` below.     |
 | zfs_vdev_async_write_max_active              | 5                | Maximum async write I/O operations per vdev.                               |
 | zfs_vdev_async_write_min_active              | 1                | Minimum async write I/O operations per vdev.                               |
 | zfs_lowmem_callback_period                   | 0                | Low memory callback period.                                                |
@@ -55,6 +56,10 @@ Dependencies
     * Dictionary accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_pools_capacity_monitoring_schedule`: Dictionary describing the cron schedule for the pools capacity monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_replication_monitoring_schedule`: Dictionary describing the cron schedule for the replication monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
+  * `zfs_zpool_capacity_thresholds`: Dictionary of zpool capacity thresholds at which to issue corresponding warnings, with mandatory attributes:
+    * `notice`: Defaults to 70%.
+    * `warning`: Defaults to 80%.
+    * `critical`: Defaults to 90%.
   * `zfs_replication_user`: Dictionary describing the user who will perform replication, with attributes:
     * `name`: The user's username.
     * `uid`: Optional UID of the user, defaulting to the next available UID.
