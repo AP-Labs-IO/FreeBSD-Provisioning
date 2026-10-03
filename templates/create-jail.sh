@@ -3,7 +3,7 @@
 set -e
 
 
-BASTILLE_ROOT=/usr/local/bastille
+BASTILLE_ROOT={{ bastille_prefix }}
 DEFAULT_USERLAND="14.4-RELEASE"
 DEFAULT_IP_OPTIONS="DHCP SLAAC"
 TEMPLATES_REPO="git@gitlab.lan:ap-labs/bastille-templates.git"
