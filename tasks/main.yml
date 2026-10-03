@@ -106,7 +106,7 @@
   tags: [pkg]
 
 - name: Configure toor's shell
-  tags: [root, toor, shell]
+  tags: [toor, shell]
   block:
     - name: Query toor's shell
       ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
