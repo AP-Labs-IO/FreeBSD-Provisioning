@@ -50,7 +50,7 @@ Dependencies
   * `zfs_encryption_datasets`: List of dictionaries describing the encrypted ZFS datasets and their encryption keys, with attributes:
     * `dataset`: The full path of the ZFS dataset.
     * `key`: The encryption key for the ZFS dataset.
-  * `zfs_pools_scrub_schedules`: A list of dictionaries describing the the ZFS pools to scrub and their corresponding cron schedules, with attributes:
+  * `zfs_pools_scrub_schedules`: A list of dictionaries describing the ZFS pools to scrub and their corresponding cron schedules, with attributes:
     * `pool`: The name of the ZFS pool.
     * Dictionary accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_pools_capacity_monitoring_schedule`: Dictionary describing the cron schedule for the pools capacity monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
