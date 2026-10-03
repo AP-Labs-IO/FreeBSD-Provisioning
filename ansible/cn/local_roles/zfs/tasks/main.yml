@@ -27,19 +27,20 @@
     state: started
   tags: [zfsd, service]
 
-- name: Query active pools
-  ansible.builtin.command: zpool list -H -o name
-  register: zfs_reg_active_pools
-  changed_when: false
-  failed_when: false
+- name: Configure data pools
   tags: [data, pools]
+  block:
+    - name: Query active pools
+      ansible.builtin.command: zpool list -H -o name
+      register: zfs_reg_active_pools
+      changed_when: false
+      failed_when: false
 
-- name: Import data pools
-  ansible.builtin.command: "zpool import {{ item }}"
-  loop: "{{ zfs_data_pools }}"
-  when: item not in zfs_reg_active_pools.stdout_lines
-  changed_when: true
-  tags: [data, pools]
+    - name: Import data pools
+      ansible.builtin.command: "zpool import {{ item }}"
+      loop: "{{ zfs_data_pools }}"
+      when: item not in zfs_reg_active_pools.stdout_lines
+      changed_when: true
 
 - name: Create data pools legacy mountpoint links
   ansible.builtin.file:
@@ -51,33 +52,33 @@
   loop: "{{ zfs_data_pools }}"
   tags: [data, pools, mountpoint, legacy]
 
-- name: Create ZFS encryption keys directory
-  ansible.builtin.file:
-    path: "{{ zfs_encryption_keys_directory }}"
-    state: directory
-    owner: root
-    group: wheel
-    mode: "0700"
+- name: Configure zfskeys service
   tags: [encryption, keys]
+  block:
+    - name: Create ZFS encryption keys directory
+      ansible.builtin.file:
+        path: "{{ zfs_encryption_keys_directory }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0700"
 
-- name: Copy ZFS encryption keys
-  ansible.builtin.copy:
-    dest: "{{ zfs_encryption_keys_directory }}/{{ item.dataset | replace('/', '_') }}.key"
-    owner: root
-    group: wheel
-    mode: "0400"
-    content: "{{ item.key }}"
-  loop: "{{ zfs_encryption_datasets }}"
-  no_log: true
-  tags: [encryption, keys]
+    - name: Copy ZFS encryption keys
+      ansible.builtin.copy:
+        dest: "{{ zfs_encryption_keys_directory }}/{{ item.dataset | replace('/', '_') }}.key"
+        owner: root
+        group: wheel
+        mode: "0400"
+        content: "{{ item.key }}"
+      loop: "{{ zfs_encryption_datasets }}"
+      no_log: true
 
-- name: Enable zfskeys service
-  community.general.sysrc:
-    name: zfskeys_enable
-    state: present
-    value: "YES"
-  notify: Import encrypted ZFS datasets
-  tags: [encryption, keys]
+    - name: Enable zfskeys service
+      community.general.sysrc:
+        name: zfskeys_enable
+        state: present
+        value: "YES"
+      notify: Import encrypted ZFS datasets
 
 - name: Disable periodic-based zpool scrubbing
   community.general.sysrc:
@@ -99,42 +100,47 @@
   loop: "{{ zfs_pools_scrub_schedules }}"
   tags: [zpool, scrub, cron, config]
 
-- name: Create local devd directory
-  ansible.builtin.file:
-    path: /usr/local/etc/devd
-    state: directory
-    owner: root
-    group: wheel
-    mode: "0755"
+- name: Configure devd alerts
   tags: [devd, config]
+  block:
+    - name: Create local devd directory
+      ansible.builtin.file:
+        path: /usr/local/etc/devd
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
 
-- name: Install devd ZFS alerting rules
-  ansible.builtin.copy:
-    src: devd-zfs.conf
-    dest: /usr/local/etc/devd/zfs.conf
-    owner: root
-    group: wheel
-    mode: "0644"
-  notify: Restart devd
-  tags: [devd, config, alerts]
+    - name: Install devd ZFS alerting rules
+      ansible.builtin.copy:
+        src: devd-zfs.conf
+        dest: /usr/local/etc/devd/zfs.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+      notify: Restart devd
+      tags: [alerts]
 
-- name: Install zpool capacity monitoring script
-  ansible.builtin.copy:
-    src: monitor-zpool-capacity
-    dest: "{{ zfs_installation_path }}/monitor-zpool-capacity"
-    owner: root
-    group: wheel
-    mode: "0755"
-  tags: [zpool, capacity, script]
+- name: Configure zpool capacity monitoring
+  tags: [zpool, capacity]
+  block:
+    - name: Install zpool capacity monitoring script
+      ansible.builtin.copy:
+        src: monitor-zpool-capacity
+        dest: "{{ zfs_installation_path }}/monitor-zpool-capacity"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
 
-- name: Install zpool capacity alert job
-  ansible.builtin.cron:
-    name: Zpool capacity alert
-    cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
-    minute: 0
-    user: root
-    job: "{{ zfs_installation_path }}/monitor-zpool-capacity"
-  tags: [zpool, capacity, alert, cron]
+    - name: Install zpool capacity alert job
+      ansible.builtin.cron:
+        name: Zpool capacity alert
+        cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
+        minute: 0
+        user: root
+        job: "{{ zfs_installation_path }}/monitor-zpool-capacity"
+      tags: [alert, cron]
 
 - name: Import snapshotting & replication common tasks
   ansible.builtin.import_tasks: zrepl_common.yml

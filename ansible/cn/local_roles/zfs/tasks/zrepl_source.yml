@@ -8,21 +8,22 @@
     mode: "0700"
   tags: [replication, ssh]
 
-- name: Generate replication SSH key
-  community.crypto.openssh_keypair:
-    path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
-    type: ed25519
-    comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
-    owner: "{{ zfs_replication_user.name }}"
-    group: "{{ zfs_replication_user.group }}"
-    mode: "0400"
+- name: Configure replication SSH key
   tags: [replication, ssh, key]
+  block:
+    - name: Generate replication SSH key
+      community.crypto.openssh_keypair:
+        path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
+        type: ed25519
+        comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
+        owner: "{{ zfs_replication_user.name }}"
+        group: "{{ zfs_replication_user.group }}"
+        mode: "0400"
 
-- name: Retrieve replication SSH public key
-  ansible.builtin.slurp:
-    src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
-  register: zfs_reg_replication_pubkey
-  tags: [replication, ssh, key]
+    - name: Retrieve replication SSH public key
+      ansible.builtin.slurp:
+        src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
+      register: zfs_reg_replication_pubkey
 
 - name: Copy replication host SSH public keys
   ansible.builtin.copy:
