@@ -19,6 +19,8 @@ Role Variables
 
 | Variable                               | Default value                                       | Description                                         |
 |----------------------------------------|-----------------------------------------------------|-----------------------------------------------------|
+| monitoring_installation_directory      | libexec                                             | Installation directory.                             |
+| monitoring_namespace                   | ap-labs                                             | Installation subdirectory.                          |
 | monitoring_watchdogd_flags             | --pretimeout 10 --pretimeout-action log,printf      | See `monitoring_watchdogd_flags` below.             |
 | monitoring_smartd_poll_interval        | 300                                                 | See `monitoring_smartd_poll_interval` below.        |
 | monitoring_smartd_alert_recipient      | root                                                | See `monitoring_smartd_alert_recipient` below.      |
@@ -36,6 +38,10 @@ Role Variables
 | monitoring_alert_targets               | []                                                  | See `monitoring_alert_targets` below.               |
 | monitoring_jails                       | ""                                                  | Space-separated list of jails to monitor.           |
 | monitoring_extra_services              | ""                                                  | Space-separated list of extra services to monitor.  |
+
+As a first step, the role queries the target node's "local base", i.e. the result of `sysctl -n user.localbase`, and uses that plus the `monitoring_installation_directory` & `monitoring_namespace` variables above, and the role's name, to construct the full path where scripts will be installed.
+
+In a default setup, this construction results in an installation path of `/usr/local/libexec/ap-labs/monitoring`.
 
 Dependencies
 ------------

@@ -1,4 +1,25 @@
 ---
+- name: Configure installation path
+  tags: [installation-path]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: monitoring_reg_local_base
+      changed_when: false
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        monitoring_installation_path: >-
+          {{ monitoring_reg_local_base.stdout }}/{{ monitoring_installation_directory }}/{{ monitoring_namespace }}/monitoring
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ monitoring_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
 - name: Load monitoring kernel modules
   community.general.sysrc:
     name: "{{ item }}_load"
@@ -75,7 +96,7 @@
 - name: Install CPU temperature script
   ansible.builtin.copy:
     src: collectd-cputemp
-    dest: /usr/local/bin/ap-collectd-cputemp
+    dest: "{{ monitoring_installation_path }}/collectd-cputemp"
     owner: root
     group: wheel
     mode: "0755"
@@ -126,7 +147,7 @@
     - name: Install IPMI monitoring script
       ansible.builtin.copy:
         src: monitor-ipmi
-        dest: /usr/local/bin/ap-monitor-ipmi
+        dest: "{{ monitoring_installation_path }}/monitor-ipmi"
         owner: root
         group: wheel
         mode: "0755"
@@ -138,13 +159,13 @@
         cron_file: /usr/local/etc/cron.d/alert-ipmi
         special_time: daily
         user: root
-        job: /usr/local/bin/ap-monitor-ipmi
+        job: "{{ monitoring_installation_path }}/monitor-ipmi"
       tags: [cron]
 
 - name: Install SSH login failure alert script
   ansible.builtin.copy:
     src: ssh-alert
-    dest: /usr/local/bin/ap-ssh-alert
+    dest: "{{ monitoring_installation_path }}/ssh-alert"
     owner: root
     group: wheel
     mode: "0755"
@@ -166,7 +187,7 @@
     group: wheel
     mode: "0644"
     content: |
-      auth.info | /usr/local/bin/ap-ssh-alert
+      auth.info | {{ monitoring_installation_path }}/ssh-alert
   notify: Reload syslogd
   tags: [syslog, alert, ssh, security]
 
@@ -232,7 +253,7 @@
     - name: Install base services monitoring script
       ansible.builtin.template:
         src: usr/local/bin/monitor-base-services.j2
-        dest: /usr/local/bin/ap-monitor-base-services
+        dest: "{{ monitoring_installation_path }}/monitor-base-services"
         owner: root
         group: wheel
         mode: "0755"
@@ -244,5 +265,5 @@
         cron_file: /usr/local/etc/cron.d/alert-base-services
         minute: "*/5"
         user: root
-        job: /usr/local/bin/ap-monitor-base-services
+        job: "{{ monitoring_installation_path }}/monitor-base-services"
       tags: [cron]

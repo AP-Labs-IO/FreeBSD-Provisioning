@@ -51,7 +51,7 @@ LoadPlugin aggregation
 # ==============================================================================
 LoadPlugin exec
 <Plugin exec>
-    Exec "nobody" "/usr/local/bin/ap-collectd-cputemp"
+    Exec "nobody" "{{ monitoring_installation_path }}/collectd-cputemp"
 </Plugin>
 
 LoadPlugin interface

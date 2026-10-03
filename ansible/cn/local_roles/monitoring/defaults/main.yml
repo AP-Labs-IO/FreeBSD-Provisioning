@@ -1,4 +1,7 @@
 ---
+monitoring_namespace: ap-labs
+monitoring_installation_directory: libexec
+
 monitoring_watchdogd_flags: --pretimeout 10 --pretimeout-action log,printf
 
 monitoring_smartd_poll_interval: 300
