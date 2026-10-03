@@ -51,7 +51,7 @@
 
 - name: Create deployments tree
   ansible.builtin.file:
-    path: "/root/{{ item.name }}"
+    path: "{{ bastille_ops_path }}/{{ item.name }}"
     state: directory
     owner: root
     group: wheel
@@ -68,7 +68,7 @@
 - name: Copy jails creation script
   ansible.builtin.copy:
     src: create-jail.sh
-    dest: /root/deployments/scripts/create-bastille-jail.sh
+    dest: "{{ bastille_ops_path }}/deployments/scripts/create-bastille-jail.sh"
     owner: root
     group: wheel
     mode: "0755"
