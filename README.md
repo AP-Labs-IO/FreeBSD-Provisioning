@@ -23,6 +23,8 @@ Role Variables
 | bastille_tzdata     | ""                  | Timezone for Bastille jails.                               |
 | bastille_zfs_enable | YES                 | Set to YES to enable some ZFS magic (recommended).         |
 | bastille_zfs_zpool  | zroot               | The ZFS pool where Bastille will host its files and jails. |
+| bastille_default_release    | 14.4-RELEASE | FreeBSD release used by default when deploying Bastille jails. |
+| bastille_default_ip_options | DHCP SLAAC   | IP options used by default when deploying Bastille jails.      |
 | bastille_ops_path   | /root               | Path where the Bastille "operations" tree is created.      |
 
 Dependencies
@@ -31,6 +33,7 @@ Dependencies
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `bastille_releases`: List of strings with the names of the FreeBSD releases that Bastille should bootstrap.
+  * `bastille_templates_repository`: URL of the Bastille templates repository to use for the deployment of jails.
 
 Example Ansible Configuration
 -----------------------------
