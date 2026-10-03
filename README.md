@@ -69,6 +69,31 @@ Dependencies
     * `nameservers`: A list of DNS IP addresses.
     * `options`: Space-separated list of system resolver customizations.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: network
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/network.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -95,6 +120,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags network playbook.yml
 ```
 
