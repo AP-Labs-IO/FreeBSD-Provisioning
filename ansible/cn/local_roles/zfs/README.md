@@ -20,6 +20,8 @@ Role Variables
 
 | Variable                                     | Default value    | Description                                                                |
 |----------------------------------------------|------------------|----------------------------------------------------------------------------|
+| zfs_installation_directory                   | libexec          | Installation directory.                                                    |
+| zfs_namespace                                | ap-labs          | Installation subdirectory.                                                 |
 | zfs_data_pools                               | []               | List of data pools names to import.                                        |
 | zfs_encryption_keys_directory                | `/root/.zfskeys` | Directory where ZFS encryption keys are kept.                              |
 | zfs_encryption_datasets                      | []               | See `zfs_encryption_datasets` below.                                       |
@@ -33,6 +35,10 @@ Role Variables
 | zfs_arc_min_multiplier                       | 0.25             | See `zfs_arc_min_multiplier` below.                                        |
 | zfs_file_timestamp_precision                 | 3                | File timestamp precision, according to `sysctl -d vfs.timestamp_precision` |
 | zfs_extra_runtime_settings                   | []               | See `zfs_extra_runtime_settings` below.                                    |
+
+As a first step, the role queries the target node's "local base", i.e. the result of `sysctl -n user.localbase`, and uses that plus the `zfs_installation_directory` & `zfs_namespace` variables above, and the role's name, to construct the full path where scripts will be installed.
+
+In a default setup, this construction results in an installation path of `/usr/local/libexec/ap-labs/zfs`.
 
 Dependencies
 ------------

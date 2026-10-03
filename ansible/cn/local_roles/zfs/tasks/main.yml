@@ -1,4 +1,25 @@
 ---
+- name: Configure installation path
+  tags: [installation-path]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: zfs_reg_local_base
+      changed_when: false
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        zfs_installation_path: >-
+          {{ zfs_reg_local_base.stdout }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ zfs_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
 - name: Start zfsd
   ansible.builtin.service:
     name: zfsd
@@ -100,7 +121,7 @@
 - name: Install zpool capacity monitoring script
   ansible.builtin.copy:
     src: monitor-zpool-capacity
-    dest: /usr/local/bin/ap-monitor-zpool-capacity
+    dest: "{{ zfs_installation_path }}/monitor-zpool-capacity"
     owner: root
     group: wheel
     mode: "0755"
@@ -112,7 +133,7 @@
     cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
     minute: 0
     user: root
-    job: /usr/local/bin/ap-monitor-zpool-capacity
+    job: "{{ zfs_installation_path }}/monitor-zpool-capacity"
   tags: [zpool, capacity, alert, cron]
 
 - name: Import snapshotting & replication common tasks

@@ -56,7 +56,7 @@
     - name: Install snapshotting & replication monitoring script
       ansible.builtin.copy:
         src: monitor-replication
-        dest: /usr/local/bin/ap-monitor-replication
+        dest: "{{ zfs_installation_path }}/monitor-replication"
         owner: root
         group: wheel
         mode: "0755"
@@ -68,5 +68,5 @@
         cron_file: /usr/local/etc/cron.d/alert-replication
         minute: "*/15"
         user: root
-        job: /usr/local/bin/ap-monitor-replication
+        job: "{{ zfs_installation_path }}/monitor-replication"
       tags: [cron]
