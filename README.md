@@ -20,7 +20,7 @@ Role Variables
 | Variable            | Default value       | Description                                                |
 |---------------------|---------------------|------------------------------------------------------------|
 | bastille_prefix     | /usr/local/bastille | Where jails, releases, templates, backpus etc lives.       |
-| bastille_tzdata     |                     | Timezone for Bastille jails.                               |
+| bastille_tzdata     | ""                  | Timezone for Bastille jails.                               |
 | bastille_zfs_enable | YES                 | Set to YES to enable some ZFS magic (recommended).         |
 | bastille_zfs_zpool  | zroot               | The ZFS pool where Bastille will host its files and jails. |
 | bastille_ops_path   | /root               | Path where the Bastille "operations" tree is created.      |
