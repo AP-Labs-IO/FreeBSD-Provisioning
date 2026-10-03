@@ -58,6 +58,31 @@ Dependencies
     * `user`: The target user's username.
     * `email`: The email address to direct the user's mail.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: users
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/users.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -84,6 +109,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags users playbook.yml
 ```
 
