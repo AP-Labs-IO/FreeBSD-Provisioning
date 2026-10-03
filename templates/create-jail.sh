@@ -4,9 +4,9 @@ set -e
 
 
 BASTILLE_PREFIX={{ bastille_prefix }}
-DEFAULT_USERLAND="14.4-RELEASE"
+DEFAULT_USERLAND=14.4-RELEASE
 DEFAULT_IP_OPTIONS="DHCP SLAAC"
-TEMPLATES_REPO="git@gitlab.lan:ap-labs/bastille-templates.git"
+TEMPLATES_REPO=git@gitlab.lan:ap-labs/bastille-templates.git
 
 
 usage() {
