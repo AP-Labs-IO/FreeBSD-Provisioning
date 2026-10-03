@@ -53,7 +53,7 @@
   tags: [data, pools, mountpoint, legacy]
 
 - name: Configure zfskeys service
-  tags: [encryption, keys]
+  tags: [encryption, zfskeys]
   block:
     - name: Create ZFS encryption keys directory
       ansible.builtin.file:
