@@ -37,6 +37,27 @@ Dependencies
     * `shells/bash-completion-zfs`
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+```
+
 Example Playbook
 ----------------
 
@@ -56,6 +77,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
+-> ansible-galaxy role install -r requirements.yml -f -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
 ```
 
