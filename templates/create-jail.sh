@@ -3,7 +3,7 @@
 set -e
 
 
-BASTILLE_ROOT={{ bastille_prefix }}
+BASTILLE_PREFIX={{ bastille_prefix }}
 DEFAULT_USERLAND="14.4-RELEASE"
 DEFAULT_IP_OPTIONS="DHCP SLAAC"
 TEMPLATES_REPO="git@gitlab.lan:ap-labs/bastille-templates.git"
@@ -98,8 +98,8 @@ then
     bastille stop ${tmp_name}
 
     bastille rename ${tmp_name} ${targe_name}
-    sed -i '' -E -e '/^ifconfig_e0b_.+_name/s/-/_/g' ${BASTILLE_ROOT}/jails/${targe_name}/root/etc/rc.conf
-    rm -rf ${BASTILLE_ROOT}/jails/${tmp_name}
+    sed -i '' -E -e '/^ifconfig_e0b_.+_name/s/-/_/g' ${BASTILLE_PREFIX}/jails/${targe_name}/root/etc/rc.conf
+    rm -rf ${BASTILLE_PREFIX}/jails/${tmp_name}
 
     bastille start ${targe_name}
 fi
