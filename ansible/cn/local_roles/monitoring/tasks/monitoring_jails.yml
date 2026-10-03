@@ -16,7 +16,11 @@
       ansible.builtin.cron:
         name: Jails monitoring alert
         cron_file: /usr/local/etc/cron.d/alert-jails
-        minute: "*/5"
+        minute: "{{ monitoring_jails_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ monitoring_jails_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ monitoring_jails_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ monitoring_jails_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ monitoring_jails_monitoring_schedule.special_time | default(omit) }}"
         user: root
         job: "{{ monitoring_installation_path }}/monitor-jails"
       tags: [cron]

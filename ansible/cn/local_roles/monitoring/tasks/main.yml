@@ -78,7 +78,11 @@
   ansible.builtin.cron:
     name: smartd drivedb update
     cron_file: /usr/local/etc/cron.d/smartd-drivedb-update
-    special_time: weekly
+    minute: "{{ monitoring_smartd_drivedb_update_schedule.minute | default(omit) }}"
+    hour: "{{ monitoring_smartd_drivedb_update_schedule.hour | default(omit) }}"
+    day: "{{ monitoring_smartd_drivedb_update_schedule.day | default(omit) }}"
+    weekday: "{{ monitoring_smartd_drivedb_update_schedule.weekday | default(omit) }}"
+    special_time: "{{ monitoring_smartd_drivedb_update_schedule.special_time | default(omit) }}"
     user: root
     job: /usr/local/sbin/update-smart-drivedb
   tags: [smartd, drivedb, update, cron]
@@ -157,7 +161,11 @@
       ansible.builtin.cron:
         name: IPMI monitoring alert
         cron_file: /usr/local/etc/cron.d/alert-ipmi
-        special_time: daily
+        minute: "{{ monitoring_ipmi_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ monitoring_ipmi_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ monitoring_ipmi_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ monitoring_ipmi_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ monitoring_ipmi_monitoring_schedule.special_time | default(omit) }}"
         user: root
         job: "{{ monitoring_installation_path }}/monitor-ipmi"
       tags: [cron]
@@ -263,7 +271,11 @@
       ansible.builtin.cron:
         name: Base services monitoring alert
         cron_file: /usr/local/etc/cron.d/alert-base-services
-        minute: "*/5"
+        minute: "{{ monitoring_base_services_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ monitoring_base_services_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ monitoring_base_services_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ monitoring_base_services_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ monitoring_base_services_monitoring_schedule.special_time | default(omit) }}"
         user: root
         job: "{{ monitoring_installation_path }}/monitor-base-services"
       tags: [cron]
