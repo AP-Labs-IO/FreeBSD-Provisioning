@@ -4,7 +4,7 @@ set -e
 
 
 BASTILLE_PREFIX={{ bastille_prefix }}
-DEFAULT_USERLAND=14.4-RELEASE
+DEFAULT_RELEASE=14.4-RELEASE
 DEFAULT_IP_OPTIONS="DHCP SLAAC"
 TEMPLATES_REPO=git@gitlab.lan:ap-labs/bastille-templates.git
 
@@ -14,7 +14,7 @@ usage() {
 create-jail-bastille.sh [options] <tempName> <targetName> <bridge> [extra arguments]
 
     Options:
-        -u          -- Jail userland. Default: ${DEFAULT_USERLAND}.
+        -r          -- Jail release. Default: ${DEFAULT_RELEASE}.
         -i          -- IP options. Default: "${DEFAULT_IP_OPTIONS}".
         -T          -- Template to apply to the target jail.
         -F          -- Tree of extra files to copy into the target jail.
@@ -32,11 +32,11 @@ EOF
 }
 
 
-while getopts ":u:i:T:F:t:xh" opt
+while getopts ":r:i:T:F:t:xh" opt
 do
     case $opt in
-    u)
-        userland=$OPTARG
+    r)
+        release=$OPTARG
         ;;
     i)
         ip_options=$OPTARG
@@ -77,7 +77,7 @@ targe_name=$2
 interface=$3
 shift 3
 
-: ${userland:="${DEFAULT_USERLAND}"}
+: ${release:="${DEFAULT_RELEASE}"}
 : ${ip_options:="${DEFAULT_IP_OPTIONS}"}
 : ${tmp_name:="${targe_name}"}
 
@@ -92,7 +92,7 @@ then
     exit 3
 fi
 
-bastille create --bridge --static-mac --clone ${tmp_name} ${userland} "${ip_options}" ${interface}
+bastille create --bridge --static-mac --clone ${tmp_name} ${release} "${ip_options}" ${interface}
 if [ "${tmp_name}" != "${targe_name}" ]
 then
     bastille stop ${tmp_name}
