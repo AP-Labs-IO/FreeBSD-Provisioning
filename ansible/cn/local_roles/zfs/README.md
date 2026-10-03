@@ -26,6 +26,8 @@ Role Variables
 | zfs_encryption_keys_directory                | `/root/.zfskeys` | Directory where ZFS encryption keys are kept.                              |
 | zfs_encryption_datasets                      | []               | See `zfs_encryption_datasets` below.                                       |
 | zfs_pools_scrub_schedules                    | []               | See `zfs_pools_scrub_schedules` below.                                     |
+| zfs_pools_capacity_monitoring_schedule       | minute: 0        | See `zfs_pools_capacity_monitoring_schedule` below.                        |
+| zfs_replication_monitoring_schedule          | minute: "*/15"   | See `zfs_replication_monitoring_schedule` below.                           |
 | zfs_vdev_async_write_max_active              | 5                | Maximum async write I/O operations per vdev.                               |
 | zfs_vdev_async_write_min_active              | 1                | Minimum async write I/O operations per vdev.                               |
 | zfs_lowmem_callback_period                   | 0                | Low memory callback period.                                                |
@@ -51,6 +53,8 @@ Dependencies
   * `zfs_pools_scrub_schedules`: A list of dictionaries describing the the ZFS pools to scrub and their corresponding cron schedules, with attributes:
     * `pool`: The name of the ZFS pool.
     * Cron calendar options compatible with Ansible's `ansible.builtin.cron` module.
+  * `zfs_pools_capacity_monitoring_schedule`: Dictionary describing the cron schedule for the pools capacity monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
+  * `zfs_replication_monitoring_schedule`: Dictionary describing the cron schedule for the replication monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_replication_user`: Dictionary describing the user who will perform replication, with attributes:
     * `name`: The user's username.
     * `uid`: Optional UID of the user, defaulting to the next available UID.

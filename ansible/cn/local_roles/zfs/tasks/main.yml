@@ -137,7 +137,11 @@
       ansible.builtin.cron:
         name: Zpool capacity alert
         cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
-        minute: 0
+        minute: "{{ zfs_pools_capacity_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ zfs_pools_capacity_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ zfs_pools_capacity_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ zfs_pools_capacity_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ zfs_pools_capacity_monitoring_schedule.special_time | default(omit) }}"
         user: root
         job: "{{ zfs_installation_path }}/monitor-zpool-capacity"
       tags: [alert, cron]

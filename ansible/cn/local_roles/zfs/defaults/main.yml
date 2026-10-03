@@ -8,6 +8,10 @@ zfs_encryption_keys_directory: /root/.zfskeys
 zfs_encryption_datasets: []
 
 zfs_pools_scrub_schedules: []
+zfs_pools_capacity_monitoring_schedule:
+  minute: 0
+zfs_replication_monitoring_schedule:
+  minute: "*/15"
 
 zfs_replication_user:
   name: replicator
