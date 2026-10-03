@@ -52,7 +52,7 @@ Dependencies
     * `key`: The encryption key for the ZFS dataset.
   * `zfs_pools_scrub_schedules`: A list of dictionaries describing the the ZFS pools to scrub and their corresponding cron schedules, with attributes:
     * `pool`: The name of the ZFS pool.
-    * Cron calendar options compatible with Ansible's `ansible.builtin.cron` module.
+    * Dictionary accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_pools_capacity_monitoring_schedule`: Dictionary describing the cron schedule for the pools capacity monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_replication_monitoring_schedule`: Dictionary describing the cron schedule for the replication monitoring job, accepting `minute`, `hour`, `day`, `weekday`, and `special_time` attributes as described by the `ansible-doc` documentation for the `ansible.builtin.cron` module.
   * `zfs_replication_user`: Dictionary describing the user who will perform replication, with attributes:

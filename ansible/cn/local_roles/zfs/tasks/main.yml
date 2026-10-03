@@ -92,9 +92,11 @@
   ansible.builtin.cron:
     name: "{{ item.pool }} pool scrub"
     cron_file: "/usr/local/etc/cron.d/scrub-{{ item.pool }}"
-    minute: "{{ item.minute }}"
-    hour: "{{ item.hour }}"
-    day: "{{ item.day_of_month }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
+    special_time: "{{ item.special_time | default(omit) }}"
     user: root
     job: "/sbin/zpool scrub {{ item.pool }}"
   loop: "{{ zfs_pools_scrub_schedules }}"
