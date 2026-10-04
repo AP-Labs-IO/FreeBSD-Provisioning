@@ -2,5 +2,5 @@
 boot_kernel_modules: []
 boot_loader_settings: []
 boot_extra_rc_settings: []
-boot_enable_moused: true
+boot_moused_enabled: true
 boot_efi_partition: /dev/gpt/efiboot0

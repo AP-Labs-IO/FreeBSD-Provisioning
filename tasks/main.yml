@@ -68,7 +68,7 @@
     name: moused
     enabled: true
     state: started
-  when: boot_enable_moused
+  when: boot_moused_enabled
   tags: [moused, service]
 
 - name: Mount EFI partition
