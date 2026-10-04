@@ -15,7 +15,7 @@
 
 - name: Gather facts
   ansible.builtin.setup:
-  tags: [facts]
+  tags: [facts, setup]
 
 - name: Load OS version-specific role constants
   ansible.builtin.include_vars:
