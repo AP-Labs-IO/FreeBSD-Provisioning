@@ -22,6 +22,19 @@
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
   tags: [config]
 
+- name: Configure local base fact
+  tags: [local-base, facts]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: bootstrap_reg_local_base
+      changed_when: false
+
+    - name: Set local base fact
+      ansible.builtin.set_fact:
+        local_base: "{{ bootstrap_reg_local_base.stdout }}"
+        cacheable: true
+
 - name: Set hostname
   community.general.sysrc:
     name: hostname
@@ -74,7 +87,7 @@
 
 - name: Create pkg repos directory
   ansible.builtin.file:
-    path: /usr/local/etc/pkg/repos
+    path: "{{ ansible_facts['local_base'] }}/etc/pkg/repos"
     state: directory
     owner: root
     group: wheel
@@ -83,7 +96,7 @@
 
 - name: Configure 'latest' pkg ports repository
   ansible.builtin.blockinfile:
-    path: /usr/local/etc/pkg/repos/FreeBSD.conf
+    path: "{{ ansible_facts['local_base'] }}/etc/pkg/repos/FreeBSD.conf"
     block: |
       {{ bootstrap_ports_repository_name }}: {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
@@ -130,7 +143,7 @@
 
 - name: Create local cron jobs directory
   ansible.builtin.file:
-    path: /usr/local/etc/cron.d
+    path: "{{ ansible_facts['local_base'] }}/etc/cron.d"
     state: directory
     owner: root
     group: wheel
