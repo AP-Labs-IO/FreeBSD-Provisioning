@@ -1,5 +1,5 @@
 ---
-bootstrap_disable_sensitive_logging: false
+bootstrap_sensitive_logging_disabled: false
 bootstrap_core_packages:
   - shells/bash
   - shells/bash-completion

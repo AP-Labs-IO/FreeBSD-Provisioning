@@ -46,7 +46,7 @@
   ansible.posix.authorized_key:
     user: root
     key: "{{ lookup('ansible.builtin.file', 'keys/root_ed25519.pub') }}"
-  no_log: "{{ bootstrap_disable_sensitive_logging }}"
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
   tags: [ssh, keys]
 
 - name: Configure SSH
@@ -75,14 +75,14 @@
     shell: "{{ bootstrap_ansible_user.shell | default('/bin/sh') }}"
     password: "{{ bootstrap_ansible_user.password | ansible.builtin.password_hash(hashtype='sha512', salt=bootstrap_ansible_user.salt) }}"
     update_password: on_create
-  no_log: "{{ bootstrap_disable_sensitive_logging }}"
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
   tags: [ansible, user]
 
 - name: Add Ansible user SSH key
   ansible.posix.authorized_key:
     user: "{{ bootstrap_ansible_user.name }}"
     key: "{{ lookup('ansible.builtin.file', 'keys/' + bootstrap_ansible_user.name + '_' + bootstrap_ansible_user.key_type + '.pub') }}"
-  no_log: "{{ bootstrap_disable_sensitive_logging }}"
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
   tags: [ansible, user, ssh, key]
 
 - name: Create pkg repos directory
