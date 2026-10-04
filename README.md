@@ -120,7 +120,7 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-galaxy role install -r requirements.yml -f -p ./roles
+-> ansible-galaxy role install -r requirements.yml -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags network playbook.yml
 ```
 
