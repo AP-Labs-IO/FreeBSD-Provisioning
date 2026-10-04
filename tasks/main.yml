@@ -4,7 +4,7 @@
     name: rtsold
     enabled: true
     state: started
-  when: network_enable_rtsold
+  when: network_rtsold_enabled
   tags: [rtsold, config, service]
 
 - name: Remove stock configuration
@@ -266,5 +266,5 @@
       description: Prevent packet filtering on interfaces members of a bridge
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  when: network_disable_bridge_filtering
+  when: network_bridge_filtering_disabled
   tags: [packet, filtering, bridge]
