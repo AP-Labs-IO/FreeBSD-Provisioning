@@ -13,7 +13,7 @@
   loop: "{{ users_accounts }}"
   loop_control:
     label: "{{ item.name }}"
-  no_log: "{{ users_disable_sensitive_logging }}"
+  no_log: "{{ users_sensitive_logging_disabled }}"
   notify: Remove /nonexistent directory
   tags: [accounts]
 
@@ -51,7 +51,7 @@
   loop: "{{ users_accounts }}"
   loop_control:
     label: "{{ item.name }} ({{ item.key_type | default('none') }})"
-  no_log: "{{ users_disable_sensitive_logging }}"
+  no_log: "{{ users_sensitive_logging_disabled }}"
   when: item.key_type is defined
   tags: [ssh, keys]
 
@@ -115,7 +115,7 @@
     content: |
       # User|Smarthost:Password
       {{ users_smarthost_username }}|{{ users_smarthost_hostname }}:{{ users_smarthost_password }}
-  no_log: "{{ users_disable_sensitive_logging }}"
+  no_log: "{{ users_sensitive_logging_disabled }}"
   tags: [mail, dma, config]
 
 - name: Configure mail aliases

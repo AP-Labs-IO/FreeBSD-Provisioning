@@ -1,5 +1,5 @@
 ---
-users_disable_sensitive_logging: true
+users_sensitive_logging_disabled: true
 
 users_home_prefix: /home
 

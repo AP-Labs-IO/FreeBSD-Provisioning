@@ -19,7 +19,7 @@ Role Variables
 
 | Variable                        | Default value    | Description                                    |
 |---------------------------------|------------------|------------------------------------------------|
-| users_disable_sensitive_logging | true             | Disable logging of potentially sensitive data. |
+| users_sensitive_logging_disabled | true             | Disable logging of potentially sensitive data. |
 | users_accounts                  | []               | See `users_accounts` below.                    |
 | users_groups                    | []               | See `users_groups` below.                      |
 | users_extra_group_memberships   | []               | See `users_extra_group_memberships` below.     |
