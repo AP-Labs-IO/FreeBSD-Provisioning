@@ -84,49 +84,53 @@
     mode: "0644"
   tags: [pw, config]
 
-- name: Stop sendmail
-  ansible.builtin.service:
-    name: sendmail
-    state: stopped
-  tags: [mail, sendmail]
+- name: Configure mail forwarding
+  when: users_mail_forwarding_enabled
+  tags: [mail, forwarding]
+  block:
+    - name: Stop sendmail
+      ansible.builtin.service:
+        name: sendmail
+        state: stopped
+      tags: [sendmail]
 
-- name: Disable sendmail
-  community.general.sysrc:
-    name: sendmail_enable
-    state: present
-    value: NONE
-  tags: [mail, sendmail]
+    - name: Disable sendmail
+      community.general.sysrc:
+        name: sendmail_enable
+        state: present
+        value: NONE
+      tags: [sendmail]
 
-- name: Install dma configuration
-  ansible.builtin.template:
-    src: etc/dma/dma.conf.j2
-    dest: /etc/dma/dma.conf
-    owner: root
-    group: mail
-    mode: "0644"
-  tags: [mail, dma, config]
+    - name: Install dma configuration
+      ansible.builtin.template:
+        src: etc/dma/dma.conf.j2
+        dest: /etc/dma/dma.conf
+        owner: root
+        group: mail
+        mode: "0644"
+      tags: [dma, config]
 
-- name: Install dma credentials
-  ansible.builtin.copy:
-    dest: /etc/dma/auth.conf
-    owner: root
-    group: mail
-    mode: "0640"
-    content: |
-      # User|Smarthost:Password
-      {{ users_smarthost_username }}|{{ users_smarthost_hostname }}:{{ users_smarthost_password }}
-  no_log: "{{ users_sensitive_logging_disabled }}"
-  tags: [mail, dma, config]
+    - name: Install dma credentials
+      ansible.builtin.copy:
+        dest: /etc/dma/auth.conf
+        owner: root
+        group: mail
+        mode: "0640"
+        content: |
+          # User|Smarthost:Password
+          {{ users_smarthost_username }}|{{ users_smarthost_hostname }}:{{ users_smarthost_password }}
+      no_log: "{{ users_sensitive_logging_disabled }}"
+      tags: [dma, config]
 
-- name: Configure mail aliases
-  ansible.builtin.blockinfile:
-    path: /etc/mail/aliases
-    block: |
-      {% for item in users_mail_aliases %}
-      {{ item.user }}: {{ item.email }}
-      {% endfor %}
-    insertafter: EOF
-    prepend_newline: true
-    append_newline: true
-  notify: Recompile mail aliases database
-  tags: [mail, aliases]
+    - name: Configure mail aliases
+      ansible.builtin.blockinfile:
+        path: /etc/mail/aliases
+        block: |
+          {% for item in users_mail_aliases %}
+          {{ item.user }}: {{ item.email }}
+          {% endfor %}
+        insertafter: EOF
+        prepend_newline: true
+        append_newline: true
+      notify: Recompile mail aliases database
+      tags: [aliases]

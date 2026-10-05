@@ -12,4 +12,5 @@ users_maxuid: 9999
 users_mingid: 1000
 users_maxgid: 9999
 
+users_mail_forwarding_enabled: true
 users_mail_aliases: []

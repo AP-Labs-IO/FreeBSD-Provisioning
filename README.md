@@ -27,6 +27,7 @@ Role Variables
 | users_maxuid                     | 9999             | Maximum user id used by `pw(8)`.               |
 | users_mingid                     | 1000             | Minimum group id used by `pw(8)`.              |
 | users_maxgid                     | 9999             | Maximum group id used by `pw(8)`.              |
+| users_mail_forwarding_enabled    | true             | Enable forwarding of local mail via `dma(8)`.  |
 | users_mail_aliases               | []               | See `users_mail_aliases` below.                |
 
 Dependencies
