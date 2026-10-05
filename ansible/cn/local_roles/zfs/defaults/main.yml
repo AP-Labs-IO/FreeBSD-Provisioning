@@ -21,6 +21,7 @@ zfs_zpool_capacity_thresholds:
 zfs_replication_user:
   name: replicator
   group: replicator
+zfs_replication_target_port: 22
 
 zfs_vdev_async_write_max_active: 5
 zfs_vdev_async_write_min_active: 1

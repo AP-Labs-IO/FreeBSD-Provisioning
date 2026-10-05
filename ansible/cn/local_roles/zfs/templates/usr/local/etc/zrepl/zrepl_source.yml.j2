@@ -3,7 +3,7 @@
       type: ssh+stdinserver
       host: {{ zfs_replication_target_host }}
       user: {{ zfs_replication_user.name }}
-      port: 22
+      port: {{ zfs_replication_target_port }}
       identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
       options:
         - StrictHostKeyChecking=yes

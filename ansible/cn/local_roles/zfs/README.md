@@ -27,6 +27,7 @@ Role Variables
 | zfs_encryption_datasets                      | []                                         | See `zfs_encryption_datasets` below.                                        |
 | zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                      |
 | zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                         |
+| zfs_replication_target_port                  | 22                                         | SSH port for the `zfs_replication_target_host`.                             |
 | zfs_replication_monitoring_schedule          | minute: "*/15"                             | See `zfs_replication_monitoring_schedule` below.                            |
 | zfs_zpool_capacity_thresholds                | See `zfs_zpool_capacity_thresholds` below. | See `zfs_zpool_capacity_thresholds` below.                                  |
 | zfs_vdev_async_write_max_active              | 5                                          | Maximum async write I/O operations per vdev.                                |
