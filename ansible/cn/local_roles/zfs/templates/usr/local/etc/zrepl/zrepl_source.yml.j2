@@ -38,24 +38,24 @@ jobs:
           grid: 24x1h | 30x1d
           regex: "^hourly_"
 
-  - name: nightly
+  - name: daily
     type: push
 {{ ssh_connect_block() }}
     filesystems:
-{% for dataset in zfs_nightly_snapshots_datasets %}
+{% for dataset in zfs_daily_snapshots_datasets %}
       "{{ dataset }}": true
 {% endfor %}
     snapshotting:
       type: periodic
-      prefix: nightly_
+      prefix: daily_
       interval: 24h
     pruning:
       keep_sender:
         - type: not_replicated
         - type: grid
           grid: 30x1d
-          regex: "^nightly_"
+          regex: "^daily_"
       keep_receiver:
         - type: grid
           grid: 30x1d
-          regex: "^nightly_"
+          regex: "^daily_"

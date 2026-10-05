@@ -1,6 +1,6 @@
 ---
 zfs_replication_key_basename: "replication-{{ zfs_replication_target_host | replace('.', '_') }}"
-zfs_replication_datasets: "{{ ((zfs_hourly_snapshots_datasets | default([])) + (zfs_nightly_snapshots_datasets | default([]))) | unique }}"
+zfs_replication_datasets: "{{ ((zfs_hourly_snapshots_datasets | default([])) + (zfs_daily_snapshots_datasets | default([]))) | unique }}"
 zfs_replication_source_delegated_permissions:
   - snapshot
   - mount
