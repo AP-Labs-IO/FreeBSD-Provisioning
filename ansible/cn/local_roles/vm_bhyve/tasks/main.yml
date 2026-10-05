@@ -55,7 +55,7 @@
 - name: Disable system support checks
   community.general.sysrc:
     name: vm_disable_host_checks
-    state: "{{ (vm_bhyve_disable_host_checks == true) | ternary('present', 'absent') }}"
+    state: "{{ (vm_bhyve_host_checks_disabled == true) | ternary('present', 'absent') }}"
     value: "YES"
   tags: [support, checks, config]
 

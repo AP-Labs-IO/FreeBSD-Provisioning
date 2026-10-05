@@ -20,7 +20,7 @@ Role Variables
 | Variable                     | Default value | Description                                                |
 |------------------------------|---------------|------------------------------------------------------------|
 | vm_bhyve_passthrough_devices | []            | See `vm_bhyve_passthrough_devices` below.                  |
-| vm_bhyve_disable_host_checks | false         | Instruct the `vm(8)` tool to bypass system support checks. |
+| vm_bhyve_host_checks_disabled | false         | Instruct the `vm(8)` tool to bypass system support checks. |
 | vm_bhyve_startup_vms         | []            | See `vm_bhyve_startup_vms` below.                          |
 | vm_bhyve_startup_delay       | 5             | Delay in seconds between each VM to autostart              |
 

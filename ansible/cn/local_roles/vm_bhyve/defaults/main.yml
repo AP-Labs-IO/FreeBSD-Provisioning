@@ -1,5 +1,5 @@
 ---
 vm_bhyve_passthrough_devices: []
-vm_bhyve_disable_host_checks: false
+vm_bhyve_host_checks_disabled: false
 vm_bhyve_startup_vms: []
 vm_bhyve_startup_delay: 5
