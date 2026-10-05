@@ -29,13 +29,14 @@ jobs:
       interval: 1h
     pruning:
       keep_sender:
-        - type: last_n
+        - type: not_replicated
+        - type: grid
+          grid: 24x1h | 30x1d
           regex: "^hourly_"
-          count: 24
       keep_receiver:
-        - type: last_n
+        - type: grid
+          grid: 24x1h | 30x1d
           regex: "^hourly_"
-          count: 24
 
   - name: nightly
     type: push
@@ -50,10 +51,11 @@ jobs:
       interval: 24h
     pruning:
       keep_sender:
-        - type: last_n
+        - type: not_replicated
+        - type: grid
+          grid: 30x1d
           regex: "^nightly_"
-          count: 31
       keep_receiver:
-        - type: last_n
+        - type: grid
+          grid: 30x1d
           regex: "^nightly_"
-          count: 31
