@@ -17,17 +17,17 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable                        | Default value    | Description                                    |
-|---------------------------------|------------------|------------------------------------------------|
+| Variable                         | Default value    | Description                                    |
+|----------------------------------|------------------|------------------------------------------------|
 | users_sensitive_logging_disabled | true             | Disable logging of potentially sensitive data. |
-| users_accounts                  | []               | See `users_accounts` below.                    |
-| users_groups                    | []               | See `users_groups` below.                      |
-| users_extra_group_memberships   | []               | See `users_extra_group_memberships` below.     |
-| users_minuid                    | 1000             | Minimum user id used by `pw(8)`.               |
-| users_maxuid                    | 9999             | Maximum user id used by `pw(8)`.               |
-| users_mingid                    | 1000             | Minimum group id used by `pw(8)`.              |
-| users_maxgid                    | 9999             | Maximum group id used by `pw(8)`.              |
-| users_mail_aliases              | []               | See `users_mail_aliases` below.                |
+| users_accounts                   | []               | See `users_accounts` below.                    |
+| users_groups                     | []               | See `users_groups` below.                      |
+| users_extra_group_memberships    | []               | See `users_extra_group_memberships` below.     |
+| users_minuid                     | 1000             | Minimum user id used by `pw(8)`.               |
+| users_maxuid                     | 9999             | Maximum user id used by `pw(8)`.               |
+| users_mingid                     | 1000             | Minimum group id used by `pw(8)`.              |
+| users_maxgid                     | 9999             | Maximum group id used by `pw(8)`.              |
+| users_mail_aliases               | []               | See `users_mail_aliases` below.                |
 
 Dependencies
 ------------
