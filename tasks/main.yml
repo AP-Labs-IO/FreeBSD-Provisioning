@@ -5,7 +5,7 @@
     PAGER: cat
   register: patch_reg_patches
   when: not patch_freebsd_15_or_newer
-  changed_when: patch_reg_patches.stdout | ansible.builtin.search('(?i)installing.*updates')
+  changed_when: patch_reg_patches.stdout is ansible.builtin.search('(?i)installing.*updates')
   failed_when:
     - patch_reg_patches.rc != 0
     - "'No updates needed' not in patch_reg_patches.stdout"
