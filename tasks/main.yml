@@ -1,9 +1,9 @@
 ---
-- name: Set NFS caching to 5 seconds
+- name: Set NFS access cache
   community.general.sysrc:
     name: nfs_access_cache
     state: present
-    value: 5
+    value: "{{ nfs_shares_access_cache }}"
   tags: [config]
 
 - name: Start NFS client
