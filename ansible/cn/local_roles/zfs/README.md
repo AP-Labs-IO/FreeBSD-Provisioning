@@ -123,13 +123,11 @@ Example Playbook
 
 - name: Configure ZFS Services
   hosts: all:!replication
-  become: true
   roles:
     - { role: zfs, tags: [zfs] }
 
 - name: Configure ZFS replication targets
   hosts: replication
-  become: true
   tasks:
     - name: Import snapshotting & replication common tasks
       ansible.builtin.import_role:
