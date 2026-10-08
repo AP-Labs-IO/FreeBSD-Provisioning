@@ -83,7 +83,6 @@ Example Playbook
 
 - name: ...
   hosts: all
-  become: true
   roles:
     - { role: host_tuning, tags: [host_tuning] }
 ```
