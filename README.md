@@ -109,7 +109,6 @@ Example Playbook
 
 - name: Configure Network
   hosts: all
-  become: true
   roles:
     - { role: network, tags: [network] }
 ```
