@@ -4,15 +4,8 @@
     name: nfs_access_cache
     state: present
     value: "{{ nfs_shares_access_cache }}"
+  notify: Restart NFS client
   tags: [config]
-
-- name: Start NFS client
-  ansible.builtin.service:
-    name: nfsclient
-    pattern: nfscl
-    enabled: true
-    state: started
-  tags: [client, service]
 
 - name: Mount NFS shares
   ansible.posix.mount:
