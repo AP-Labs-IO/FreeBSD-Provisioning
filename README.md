@@ -82,7 +82,6 @@ Example Playbook
 
 - name: Configure Early Boot Environment
   hosts: all
-  become: true
   roles:
     - { role: boot, tags: [boot] }
 ```
