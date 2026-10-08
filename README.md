@@ -72,7 +72,6 @@ Example Playbook
 
 - name: Configure NFS shares
   hosts: all
-  become: true
   roles:
     - { role: nfs_shares, tags: [nfs_shares] }
 ```
