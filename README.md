@@ -65,7 +65,6 @@ Example Playbook
 
 - name: Patch Operating System
   hosts: all
-  become: true
   roles:
     - { role: patch, tags: [patch] }
 ```
