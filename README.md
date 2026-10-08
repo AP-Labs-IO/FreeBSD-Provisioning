@@ -99,7 +99,6 @@ Example Playbook
 
 - name: Create And Configure Users & Groups
   hosts: all
-  become: true
   roles:
     - { role: users, tags: [users] }
 ```
