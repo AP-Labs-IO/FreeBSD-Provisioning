@@ -1,0 +1,98 @@
+---
+- name: Configure base loader settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: vfs.nfsd.fha.write
+      value: "{{ nfs_server_fha_write_locality }}"
+      description: FHA write locality
+    - key: vfs.nfsd.fha.max_nfsds_per_fh
+      value: "{{ nfs_server_cpu_threads if (nfs_server_cpu_threads <= 32) else 32 }}"
+      description: Max threads per file handle
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [loader, config]
+
+- name: Configure extra loader settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop: "{{ nfs_server_extra_loader_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [loader, config]
+
+- name: Configure base kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: vfs.nfsd.enable_stringtouid
+      value: 1
+      description: Accept numeric owner_names
+    - key: vfs.nfs.enable_uidtostring
+      value: 1
+      description: Send numeric owner_names
+    - key: vfs.nfsd.issue_delegations
+      value: 1
+      description: Enable delegations
+    - key: vfs.nfsd.maxthreads
+      value: "{{ nfs_server_nfsd_maxthreads }}"
+      description: Max number of nfsd threads
+    - key: vfs.nfsd.tcphighwater
+      value: "{{ drc_high_watermark }}"
+      description: Duplicate Request Cache TCP entries high water mark
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  vars:
+    gb_to_bytes: "{{ 1024 * 1024 * 1024 }}"
+    memtotal_gb: "{{ (ansible_facts['memtotal_mb'] | float) / 1024.0 }}"
+    drc_high_watermark: "{{ ((memtotal_gb * gb_to_bytes * 0.015) // 64) | int }}"
+  tags: [kernel, config]
+
+- name: Configure extra kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ nfs_server_extra_kernel_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
+- name: Configure nfsd
+  notify: Restart nfsd
+  tags: [config]
+  block:
+    - name: Configure nfsd flags
+      community.general.sysrc:
+        name: nfs_server_flags
+        state: present
+        value: "{{ nfs_server_nfsd_flags }} --maxthreads {{ nfs_server_nfsd_maxthreads }}"
+      tags: [flags, nfsd]
+
+    - name: Set to NFSv4 only
+      community.general.sysrc:
+        name: nfsv4_server_only
+        state: present
+        value: "YES"
+      tags: [flags, nfsv4]
+
+    - name: Install exports file
+      ansible.builtin.copy:
+        src: "{{ nfs_server_exports_file_path }}"
+        dest: /etc/exports
+        owner: root
+        group: wheel
+        mode: "0644"
+      tags: [exports]
