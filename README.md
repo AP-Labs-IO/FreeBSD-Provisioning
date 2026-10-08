@@ -75,7 +75,6 @@ Example Playbook
 
 - name: Configure Bastille Jail Hosting
   hosts: all
-  become: true
   roles:
     - { role: bastille, tags: [bastille] }
 ```
