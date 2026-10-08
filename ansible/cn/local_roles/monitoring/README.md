@@ -130,7 +130,6 @@ Example Playbook
 
 - name: Configure Monitoring
   hosts: all
-  become: true
   roles:
     - { role: monitoring, tags: [monitoring] }
 ```
