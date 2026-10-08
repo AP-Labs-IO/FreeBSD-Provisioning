@@ -68,7 +68,6 @@ Example Playbook
 
 - name: Configure vm-bhyve
   hosts: all
-  become: true
   roles:
     - { role: vm_bhyve, tags: [vm-bhyve] }
 ```
