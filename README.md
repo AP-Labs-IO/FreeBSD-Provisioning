@@ -72,7 +72,6 @@ Example Playbook
 
 - name: Configure runtime state
   hosts: all
-  become: true
   roles:
     - { role: runtime, tags: [runtime }
 ```
