@@ -105,30 +105,29 @@
         regexp: "^#?(?!({{ boot_swap_devices | join('|') }})).+swap"
         state: absent
 
-- name: Configure custom swap devices
-  ansible.posix.mount:
-    fstype: swap
-    src: "{{ item }}"
-    path: none
-    opts: sw
-    state: present
-  loop: "{{ boot_swap_devices }}"
+- name: Configure custom swap
   when: boot_swap_devices is defined
   tags: [swap]
+  block:
+    - name: Record custom swap mounts
+      ansible.posix.mount:
+        fstype: swap
+        src: "{{ item }}"
+        path: none
+        opts: sw
+        state: present
+      loop: "{{ boot_swap_devices }}"
 
-- name: Check active custom swap devices
-  ansible.builtin.command: swapinfo
-  register: boot_reg_check_swap
-  when: boot_swap_devices is defined
-  changed_when: false
-  tags: [swap]
+    - name: Check active custom swap devices
+      ansible.builtin.command: swapinfo
+      register: boot_reg_check_swap
+      changed_when: false
 
-- name: Activate inactive custom swap devices
-  ansible.builtin.command: "swapon {{ item }}"
-  loop: "{{ boot_swap_devices }}"
-  when: boot_swap_devices is defined and item not in boot_reg_check_swap.stdout
-  changed_when: true
-  tags: [swap]
+    - name: Activate inactive custom swap devices
+      ansible.builtin.command: "swapon {{ item }}"
+      loop: "{{ boot_swap_devices }}"
+      when: item not in boot_reg_check_swap.stdout
+      changed_when: true
 
 - name: Reboot
   ansible.builtin.reboot:
