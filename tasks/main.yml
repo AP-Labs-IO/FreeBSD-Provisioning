@@ -80,31 +80,30 @@
     state: present
   tags: [efi, mount]
 
-- name: Check for stock swap devices
-  ansible.builtin.command: swapinfo
-  register: boot_reg_active_stock_swaps
-  when: boot_swap_devices is defined
-  changed_when: false
-  tags: [reset, swap]
-
-- name: Deactivate stock swap devices
-  ansible.builtin.command: "swapoff {{ item }}"
-  loop: "{{ active_stock_swaps }}"
-  vars:
-    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
-    active_devices: "{{ device_lines | map('split') | map('first') | list }}"
-    active_stock_swaps: "{{ active_devices | difference(boot_swap_devices) }}"
-  when: active_stock_swaps | default([]) | length > 0
-  changed_when: true
-  tags: [reset, swap]
-
-- name: Remove stock swap devices from fstab
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    regexp: "^#?(?!({{ boot_swap_devices | join('|') }})).+swap"
-    state: absent
+- name: Disable stock swap
   when: boot_swap_devices is defined
   tags: [reset, swap]
+  block:
+    - name: Check for stock swap devices
+      ansible.builtin.command: swapinfo
+      register: boot_reg_active_stock_swaps
+      changed_when: false
+
+    - name: Deactivate stock swap devices
+      ansible.builtin.command: "swapoff {{ item }}"
+      loop: "{{ active_stock_swaps }}"
+      vars:
+        device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
+        active_devices: "{{ device_lines | map('split') | map('first') | list }}"
+        active_stock_swaps: "{{ active_devices | difference(boot_swap_devices) }}"
+      when: active_stock_swaps | default([]) | length > 0
+      changed_when: true
+
+    - name: Remove stock swap devices from fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: "^#?(?!({{ boot_swap_devices | join('|') }})).+swap"
+        state: absent
 
 - name: Configure custom swap devices
   ansible.posix.mount:
