@@ -7,7 +7,7 @@
     path: /boot/loader.conf
   loop: "{{ boot_kernel_modules }}"
   register: boot_reg_modules
-  tags: [kernel, config, modules]
+  tags: [kernel, modules, config]
 
 - name: Configure loader settings
   ansible.posix.sysctl:
@@ -20,7 +20,7 @@
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   register: boot_reg_loader
-  tags: [kernel, config, loader]
+  tags: [loader, config]
 
 - name: Configure keymap
   community.general.sysrc:
@@ -115,7 +115,7 @@
     state: present
   loop: "{{ boot_swap_devices }}"
   when: boot_swap_devices is defined
-  tags: [swap, mount]
+  tags: [swap]
 
 - name: Check active custom swap devices
   ansible.builtin.command: swapinfo
