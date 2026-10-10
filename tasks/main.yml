@@ -9,17 +9,17 @@
   register: boot_reg_modules
   tags: [kernel, modules, config]
 
-- name: Configure loader settings
+- name: Configure extra loader settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ boot_loader_settings }}"
+  loop: "{{ boot_extra_loader_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_loader
+  register: boot_reg_extra_loader
   tags: [loader, config]
 
 - name: Configure keymap
@@ -139,7 +139,7 @@
     pre_reboot_delay: 5
   when: >
     (boot_reg_modules.changed | default(false) | bool) or
-    (boot_reg_loader.changed | default(false) | bool) or
+    (boot_reg_extra_loader.changed | default(false) | bool) or
     (boot_reg_keymap.changed | default(false) | bool) or
     (boot_reg_timezone.changed | default(false) | bool) or
     (boot_reg_extra_rc_settings.changed | default(false) | bool)

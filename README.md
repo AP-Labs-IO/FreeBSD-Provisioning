@@ -20,7 +20,7 @@ Role Variables
 | Variable               | Default value     | Description                                |
 |------------------------|-------------------|--------------------------------------------|
 | boot_kernel_modules    | []                | See `boot_kernel_modules` below.           |
-| boot_loader_settings   | []                | See `boot_loader_settings` below.          |
+| boot_extra_loader_settings | []            | See `boot_extra_loader_settings` below.    |
 | boot_extra_rc_settings | []                | See `boot_extra_rc_settings` below.        |
 | boot_moused_enabled    | true              | Boolean toggle to enable the mouse daemon. |
 | boot_efi_partition     | /dev/gpt/efiboot0 | EFI partition.                             |
@@ -31,7 +31,7 @@ Dependencies
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `boot_kernel_modules`: List of strings with the names of the kernel modules to load.
-  * `boot_loader_settings`: List of dictionaries with attributes:
+  * `boot_extra_loader_settings`: List of dictionaries with attributes:
     * `key`: Name of the loader setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
