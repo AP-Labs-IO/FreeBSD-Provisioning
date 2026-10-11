@@ -97,7 +97,7 @@
   when: runtime_reg_check_mac_do.rc == 0
   tags: [mac_do, config]
 
-- name: Configure extra kernel state
+- name: Configure extra kernel settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
