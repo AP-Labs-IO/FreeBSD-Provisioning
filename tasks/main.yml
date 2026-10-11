@@ -82,21 +82,22 @@
       when: runtime_reg_check_randompids.stdout | trim | int < 1
       changed_when: true
 
-- name: Check if mac_do kernel module is loaded
-  ansible.builtin.command: kldstat -q -m mac_do
-  register: runtime_reg_check_mac_do
+- name: Configure mac_do(4) policy
   when: runtime_mac_do_rules is defined
-  changed_when: false
-  failed_when: runtime_reg_check_mac_do.rc < 0
   tags: [mac_do, config]
+  block:
+    - name: Check if mac_do kernel module is loaded
+      ansible.builtin.command: kldstat -q -m mac_do
+      register: runtime_reg_check_mac_do
+      changed_when: false
+      failed_when: runtime_reg_check_mac_do.rc < 0
 
-- name: Set mac_do(4) rules
-  ansible.posix.sysctl:
-    name: security.mac.do.rules
-    state: present
-    value: "{{ runtime_mac_do_rules }}"
-  when: runtime_reg_check_mac_do.rc == 0
-  tags: [mac_do, config]
+    - name: Set mac_do(4) rules
+      ansible.posix.sysctl:
+        name: security.mac.do.rules
+        state: present
+        value: "{{ runtime_mac_do_rules }}"
+      when: runtime_reg_check_mac_do.rc == 0
 
 - name: Configure extra kernel settings
   ansible.posix.sysctl:
