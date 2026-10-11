@@ -9,3 +9,6 @@ network_vlan_interfaces: []
 network_bridge_interfaces: []
 
 network_bridge_filtering_disabled: true
+
+network_send_buffer_size: 1048576
+network_receive_buffer_size: 1048576

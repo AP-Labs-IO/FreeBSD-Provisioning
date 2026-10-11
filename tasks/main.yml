@@ -264,6 +264,12 @@
     - key: net.link.bridge.pfil_member
       value: 0
       description: Prevent packet filtering on interfaces members of a bridge
+    - key: net.inet.tcp.sendspace
+      value: "{{ network_send_buffer_size }}"
+      description: Initial send socket buffer size
+    - key: net.inet.tcp.recvspace
+      value: "{{ network_receive_buffer_size }}"
+      description: Initial receive socket buffer size
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   when: network_bridge_filtering_disabled
