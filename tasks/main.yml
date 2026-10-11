@@ -252,7 +252,7 @@
     (network_reg_default_route_ipv6.changed | default(false) | bool)
   tags: [reboot]
 
-- name: Disable packet filtering on bridge interfaces
+- name: Configure base runtime settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -267,4 +267,4 @@
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   when: network_bridge_filtering_disabled
-  tags: [packet, filtering, bridge]
+  tags: [runtime, config]
