@@ -23,7 +23,7 @@
   loop: "{{ network_renamed_interfaces }}"
   loop_control:
     label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
-  register: network_reg_rename
+  notify: Reboot
   tags: [interfaces, rename, config]
 
 - name: Configure base interfaces IPv4
@@ -47,7 +47,7 @@
   loop: "{{ network_base_interfaces }}"
   loop_control:
     label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
-  register: network_reg_base_ip4
+  notify: Reboot
   tags: [interfaces, base, ipv4, config]
 
 - name: Configure base interfaces IPv6
@@ -59,7 +59,7 @@
   loop_control:
     label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
-  register: network_reg_base_ip6
+  notify: Reboot
   tags: [interfaces, base, ipv6, config]
 
 - name: Create VLAN interfaces
@@ -70,7 +70,7 @@
   loop: "{{ network_vlan_interfaces }}"
   loop_control:
     label: "Configuring VLANs for parent: {{ item.parent }}"
-  register: network_reg_vlans_create
+  notify: Reboot
   tags: [interfaces, vlan, config]
 
 - name: Configure VLANs IPv4
@@ -106,7 +106,7 @@
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
     label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 | default('up') }}"
-  register: network_reg_vlans_ip4
+  notify: Reboot
   tags: [interfaces, vlan, ipv4, config]
 
 - name: Configure VLANs IPv6
@@ -133,7 +133,7 @@
   loop_control:
     label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
-  register: network_reg_vlans_ip6
+  notify: Reboot
   tags: [interfaces, vlan, ipv6, config]
 
 - name: Create cloned interfaces
@@ -143,7 +143,7 @@
     value: "{{ cloned_interfaces | join(' ') }}"
   vars:
     cloned_interfaces: "{{ network_bridge_interfaces | map(attribute='name') | list }}"
-  register: network_reg_cloned
+  notify: Reboot
   tags: [interfaces, cloned, config]
 
 - name: Configure bridges IPv4
@@ -169,7 +169,7 @@
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
-  register: network_reg_bridges_ip4
+  notify: Reboot
   tags: [interfaces, bridge, ipv4, config]
 
 - name: Configure bridges IPv6
@@ -181,7 +181,7 @@
   loop_control:
     label: "Configuring bridge IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
-  register: network_reg_bridges_ip6
+  notify: Reboot
   tags: [interfaces, bridge, ipv6, config]
 
 - name: Configure default route IPv4
@@ -189,7 +189,7 @@
     name: defaultrouter
     state: "{{ network_default_route_ipv4 is defined | ternary('present', 'absent') }}"
     value: "{{ network_default_route_ipv4 | default('') }}"
-  register: network_reg_default_route_ipv4
+  notify: Reboot
   tags: [route, config, ipv4]
 
 - name: Configure default route IPv6
@@ -197,7 +197,7 @@
     name: ipv6_defaultrouter
     state: "{{ network_default_route_ipv6 is defined | ternary('present', 'absent') }}"
     value: "{{ network_default_route_ipv6 | default('') }}"
-  register: network_reg_default_route_ipv6
+  notify: Reboot
   tags: [route, config, ipv6]
 
 - name: Configure DNS resolver
@@ -230,26 +230,6 @@
 - name: Force execution of notified handlers
   ansible.builtin.meta: flush_handlers
   tags: [resolver, config]
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (network_reg_rename.changed | default(false) | bool) or
-    (network_reg_base_ip4.changed | default(false) | bool) or
-    (network_reg_base_ip6.changed | default(false) | bool) or
-    (network_reg_vlans_create.changed | default(false) | bool) or
-    (network_reg_vlans_ip4.changed | default(false) | bool) or
-    (network_reg_vlans_ip6.changed | default(false) | bool) or
-    (network_reg_cloned.changed | default(false) | bool) or
-    (network_reg_bridges_ip4.changed | default(false) | bool) or
-    (network_reg_bridges_ip6.changed | default(false) | bool) or
-    (network_reg_default_route_ipv4.changed | default(false) | bool) or
-    (network_reg_default_route_ipv6.changed | default(false) | bool)
-  tags: [reboot]
 
 - name: Configure base runtime settings
   ansible.posix.sysctl:
