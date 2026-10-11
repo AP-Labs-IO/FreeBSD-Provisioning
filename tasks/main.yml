@@ -66,20 +66,21 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [config]
 
-- name: Check if PIDs are randomized
-  ansible.builtin.command: sysctl -n kern.randompid
-  register: runtime_reg_check_randompids
-  changed_when: false
-  tags: [pid]
+- name: Configure PID randomization
+  tags: [pid, randomization]
+  block:
+    - name: Check if PIDs are randomized
+      ansible.builtin.command: sysctl -n kern.randompid
+      register: runtime_reg_check_randompids
+      changed_when: false
 
-- name: Set PID randomization
-  ansible.posix.sysctl:
-    name: kern.randompid
-    state: present
-    value: 1
-  when: runtime_reg_check_randompids.stdout | trim | int < 1
-  changed_when: true
-  tags: [config, pid]
+    - name: Set PID randomization
+      ansible.posix.sysctl:
+        name: kern.randompid
+        state: present
+        value: 1
+      when: runtime_reg_check_randompids.stdout | trim | int < 1
+      changed_when: true
 
 - name: Check if mac_do kernel module is loaded
   ansible.builtin.command: kldstat -q -m mac_do
