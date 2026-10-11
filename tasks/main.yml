@@ -247,7 +247,6 @@
     (network_reg_cloned.changed | default(false) | bool) or
     (network_reg_bridges_ip4.changed | default(false) | bool) or
     (network_reg_bridges_ip6.changed | default(false) | bool) or
-    (network_reg_activate.changed | default(false) | bool) or
     (network_reg_default_route_ipv4.changed | default(false) | bool) or
     (network_reg_default_route_ipv6.changed | default(false) | bool)
   tags: [reboot]
