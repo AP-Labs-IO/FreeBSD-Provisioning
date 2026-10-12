@@ -1,11 +1,13 @@
 ---
-- name: Set NFS access cache
-  community.general.sysrc:
-    name: nfs_access_cache
-    state: present
-    value: "{{ nfs_shares_access_cache }}"
+- name: Configure NFS client
   notify: Restart NFS client
   tags: [config]
+  block:
+    - name: Set NFS access cache
+      community.general.sysrc:
+        name: nfs_access_cache
+        state: present
+        value: "{{ nfs_shares_access_cache }}"
 
 - name: Mount NFS shares
   ansible.posix.mount:
