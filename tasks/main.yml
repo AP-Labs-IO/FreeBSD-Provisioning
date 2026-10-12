@@ -1,4 +1,20 @@
 ---
+- name: Configure base loader settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: kern.ipc.maxsockbuf
+      value: "{{ network_max_socket_buffer_size }}"
+      description: Max socket buffer size
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [loader, config]
+
 - name: Start rtsold
   ansible.builtin.service:
     name: rtsold

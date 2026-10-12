@@ -19,6 +19,7 @@ Role Variables
 
 | Variable                           | Default value | Description                                                                                                             |
 |----------------------------------  |---------------|-------------------------------------------------------------------------------------------------------------------------|
+| network_max_socket_buffer_size     | 16777216      | Max socket buffer size, according to `sysctl kern.ipc.maxsockbuf`.                                                      |
 | network_rtsold_enabled             | true          | Boolean toggle to enable the Router Solicitation daemon.                                                                |
 | network_remove_stock_configuration | false         | Boolean toggle to to remove the node's stock network configuration. See `network_preserve_custom_configurations` below. |
 | network_renamed_interfaces         | []            | See `network_renamed_interfaces` below.                                                                                 |

@@ -1,4 +1,6 @@
 ---
+network_max_socket_buffer_size: 16777216
+
 network_rtsold_enabled: true
 
 network_remove_stock_configuration: false
