@@ -1,2 +1,3 @@
 ---
+runtime_somaxconn_size: 2048
 runtime_extra_kernel_settings: []

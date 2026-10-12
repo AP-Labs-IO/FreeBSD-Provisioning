@@ -99,6 +99,19 @@
         value: "{{ runtime_mac_do_rules }}"
       when: runtime_reg_check_mac_do.rc == 0
 
+- name: Configure kernel tunning settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: kern.ipc.somaxconn
+      value: "{{ runtime_somaxconn_size }}"
+      description: Max pending socket connections queue size
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
 - name: Configure extra kernel settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
