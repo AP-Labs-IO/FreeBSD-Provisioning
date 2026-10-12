@@ -6,7 +6,7 @@
     value: "YES"
     path: /boot/loader.conf
   loop: "{{ boot_kernel_modules }}"
-  register: boot_reg_modules
+  notify: Reboot
   tags: [kernel, modules, config]
 
 - name: Configure extra loader settings
@@ -19,7 +19,7 @@
   loop: "{{ boot_extra_loader_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_extra_loader
+  notify: Reboot
   tags: [loader, config]
 
 - name: Configure keymap
@@ -27,10 +27,11 @@
     name: keymap
     state: present
     value: "{{ boot_keymap }}"
-  register: boot_reg_keymap
+  notify: Reboot
   tags: [keymap, config]
 
 - name: Configure timezone
+  notify: Reboot
   tags: [timezone, config]
   block:
     - name: Query current timezone
@@ -42,7 +43,6 @@
     - name: Set timezone
       ansible.builtin.command: "/usr/sbin/tzsetup -s {{ boot_timezone }}"
       when: boot_timezone != (boot_reg_current_tz.content | default('') | b64decode | trim)
-      register: boot_reg_timezone
       changed_when: true
 
 - name: Configure extra early rc(8) settings
@@ -53,7 +53,7 @@
   loop: "{{ boot_extra_rc_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_extra_rc_settings
+  notify: Reboot
   tags: [rc, config]
 
 - name: Start ntpd
@@ -128,17 +128,3 @@
       loop: "{{ boot_swap_devices }}"
       when: item not in boot_reg_check_swap.stdout
       changed_when: true
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (boot_reg_modules.changed | default(false) | bool) or
-    (boot_reg_extra_loader.changed | default(false) | bool) or
-    (boot_reg_keymap.changed | default(false) | bool) or
-    (boot_reg_timezone.changed | default(false) | bool) or
-    (boot_reg_extra_rc_settings.changed | default(false) | bool)
-  tags: [reboot]
