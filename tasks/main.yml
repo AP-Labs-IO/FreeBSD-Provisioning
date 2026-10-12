@@ -9,6 +9,12 @@
         state: present
         value: "{{ nfs_shares_access_cache }}"
 
+    - name: Set NFS buffer packets
+      community.general.sysrc:
+        name: nfs_bufpackets
+        state: present
+        value: "{{ nfs_shares_bufpackets }}"
+
 - name: Mount NFS shares
   ansible.posix.mount:
     fstype: nfs
