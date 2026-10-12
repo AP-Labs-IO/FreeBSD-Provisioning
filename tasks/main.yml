@@ -28,6 +28,16 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
 
+- name: Configure extra kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ nfs_server_extra_kernel_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
 - name: Mount NFS shares
   ansible.posix.mount:
     fstype: nfs

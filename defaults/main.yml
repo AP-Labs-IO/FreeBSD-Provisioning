@@ -1,3 +1,4 @@
 ---
 nfs_shares_access_cache: 5
 nfs_shares_bufpackets: 64
+nfs_server_extra_kernel_settings: []
