@@ -9,6 +9,7 @@
   failed_when:
     - patch_reg_patches.rc != 0
     - "'No updates needed' not in patch_reg_patches.stdout"
+  notify: Reboot
   tags: [patch]
 
 - name: Update base packages (pkgbase)
@@ -16,16 +17,6 @@
     pkgsite: FreeBSD-base
     name: "*"
     state: latest
-  register: patch_reg_patches
+  notify: Reboot
   when: patch_freebsd_15_or_newer
   tags: [patch]
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to apply OS patches
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (patch_reg_patches.changed | default(false) | bool)
-  tags: [reboot]
