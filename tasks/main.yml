@@ -15,6 +15,19 @@
         state: present
         value: "{{ nfs_shares_bufpackets }}"
 
+- name: Configure base kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: vfs.nfs.enable_uidtostring
+      value: 1
+      description: Send numeric owner_names
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
 - name: Mount NFS shares
   ansible.posix.mount:
     fstype: nfs
