@@ -1,7 +1,7 @@
 ---
 - name: Configure NFS client
   notify: Restart NFS client
-  tags: [config]
+  tags: [client, config]
   block:
     - name: Set NFS access cache
       community.general.sysrc:
