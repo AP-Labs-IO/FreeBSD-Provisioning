@@ -32,7 +32,7 @@
     name: performance_cx_lowest
     state: present
     value: "{{ host_tuning_performance_cx_lowest }}"
-  register: host_tuning_reg_ac_c_state
+  notify: Reboot
   tags: [power, c-state, ac, performance, tuning]
 
 - name: Set CPU non-AC power idle state
@@ -40,7 +40,7 @@
     name: economy_cx_lowest
     state: present
     value: "{{ host_tuning_economy_cx_lowest }}"
-  register: host_tuning_reg_non_ac_c_state
+  notify: Reboot
   tags: [power, c-state, non-ac, performance, tuning]
 
 - name: Set CPU package-level power control
@@ -50,11 +50,12 @@
     value: "{{ host_tuning_cpu_package_level_power_control }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  register: host_tuning_reg_per_core_c_states
+  notify: Reboot
   tags: [power, c-state, performance, tuning]
 
 - name: CPU microcode boot-time updates configuration
   when: ansible_facts['architecture'] in ['amd64', 'i386']
+  notify: Reboot
   tags: [cpu, microcode, firmware]
   block:
     - name: Install packages
@@ -62,7 +63,6 @@
         name: sysutils/cpu-microcode
         state: latest
         use_globs: false
-      register: host_tuning_reg_microcode_pkg
       tags: [pkg]
 
     - name: Enable microcode updates
@@ -71,7 +71,6 @@
         state: present
         value: "YES"
         path: /boot/loader.conf
-      register: host_tuning_reg_microcode_enable
       tags: [loader]
 
     - name: Configure microcode firmware file
@@ -84,7 +83,6 @@
         cpu_vendor_string: "{{ ansible_facts['processor'] | join(' ') }}"
         microcode_firmware_file: >-
           {{ ('Intel' in cpu_vendor_string) | ternary('/boot/firmware/intel-ucode.bin', '/boot/firmware/amd-ucode.bin') }}
-      register: host_tuning_reg_microcode_firmware
       tags: [loader]
 
 - name: Storage power management configuration
@@ -116,18 +114,3 @@
         state: present
         value: "YES"
       tags: [service]
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (host_tuning_reg_ac_c_state.changed | default(false) | bool) or
-    (host_tuning_reg_non_ac_c_state.changed | default(false) | bool) or
-    (host_tuning_reg_per_core_c_states.changed | default(false) | bool) or
-    (host_tuning_reg_microcode_pkg.changed | default(false) | bool) or
-    (host_tuning_reg_microcode_enable.changed | default(false) | bool) or
-    (host_tuning_reg_microcode_firmware.changed | default(false) | bool)
-  tags: [reboot]
