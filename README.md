@@ -17,11 +17,11 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable                | Default value | Description                                                                  |
-|-------------------------|---------------|------------------------------------------------------------------------------|
-| nfs_shares_access_cache | 5             | NFS access results caching, according to `nfs_access_cache` in `rc.conf(5)`. |
-| nfs_shares_bufpackets   | 64            | Value of the `nfs_bufpackets` `rc.conf(5)` setting.                          |
-| nfs_server_extra_kernel_settings | []   | See `nfs_server_extra_kernel_settings` below.                                |
+| Variable                         | Default value | Description                                                                  |
+|----------------------------------|---------------|------------------------------------------------------------------------------|
+| nfs_shares_access_cache          | 5             | NFS access results caching, according to `nfs_access_cache` in `rc.conf(5)`. |
+| nfs_shares_bufpackets            | 64            | Value of the `nfs_bufpackets` `rc.conf(5)` setting.                          |
+| nfs_server_extra_kernel_settings | []            | See `nfs_server_extra_kernel_settings` below.                                |
 
 Dependencies
 ------------
