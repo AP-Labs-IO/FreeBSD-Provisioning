@@ -21,7 +21,7 @@ Role Variables
 |----------------------------------|---------------|------------------------------------------------------------------------------|
 | nfs_shares_access_cache          | 5             | NFS access results caching, according to `nfs_access_cache` in `rc.conf(5)`. |
 | nfs_shares_bufpackets            | 64            | Value of the `nfs_bufpackets` `rc.conf(5)` setting.                          |
-| nfs_server_extra_kernel_settings | []            | See `nfs_server_extra_kernel_settings` below.                                |
+| nfs_shares_extra_kernel_settings | []            | See `nfs_shares_extra_kernel_settings` below.                                |
 
 Dependencies
 ------------
@@ -33,7 +33,7 @@ Dependencies
     * `src`: Path of the target NFS share within the host that exports it.
     * `path`: Path where the target NFS share should be mounted on the client.
     * `opts`: Mount options for the target NFS share.
-  * `nfs_server_extra_kernel_settings`: List of dictionaries with attributes:
+  * `nfs_shares_extra_kernel_settings`: List of dictionaries with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
