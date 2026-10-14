@@ -7,13 +7,13 @@
       community.general.sysrc:
         name: nfs_access_cache
         state: present
-        value: "{{ nfs_shares_access_cache }}"
+        value: "{{ nfs_client_access_cache }}"
 
     - name: Set NFS buffer packets
       community.general.sysrc:
         name: nfs_bufpackets
         state: present
-        value: "{{ nfs_shares_bufpackets }}"
+        value: "{{ nfs_client_bufpackets }}"
 
 - name: Configure base kernel settings
   ansible.posix.sysctl:
@@ -33,7 +33,7 @@
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ nfs_shares_extra_kernel_settings }}"
+  loop: "{{ nfs_client_extra_kernel_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
@@ -45,7 +45,7 @@
     path: "{{ item.path }}"
     opts: "{{ item.opts }}"
     state: mounted
-  loop: "{{ nfs_shares }}"
+  loop: "{{ nfs_client_shares }}"
   loop_control:
     label: "{{ item.host }}:{{ item.src }} -> {{ item.path }}"
   tags: [shares, mount, config]
