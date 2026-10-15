@@ -1,0 +1,73 @@
+---
+- name: Install packages
+  community.general.pkgng:
+    name:
+      - net/samba{{ samba_server_version }}
+      - net/avahi-app
+    state: latest
+    use_globs: false
+  tags: [pkg]
+
+- name: Configure smbd
+  tags: [smbd, config]
+  notify: Restart Samba
+  block:
+    - name: Install smbd main configuration
+      ansible.builtin.template:
+        src: smb4.conf.j2
+        dest: /usr/local/etc/smb4.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Install smbd shares configuration
+      ansible.builtin.template:
+        src: smb4_shares.conf.j2
+        dest: /usr/local/etc/smb4_shares.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+- name: Configure Avahi
+  tags: [avahi, config]
+  notify: Restart Avahi
+  block:
+    - name: Start dbus
+      ansible.builtin.service:
+        name: dbus
+        enabled: true
+        state: started
+
+    - name: Install Avahi SMB configuration
+      ansible.builtin.template:
+        src: smb.service.j2
+        dest: /usr/local/etc/avahi/services/smb.service
+        owner: root
+        group: wheel
+        mode: "0644"
+
+- name: Configure Samba users
+  tags: [users]
+  block:
+    - name: Query existing Samba users
+      ansible.builtin.shell:
+        cmd: "smbclient -L localhost -U {{ item.name }} --password '{{ item.password }}' > /dev/null 2>&1"
+      loop: "{{ samba_server_users }}"
+      loop_control:
+        label: "Checking user: {{ item.name }}"
+      register: samba_server_reg_users_query
+      failed_when: false
+      changed_when: false
+      no_log: "{{ samba_server_sensitive_logging_disabled }}"
+
+    - name: Synchronize user credentials
+      ansible.builtin.shell:
+        cmd: "smbpasswd -s -a {{ item.name }}"
+        stdin: "{{ item.password }}\n{{ item.password }}\n"
+      loop: "{{ samba_server_users }}"
+      loop_control:
+        index_var: user
+        label: "Synchronizing credentials for user: {{ item.name }}"
+      when: samba_server_reg_users_query.results[user].rc != 0
+      changed_when: true
+      no_log: "{{ samba_server_sensitive_logging_disabled }}"

@@ -1,0 +1,20 @@
+{% for share in samba_server_shares %}
+[{{ share.name }}]
+    comment = {{ share.comment | default(share.name) }}
+    path = {{ share.path }}
+    browsable = {{ share.browsable | default('yes') }}
+    read only = {{ share.read_only | default('no') }}
+    guest ok = {{ share.guests | default('no') }}
+
+{% if share.time_machine | default(false) %}
+    fruit:time machine = yes
+    fruit:advertise_fullsync = yes
+{% endif %}
+
+{% if share.shadow_copies is defined and share.shadow_copies %}
+    shadow:snapdir = {{ share.shadow_copies.snapdir | default('.zfs/snapshot') }}
+    shadow:format = {{ share.shadow_copies.format }}
+    shadow:sort = {{ share.shadow_copies.sort | default('desc') }}
+    shadow:localtime = {{ share.shadow_copies.localtime | default('yes') }}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,7 @@
+---
+samba_server_sensitive_logging_disabled: true
+samba_server_version: 424
+samba_server_xattr_maxsize: 2097152
+samba_server_icon: Xserve
+samba_server_shares: []
+samba_server_users: []

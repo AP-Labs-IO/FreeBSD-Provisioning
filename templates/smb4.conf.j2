@@ -1,0 +1,19 @@
+[global]
+    server role = standalone
+    security = user
+
+    workgroup = {{ samba_server_workgroup }}
+    server string = {{ samba_server_description | default('%h') }}
+
+    use sendfile = yes
+    smbd max xattr size = {{ samba_server_xattr_maxsize }}
+    dns proxy = no
+    logging = syslog@1 file
+
+    vfs objects = catia fruit streams_xattr shadow_copy2 zfsacl
+
+    fruit:model = {{ samba_server_icon }}
+    fruit:metadata = stream
+    fruit:resource = stream
+
+    include = /usr/local/etc/smb4_shares.conf
