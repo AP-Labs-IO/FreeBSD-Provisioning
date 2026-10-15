@@ -69,7 +69,7 @@ Example Playbook
 - name: Configure vm-bhyve
   hosts: all
   roles:
-    - { role: vm_bhyve, tags: [vm-bhyve] }
+    - { role: vm_bhyve, tags: [vm_bhyve] }
 ```
 
 Execution
@@ -79,7 +79,7 @@ Run the master orchestration playbook against your target inventory environment:
 
 ```sh
 -> ansible-galaxy role install -r requirements.yml -p ./roles
--> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags vm-bhyve playbook.yml
+-> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags vm_bhyve playbook.yml
 ```
 
 License
