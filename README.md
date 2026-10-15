@@ -74,7 +74,7 @@ Example Playbook
 - name: Configure runtime state
   hosts: all
   roles:
-    - { role: runtime, tags: [runtime }
+    - { role: runtime, tags: [runtime] }
 ```
 
 Execution
