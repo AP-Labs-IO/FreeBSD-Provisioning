@@ -5,7 +5,7 @@
     state: present
     value: "YES"
     path: /boot/loader.conf
-  register: vm_bhyve_reg_kernel_module
+  notify: Reboot
   tags: [bhyve, module, config]
 
 - name: Reserve PCI passthrough devices
@@ -14,7 +14,7 @@
     state: "{{ (vm_bhyve_passthrough_devices | length > 0) | ternary('present', 'absent') }}"
     value: "{{ vm_bhyve_passthrough_devices | join(' ') }}"
     path: /boot/loader.conf
-  register: vm_bhyve_reg_passthrough_devs
+  notify: Reboot
   tags: [kernel, config, modules]
 
 - name: Expose zvols as device files
@@ -24,7 +24,7 @@
     value: 2
     sysctl_file: /boot/loader.conf
     reload: false
-  register: vm_bhyve_reg_zvols
+  notify: Reboot
   tags: [config, zvols]
 
 - name: Enable automatic tap device activation
@@ -85,15 +85,3 @@
     state: present
     value: "{{ vm_bhyve_startup_delay }}"
   tags: [vms, startup, delay, config]
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (vm_bhyve_reg_kernel_module.changed | default(false) | bool) or
-    (vm_bhyve_reg_passthrough_devs.changed | default(false) | bool) or
-    (vm_bhyve_reg_zvols.changed | default(false) | bool)
-  tags: [reboot]
