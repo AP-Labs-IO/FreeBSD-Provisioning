@@ -175,7 +175,7 @@
       description: Set low memory callback period
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: zfs_reg_base_boot_settings
+  notify: Reboot
   tags: [config, boot-time]
 
 - name: Configure extra boot-time settings
@@ -188,7 +188,7 @@
   loop: "{{ zfs_extra_boot_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  register: zfs_reg_extra_boot_settings
+  notify: Reboot
   tags: [config, boot-time]
 
 - name: Configure base runtime settings
@@ -237,14 +237,3 @@
     state: latest
     use_globs: false
   tags: [zrepl, pkg]
-
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (zfs_reg_base_boot_settings.changed | default(false) | bool) or
-    (zfs_reg_extra_boot_settings.changed | default(false) | bool)
-  tags: [reboot]
