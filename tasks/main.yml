@@ -101,6 +101,9 @@
       {{ bootstrap_ports_repository_name }}: {
           url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
       }
+      {{ bootstrap_ports_kmods_repository_name }}: {
+          url: "pkg+https://pkg.FreeBSD.org/${ABI}/kmods_latest_${VERSION_MINOR}",
+      }
     insertafter: EOF
     prepend_newline: true
     append_newline: true
