@@ -105,7 +105,7 @@
     state: present
     value: "{{ item.value }}"
   loop:
-    - key: kern.ipc.somaxconn
+    - key: kern.ipc.soacceptqueue
       value: "{{ runtime_somaxconn_size }}"
       description: Max pending socket connections queue size
     - key: kern.kq_calloutmax
