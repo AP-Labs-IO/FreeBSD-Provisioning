@@ -14,3 +14,4 @@ network_bridge_filtering_disabled: true
 
 network_send_buffer_size: 1048576
 network_receive_buffer_size: 1048576
+network_receive_delayed_ack: 0

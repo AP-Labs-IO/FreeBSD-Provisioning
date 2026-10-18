@@ -265,6 +265,9 @@
     - key: net.inet.tcp.recvspace
       value: "{{ network_receive_buffer_size }}"
       description: Initial receive socket buffer size
+    - key: net.inet.tcp.delayed_ack
+      value: "{{ network_receive_delayed_ack }}"
+      description: TCP ACK delay
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   when: network_bridge_filtering_disabled

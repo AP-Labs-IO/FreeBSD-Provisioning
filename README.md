@@ -29,6 +29,7 @@ Role Variables
 | network_bridge_filtering_disabled  | true          | Boolean toggle to disable packet filtering on bridge interfaces.                                                        |
 | network_send_buffer_size           | 1048576       | Initial send socket buffer size, according to ` sysctl net.inet.tcp.sendspace`.                                         |
 | network_receive_buffer_size        | 1048576       | Initial receive socket buffer size, according to ` sysctl net.inet.tcp.recvspace`.                                      |
+| network_receive_delayed_ack        | 0             | TCP ACK delay, according to ` sysctl net.inet.tcp.delayed_ack`.                                                         |
 
 Dependencies
 ------------
