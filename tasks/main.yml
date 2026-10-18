@@ -12,6 +12,12 @@
   tags: [smbd, config]
   notify: Restart Samba
   block:
+    - name: Disable nmbd(8)
+      community.general.sysrc:
+        name: nmbd_enable
+        state: present
+        value: "NO"
+
     - name: Install smbd main configuration
       ansible.builtin.template:
         src: smb4.conf.j2

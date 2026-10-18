@@ -1,7 +1,7 @@
 Samba Server
 ============
 
-Configure a simple Samba Server for file sharing purposes only (i.e. without joining a Domain Controller nor acting as one, printing, etc.).
+Configure a simple Samba Server, strictly over TCP/IP (i.e. no NetBIOS support), for file sharing purposes only (i.e. without joining a Domain Controller nor acting as one, printing, etc.).
 
 Requirements
 ------------
