@@ -30,11 +30,11 @@ Dependencies
 
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
-  * `nfs_server_extra_loader_settings`: List of dictionaries with attributes:
+  * `nfs_server_extra_loader_settings`: List of dictionaries of extra `loader(8)` settings to configure, with attributes:
     * `key`: Name of the loader setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
-  * `nfs_server_extra_kernel_settings`: List of dictionaries with attributes:
+  * `nfs_server_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
