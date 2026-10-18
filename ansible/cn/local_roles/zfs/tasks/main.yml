@@ -71,7 +71,7 @@
         mode: "0400"
         content: "{{ item.key }}"
       loop: "{{ zfs_encryption_datasets }}"
-      no_log: true
+      no_log: "{{ zfs_sensitive_logging_disabled }}"
 
     - name: Enable zfskeys service
       community.general.sysrc:

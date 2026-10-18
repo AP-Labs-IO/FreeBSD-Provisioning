@@ -1,4 +1,6 @@
 ---
+zfs_sensitive_logging_disabled: true
+
 zfs_namespace: ap-labs
 zfs_installation_directory: libexec
 

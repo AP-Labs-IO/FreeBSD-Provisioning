@@ -20,6 +20,7 @@ Role Variables
 
 | Variable                                     | Default value                              | Description                                                                 |
 |----------------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------|
+| zfs_sensitive_logging_disabled               | true                                       | Boolean that dictates whether task output considered sensitive is logged or not. |
 | zfs_installation_directory                   | libexec                                    | Installation directory.                                                     |
 | zfs_namespace                                | ap-labs                                    | Installation subdirectory.                                                  |
 | zfs_data_pools                               | []                                         | List of data pools names to import.                                         |
