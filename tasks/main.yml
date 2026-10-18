@@ -108,6 +108,9 @@
     - key: kern.ipc.somaxconn
       value: "{{ runtime_somaxconn_size }}"
       description: Max pending socket connections queue size
+    - key: kern.kq_calloutmax
+      value: "{{ runtime_kq_calloutmax }}"
+      description: Maximum number of callouts allocated for kqueue
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
