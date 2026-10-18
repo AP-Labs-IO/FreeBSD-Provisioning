@@ -17,11 +17,11 @@ The last set of requirements can be easily met by running the `ap_labs.bootstrap
 Role Variables
 --------------
 
-| Variable                      |  Default value    | Description                                                                          |
-|-------------------------------|-------------------|--------------------------------------------------------------------------------------|
-| runtime_somaxconn_size        | 2048              | Max pending socket connections queue size, according to `sysctl kern.ipc.somaxconn`. |
+| Variable                      |  Default value    | Description                                                                            |
+|-------------------------------|-------------------|----------------------------------------------------------------------------------------|
+| runtime_somaxconn_size        | 2048              | Max pending socket connections queue size, according to `sysctl kern.ipc.somaxconn`.   |
 | runtime_kq_calloutmax         | 150000            | Max number of callouts allocated for kqueue, according to `sysctl kern.kq_calloutmax`. |
-| runtime_extra_kernel_settings | []                | See `runtime_extra_kernel_settings` below.                                           |
+| runtime_extra_kernel_settings | []                | See `runtime_extra_kernel_settings` below.                                             |
 
 Dependencies
 ------------
