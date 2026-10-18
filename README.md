@@ -28,12 +28,12 @@ Dependencies
 
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
-  * `nfs_client_shares`: List of dictionaries with attributes:
+  * `nfs_client_shares`: List of dictionaries of NFS shares to mount, with attributes:
     * `host`: Host that exports the target NFS share.
     * `src`: Path of the target NFS share within the host that exports it.
     * `path`: Path where the target NFS share should be mounted on the client.
     * `opts`: Mount options for the target NFS share.
-  * `nfs_client_extra_kernel_settings`: List of dictionaries with attributes:
+  * `nfs_client_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
