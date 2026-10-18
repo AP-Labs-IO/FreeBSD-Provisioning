@@ -28,7 +28,7 @@ Dependencies
 * Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `runtime_mac_do_rules`: String with the desired `mac_do(4)` configuration.
-  * `runtime_extra_kernel_settings`: List of dictionaries with attributes:
+  * `runtime_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:
     * `key`: Name of the runtime kernel tunable to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
