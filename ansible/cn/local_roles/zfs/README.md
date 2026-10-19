@@ -29,6 +29,8 @@ Role Variables
 | zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                           |
 | zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                              |
 | zfs_replication_target_port                  | 22                                         | SSH port for the `zfs_replication_target_host`.                                  |
+| zfs_hourly_snapshots_datasets                | []                                         | See `zfs_hourly_snapshots_datasets` below.                                       |
+| zfs_daily_snapshots_datasets                 | []                                         | See `zfs_daily_snapshots_datasets` below.                                        |
 | zfs_replication_monitoring_schedule          | minute: "*/15"                             | See `zfs_replication_monitoring_schedule` below.                                 |
 | zfs_zpool_capacity_thresholds                | See `zfs_zpool_capacity_thresholds` below. | See `zfs_zpool_capacity_thresholds` below.                                       |
 | zfs_vdev_async_write_max_active              | 5                                          | Maximum async write I/O operations per vdev.                                     |
@@ -69,8 +71,8 @@ Dependencies
     * `gid`: Optional GID of the group, defaulting to the next available GID.
   * `zfs_replication_target_host`: FQDN of the host to target for replication. This role expects a file by the name of `known_hosts_{{ zfs_replication_target_host }}` to be present at the root of the project's `files` directory, holding the replication target host's SSH public keys.
   * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
-  * `zfs_hourly_snapshots_datasets`: List of ZFS datasets to include in the hourly snapshotting and replication schedule.
-  * `zfs_daily_snapshots_datasets`: List of ZFS datasets to include in the daily snapshotting and replication schedule.
+  * `zfs_hourly_snapshots_datasets`: List of ZFS datasets to include in the hourly snapshotting and replication schedule, defaulting to an empty list.
+  * `zfs_daily_snapshots_datasets`: List of ZFS datasets to include in the daily snapshotting and replication schedule, defaulting to an empty list.
   * `zfs_extra_boot_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
     * `key`: Name of the boot-time ZFS setting to set in `/boot/loader.conf` via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.

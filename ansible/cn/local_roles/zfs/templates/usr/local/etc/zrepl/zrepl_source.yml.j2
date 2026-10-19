@@ -16,6 +16,7 @@ global:
       time: false
 
 jobs:
+{% if zfs_hourly_snapshots_datasets | length > 0 %}
   - name: hourly
     type: push
 {{ ssh_connect_block() }}
@@ -37,7 +38,9 @@ jobs:
         - type: grid
           grid: 24x1h | 30x1d
           regex: "^hourly_"
+{% endif %}
 
+{% if zfs_daily_snapshots_datasets | length > 0 %}
   - name: daily
     type: push
 {{ ssh_connect_block() }}
@@ -59,3 +62,4 @@ jobs:
         - type: grid
           grid: 30x1d
           regex: "^daily_"
+{% endif %}
