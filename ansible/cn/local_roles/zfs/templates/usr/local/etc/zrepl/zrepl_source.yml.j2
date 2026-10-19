@@ -13,8 +13,8 @@ jobs:
     connect:
       type: ssh+stdinserver
       host: {{ zfs_replication_target_host }}
-      user: {{ zfs_replication_user.name }}
       port: {{ zfs_replication_target_port }}
+      user: {{ zfs_replication_user.name }}
       identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
       options:
         - StrictHostKeyChecking=yes
