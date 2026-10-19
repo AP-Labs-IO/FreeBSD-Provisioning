@@ -18,28 +18,28 @@ The bootstrap set of requirements can be easily met by running the `ap_labs.boot
 Role Variables
 --------------
 
-| Variable                                     | Default value                              | Description                                                                 |
-|----------------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------|
+| Variable                                     | Default value                              | Description                                                                      |
+|----------------------------------------------|--------------------------------------------|----------------------------------------------------------------------------------|
 | zfs_sensitive_logging_disabled               | true                                       | Boolean that dictates whether task output considered sensitive is logged or not. |
-| zfs_installation_directory                   | libexec                                    | Installation directory.                                                     |
-| zfs_namespace                                | ap-labs                                    | Installation subdirectory.                                                  |
-| zfs_data_pools                               | []                                         | List of data pools names to import.                                         |
-| zfs_encryption_keys_directory                | /root/.zfskeys                             | Directory where ZFS encryption keys are kept.                               |
-| zfs_encryption_datasets                      | []                                         | See `zfs_encryption_datasets` below.                                        |
-| zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                      |
-| zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                         |
-| zfs_replication_target_port                  | 22                                         | SSH port for the `zfs_replication_target_host`.                             |
-| zfs_replication_monitoring_schedule          | minute: "*/15"                             | See `zfs_replication_monitoring_schedule` below.                            |
-| zfs_zpool_capacity_thresholds                | See `zfs_zpool_capacity_thresholds` below. | See `zfs_zpool_capacity_thresholds` below.                                  |
-| zfs_vdev_async_write_max_active              | 5                                          | Maximum async write I/O operations per vdev.                                |
-| zfs_vdev_async_write_min_active              | 1                                          | Minimum async write I/O operations per vdev.                                |
-| zfs_lowmem_callback_period                   | 0                                          | Low memory callback period.                                                 |
-| zfs_extra_boot_settings                      | []                                         | See `zfs_extra_boot_settings` below.                                        |
-| zfs_services_memory_allocation               | 0                                          | See `zfs_services_memory_allocation` below.                                 |
-| zfs_host_memory_reservation                  | 0                                          | See `zfs_host_memory_reservation` below.                                    |
-| zfs_arc_min_multiplier                       | 0.25                                       | See `zfs_arc_min_multiplier` below.                                         |
-| zfs_file_timestamp_precision                 | 3                                          | File timestamp precision, according to `sysctl -d vfs.timestamp_precision`. |
-| zfs_extra_runtime_settings                   | []                                         | See `zfs_extra_runtime_settings` below.                                     |
+| zfs_installation_directory                   | libexec                                    | Installation directory.                                                          |
+| zfs_namespace                                | ap-labs                                    | Installation subdirectory.                                                       |
+| zfs_data_pools                               | []                                         | List of data pools names to import.                                              |
+| zfs_encryption_keys_directory                | /root/.zfskeys                             | Directory where ZFS encryption keys are kept.                                    |
+| zfs_encryption_datasets                      | []                                         | See `zfs_encryption_datasets` below.                                             |
+| zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                           |
+| zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                              |
+| zfs_replication_target_port                  | 22                                         | SSH port for the `zfs_replication_target_host`.                                  |
+| zfs_replication_monitoring_schedule          | minute: "*/15"                             | See `zfs_replication_monitoring_schedule` below.                                 |
+| zfs_zpool_capacity_thresholds                | See `zfs_zpool_capacity_thresholds` below. | See `zfs_zpool_capacity_thresholds` below.                                       |
+| zfs_vdev_async_write_max_active              | 5                                          | Maximum async write I/O operations per vdev.                                     |
+| zfs_vdev_async_write_min_active              | 1                                          | Minimum async write I/O operations per vdev.                                     |
+| zfs_lowmem_callback_period                   | 0                                          | Low memory callback period.                                                      |
+| zfs_extra_boot_settings                      | []                                         | See `zfs_extra_boot_settings` below.                                             |
+| zfs_services_memory_allocation               | 0                                          | See `zfs_services_memory_allocation` below.                                      |
+| zfs_host_memory_reservation                  | 0                                          | See `zfs_host_memory_reservation` below.                                         |
+| zfs_arc_min_multiplier                       | 0.25                                       | See `zfs_arc_min_multiplier` below.                                              |
+| zfs_file_timestamp_precision                 | 3                                          | File timestamp precision, according to `sysctl -d vfs.timestamp_precision`.      |
+| zfs_extra_runtime_settings                   | []                                         | See `zfs_extra_runtime_settings` below.                                          |
 
 As a first step, the role queries the target node's "local base", i.e. the result of `sysctl -n user.localbase`, and uses that plus the `zfs_installation_directory` & `zfs_namespace` variables above, and the role's name, to construct the full path where scripts will be installed.
 
