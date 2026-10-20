@@ -11,6 +11,11 @@ jobs:
   - name: {{ schedule.name }}
     type: {{ schedule.type | default('push') }}
     connect:
+{% if schedule.connect_raw is defined and schedule.connect_raw | length > 0 %}
+{% for key, value in schedule.connect_raw.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
       type: ssh+stdinserver
       host: {{ zfs_replication_target_host }}
       port: {{ zfs_replication_target_port }}
@@ -18,6 +23,7 @@ jobs:
       identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
       options:
         - StrictHostKeyChecking=yes
+{% endif %}
     filesystems:
 {% for dataset in schedule.datasets %}
       "{{ dataset }}": true

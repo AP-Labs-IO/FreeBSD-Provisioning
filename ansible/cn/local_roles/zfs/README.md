@@ -73,6 +73,18 @@ Dependencies
   * `zfs_snapshotting_schedules`: List of dictionaries of zrepl snapshotting and replication schedules, with attributes:
     * `name`: Name of the schedule, compatible with zrepl's schedule naming requirements.
     * `type`: Optional type of zrepl schedule, defaulting to `push`.
+    * `connect_raw`: Optional arbitrary YAML object defining the desired zrepl `connection` block for the schedule. If not defined, the connection defaults to:
+
+      ```yaml
+        type: ssh+stdinserver
+        host: {{ zfs_replication_target_host }}
+        port: {{ zfs_replication_target_port }}
+        user: {{ zfs_replication_user.name }}
+        identity_file: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_keyname }}"
+        options:
+          - StrictHostKeyChecking=yes
+      ```
+
     * `datasets`: List of datasets to include in the schedule.
     * `snapshotting`: Optional type of zrepl snapshotting to be performed by the schedule, defaulting to `periodic`.
     * `prefix`: Optional string prefix for the snapshot names, defaulting to `{{ name }}_`.
