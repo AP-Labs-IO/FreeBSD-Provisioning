@@ -20,7 +20,7 @@ jobs:
       host: {{ zfs_replication_target_host }}
       port: {{ zfs_replication_target_port }}
       user: {{ zfs_replication_user.name }}
-      identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
+      identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_keyname }}
       options:
         - StrictHostKeyChecking=yes
 {% endif %}

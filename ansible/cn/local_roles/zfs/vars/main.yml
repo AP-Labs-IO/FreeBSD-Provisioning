@@ -1,5 +1,5 @@
 ---
-zfs_replication_key_basename: "replication-{{ zfs_replication_target_host | replace('.', '_') }}"
+zfs_replication_keyname: replication
 zfs_replication_datasets: "{{ zfs_snapshotting_schedules | map(attribute='datasets') | flatten | unique }}"
 zfs_replication_source_delegated_permissions:
   - snapshot
