@@ -1,13 +1,3 @@
-{% macro ssh_connect_block() %}
-    connect:
-      type: ssh+stdinserver
-      host: {{ zfs_replication_target_host }}
-      user: {{ zfs_replication_user.name }}
-      port: {{ zfs_replication_target_port }}
-      identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
-      options:
-        - StrictHostKeyChecking=yes
-{%- endmacro %}
 global:
   logging:
     - type: stdout
@@ -16,50 +6,48 @@ global:
       time: false
 
 jobs:
-{% if zfs_hourly_snapshots_datasets | length > 0 %}
-  - name: hourly
-    type: push
-{{ ssh_connect_block() }}
+{% for schedule in zfs_snapshotting_schedules %}
+{% set prefix = schedule.prefix if schedule.prefix is defined else schedule.name ~ '_' %}
+  - name: {{ schedule.name }}
+    type: {{ schedule.type | default('push') }}
+    connect:
+{% if schedule.connect_raw is defined and schedule.connect_raw | length > 0 %}
+{% for key, value in schedule.connect_raw.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
+      type: ssh+stdinserver
+      host: {{ zfs_replication_target_host }}
+      port: {{ zfs_replication_target_port }}
+      user: {{ zfs_replication_user.name }}
+      identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}
+      options:
+        - StrictHostKeyChecking=yes
+{% endif %}
     filesystems:
-{% for dataset in zfs_hourly_snapshots_datasets %}
+{% for dataset in schedule.datasets %}
       "{{ dataset }}": true
 {% endfor %}
     snapshotting:
-      type: periodic
-      prefix: hourly_
-      interval: 1h
+      type: {{ schedule.snapshotting | default('periodic') }}
+      prefix: {{ prefix }}
+      interval: {{ schedule.interval }}
     pruning:
       keep_sender:
+{% if schedule.pruning.sender_raw is defined %}
+{{ schedule.pruning.sender_raw | to_nice_yaml(indent=2) | indent(8, first=True) }}
+{% else %}
         - type: not_replicated
         - type: grid
-          grid: 24x1h | 30x1d
-          regex: "^hourly_"
-      keep_receiver:
-        - type: grid
-          grid: 24x1h | 30x1d
-          regex: "^hourly_"
+          grid: {{ schedule.pruning.sender_grid }}
+          regex: "^{{ prefix }}"
 {% endif %}
-
-{% if zfs_daily_snapshots_datasets | length > 0 %}
-  - name: daily
-    type: push
-{{ ssh_connect_block() }}
-    filesystems:
-{% for dataset in zfs_daily_snapshots_datasets %}
-      "{{ dataset }}": true
+      keep_receiver:
+{% if schedule.pruning.receiver_raw is defined %}
+{{ schedule.pruning.receiver_raw | to_nice_yaml(indent=2) | indent(8, first=True) }}
+{% else %}
+        - type: grid
+          grid: {{ schedule.pruning.receiver_grid }}
+          regex: "^{{ prefix }}"
+{% endif %}
 {% endfor %}
-    snapshotting:
-      type: periodic
-      prefix: daily_
-      interval: 24h
-    pruning:
-      keep_sender:
-        - type: not_replicated
-        - type: grid
-          grid: 30x1d
-          regex: "^daily_"
-      keep_receiver:
-        - type: grid
-          grid: 30x1d
-          regex: "^daily_"
-{% endif %}
