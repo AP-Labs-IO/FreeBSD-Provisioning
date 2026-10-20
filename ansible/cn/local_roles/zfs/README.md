@@ -68,7 +68,7 @@ Dependencies
     * `uid`: Optional UID of the user, defaulting to the next available UID.
     * `name`: The user's main group.
     * `gid`: Optional GID of the group, defaulting to the next available GID.
-  * `zfs_replication_target_host`: FQDN of the host to target for replication. This role expects a file by the name of `known_hosts_{{ zfs_replication_target_host }}` to be present at the root of the project's `files` directory, holding the replication target host's SSH public keys.
+  * `zfs_replication_target_host`: FQDN of the host to target for replication.
   * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
   * `zfs_snapshotting_schedules`: List of dictionaries of zrepl snapshotting and replication schedules, with attributes:
     * `name`: Name of the schedule, compatible with zrepl's schedule naming requirements.
@@ -105,6 +105,7 @@ Dependencies
     * `key`: Name of the runtime ZFS setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
+* A file holding all of the replication target hosts SSH public keys at `files/replication/known_hosts` path.
 
 Example Ansible Configuration
 -----------------------------

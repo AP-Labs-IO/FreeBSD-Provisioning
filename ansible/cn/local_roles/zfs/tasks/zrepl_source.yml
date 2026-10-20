@@ -27,7 +27,7 @@
 
 - name: Copy replication host SSH public keys
   ansible.builtin.copy:
-    src: "known_hosts_{{ zfs_replication_target_host }}"
+    src: replication/known_hosts
     dest: "/home/{{ zfs_replication_user.name }}/.ssh/known_hosts"
     owner: "{{ zfs_replication_user.name }}"
     group: "{{ zfs_replication_user.group }}"
