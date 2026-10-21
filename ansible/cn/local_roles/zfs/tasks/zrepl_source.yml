@@ -13,7 +13,7 @@
   block:
     - name: Generate replication SSH key
       community.crypto.openssh_keypair:
-        path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}"
+        path: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_keyname }}"
         type: ed25519
         comment: "{{ zfs_replication_user.name }}@{{ ansible_facts['fqdn'] }}"
         owner: "{{ zfs_replication_user.name }}"
@@ -22,12 +22,12 @@
 
     - name: Retrieve replication SSH public key
       ansible.builtin.slurp:
-        src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_key_basename }}.pub"
+        src: "/home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_keyname }}.pub"
       register: zfs_reg_replication_pubkey
 
 - name: Copy replication host SSH public keys
   ansible.builtin.copy:
-    src: "known_hosts_{{ zfs_replication_target_host }}"
+    src: replication/known_hosts
     dest: "/home/{{ zfs_replication_user.name }}/.ssh/known_hosts"
     owner: "{{ zfs_replication_user.name }}"
     group: "{{ zfs_replication_user.group }}"
