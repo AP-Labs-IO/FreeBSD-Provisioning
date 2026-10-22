@@ -40,7 +40,7 @@
   notify: Restart watchdogd
   tags: [watchdog, config]
 
-- name: Install monitoring packages
+- name: Install packages
   community.general.pkgng:
     name:
       - net/ifstat
