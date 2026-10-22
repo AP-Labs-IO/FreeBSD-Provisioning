@@ -34,7 +34,7 @@
     value: 1
   tags: [tap, config]
 
-- name: Install vm-bhyve packages
+- name: Install packages
   community.general.pkgng:
     name:
       - sysutils/vm-bhyve
