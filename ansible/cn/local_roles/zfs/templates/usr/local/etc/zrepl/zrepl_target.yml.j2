@@ -17,7 +17,7 @@ jobs:
     root_fs: {{ zfs_replication_target_dataset }}
     recv:
       placeholder:
-        encryption: "off"
+        encryption: off
       properties:
         override:
           canmount: off
