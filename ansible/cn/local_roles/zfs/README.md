@@ -46,6 +46,8 @@ As a first step, the role queries the target node's "local base", i.e. the resul
 
 In a default setup, this construction results in an installation path of `/usr/local/libexec/ap-labs/zfs`.
 
+At present, zrepl configuration installed by this role is limited to a single replication target host, and the replication job created on the latter is hardcoded to a type of `sync` and a serve type of `stdinserver`. These limitations will be progressively lifted to support multiple replication targets and to allow for more flexible customizations of the receiver replication job.
+
 Dependencies
 ------------
 
