@@ -32,6 +32,14 @@ jobs:
       type: {{ schedule.snapshotting | default('periodic') }}
       prefix: {{ prefix }}
       interval: {{ schedule.interval }}
+    send:
+{% if schedule.send is defined and schedule.send | length > 0 %}
+{% for key, value in schedule.send.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
+      send_properties: true
+{% endif %}
     pruning:
       keep_sender:
 {% if schedule.pruning.sender_raw is defined %}
