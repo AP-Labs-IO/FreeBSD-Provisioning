@@ -89,6 +89,12 @@ Dependencies
     * `snapshotting`: Optional type of zrepl snapshotting to be performed by the schedule, defaulting to `periodic`.
     * `prefix`: Optional string prefix for the snapshot names, defaulting to `{{ name }}_`.
     * `interval`: Snapshotting interval for the schedule, compatible with zrepl's interval requirements.
+    * `send`: Optional dictionary describing the send options for the schedule, according to zrepl's requirements. If omitted, it defaults to:
+
+      ```yaml
+        send_properties: true
+      ```
+
     * `pruning`: Dictionary describing the snapshots pruning policy to be applied to the schedule, with attributes:
       * `sender_raw`: Optional arbitrary YAML object or list fully describing a custom "sender" pruning policy, compatible with zrepl's pruning requirements.
       * `sender_grid`: zrepl-compatible "sender" pruning grid, mandatory only if `sender_raw` is not defined.
