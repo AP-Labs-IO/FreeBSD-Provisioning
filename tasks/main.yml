@@ -4,7 +4,7 @@
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
   tags: [config]
 
-- name: Install Bastille packages
+- name: Install packages
   community.general.pkgng:
     name:
       - devel/git
