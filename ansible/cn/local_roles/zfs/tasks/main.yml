@@ -43,7 +43,7 @@
       changed_when: true
 
 - name: Configure zfskeys service
-  notify: Import encrypted ZFS datasets
+  notify: Import datasets
   tags: [encryption, zfskeys]
   block:
     - name: Create ZFS encryption keys directory

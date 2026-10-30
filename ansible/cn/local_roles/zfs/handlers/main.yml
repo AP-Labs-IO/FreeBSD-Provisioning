@@ -4,14 +4,14 @@
     name: zfskeys
     state: started
   changed_when: true
-  listen: Import encrypted ZFS datasets
+  listen: Import datasets
 
 - name: Mount all available ZFS datasets
   ansible.builtin.service:
     name: zfs
     enabled: true
     state: started
-  listen: Import encrypted ZFS datasets
+  listen: Import datasets
 
 - name: Restart devd
   ansible.builtin.service:
