@@ -43,6 +43,7 @@
       changed_when: true
 
 - name: Configure zfskeys service
+  notify: Import encrypted ZFS datasets
   tags: [encryption, zfskeys]
   block:
     - name: Create ZFS encryption keys directory
@@ -76,7 +77,6 @@
         name: zfskeys_enable
         state: present
         value: "YES"
-      notify: Import encrypted ZFS datasets
 
     - name: Force execution of notified handlers
       ansible.builtin.meta: flush_handlers
