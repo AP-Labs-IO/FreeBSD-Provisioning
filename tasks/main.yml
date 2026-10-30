@@ -98,6 +98,7 @@
     vlans_matrix: >-
       [
         {% for row in network_vlan_interfaces %}
+          {% set outer_loop = loop %}
           {% for vlan in row.vlans %}
             {
               "parent": "{{ row.parent }}",
@@ -115,7 +116,7 @@
                         {%- set _ = tokens.append('%s' | format(vlan.opts)) -%}
                       {%- endif -%}
                       {{- tokens | join(' ') | trim -}}"
-            }{% if not loop.last or not loop.parentloop.last %},{% endif %}
+            }{% if not (loop.last and outer_loop.last) %},{% endif %}
           {% endfor %}
         {% endfor %}
       ]
