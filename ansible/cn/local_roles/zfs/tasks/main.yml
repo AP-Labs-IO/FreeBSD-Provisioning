@@ -42,16 +42,6 @@
       when: item not in zfs_reg_active_pools.stdout_lines
       changed_when: true
 
-- name: Create data pools legacy mountpoint links
-  ansible.builtin.file:
-    src: "/{{ item }}"
-    dest: "/mnt/{{ item }}"
-    state: link
-    owner: root
-    group: wheel
-  loop: "{{ zfs_data_pools }}"
-  tags: [data, pools, mountpoint, legacy]
-
 - name: Configure zfskeys service
   tags: [encryption, zfskeys]
   block:
@@ -87,6 +77,19 @@
         state: present
         value: "YES"
       notify: Import encrypted ZFS datasets
+
+    - name: Force execution of notified handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: Create data pools legacy mountpoint links
+  ansible.builtin.file:
+    src: "/{{ item }}"
+    dest: "/mnt/{{ item }}"
+    state: link
+    owner: root
+    group: wheel
+  loop: "{{ zfs_data_pools }}"
+  tags: [data, pools, mountpoint, legacy]
 
 - name: Disable periodic-based zpool scrubbing
   community.general.sysrc:
