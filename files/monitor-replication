@@ -1,0 +1,47 @@
+#!/bin/sh
+
+
+HOSTNAME=$(hostname)
+
+STATUS_JSON=$(/usr/local/bin/zrepl status --mode raw 2>/dev/null)
+if [ -z "$STATUS_JSON" ]
+then
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="zrepl daemon offline on $HOSTNAME" \
+        --body="Error: The zrepl daemon process is stopped or unreachable."
+    exit 1
+fi
+
+SNAPSHOTTING_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+    [ .Jobs[] | select(.type == "push")
+      | select(.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "")
+      | .push.Snapshotting.Periodic.Error
+    ] | unique | join("\n")
+' 2>/dev/null)
+if [ -n "$SNAPSHOTTING_ERRORS" ]
+then
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="ZFS snapshotting failure on $HOSTNAME" \
+        --body="Warning: ZFS snapshotting errors:\n$SNAPSHOTTING_ERRORS"
+fi
+
+REPLICATION_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+    [ .Jobs[] | select(.type == "push") | .push.Replication | select(. != null) | (
+        [
+          (if (.WaitReconnectError != null) then .WaitReconnectError.Err else null end),
+          (.Attempts[]?.Filesystems[]?.PlanError? | select(. != null) | .Err)
+        ] | map(select(. != null and . != ""))[]
+    ) ] | unique | join("\n")
+' 2>/dev/null)
+if [ -n "$REPLICATION_ERRORS" ]
+then
+    /usr/local/bin/apprise \
+        --tag=replication \
+        --notification-type=FAILURE \
+        --title="ZFS replication failure on $HOSTNAME" \
+        --body="Warning: ZFS replication errors:\n$REPLICATION_ERRORS"
+fi

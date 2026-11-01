@@ -1,0 +1,24 @@
+---
+zfs_replication_datasets: "{{ zfs_snapshotting_schedules | map(attribute='datasets') | flatten | unique }}"
+zfs_replication_source_delegated_permissions:
+  - snapshot
+  - mount
+  - bookmark
+  - send
+  - hold
+  - release
+  - destroy
+zfs_replication_target_delegated_permissions:
+  - create
+  - userprop
+  - mountpoint
+  - receive
+  - readonly
+  - canmount
+  - compression
+  - mount
+  - rollback
+  - hold
+  - release
+  - destroy
+zfs_replication_keyname: replication

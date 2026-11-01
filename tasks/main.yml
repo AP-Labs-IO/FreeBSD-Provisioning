@@ -1,0 +1,250 @@
+---
+- name: Configure installation path
+  tags: [installation-path]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: zfs_reg_local_base
+      changed_when: false
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        zfs_installation_path: >-
+          {{ zfs_reg_local_base.stdout }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ zfs_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
+- name: Start zfsd
+  ansible.builtin.service:
+    name: zfsd
+    enabled: true
+    state: started
+  tags: [zfsd, service]
+
+- name: Configure data pools
+  tags: [data, pools]
+  block:
+    - name: Query active pools
+      ansible.builtin.command: zpool list -H -o name
+      register: zfs_reg_active_pools
+      changed_when: false
+      failed_when: false
+
+    - name: Import data pools
+      ansible.builtin.command: "zpool import {{ item }}"
+      loop: "{{ zfs_data_pools }}"
+      when: item not in zfs_reg_active_pools.stdout_lines
+      changed_when: true
+
+- name: Configure zfskeys service
+  notify: Import datasets
+  tags: [encryption, zfskeys]
+  block:
+    - name: Create ZFS encryption keys directory
+      ansible.builtin.file:
+        path: "{{ zfs_encryption_keys_directory }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0700"
+
+    - name: Copy ZFS encryption keys
+      ansible.builtin.copy:
+        dest: "{{ zfs_encryption_keys_directory }}/{{ item.dataset | replace('/', '_') }}.key"
+        owner: root
+        group: wheel
+        mode: "0400"
+        content: "{{ item.key }}"
+      loop: "{{ zfs_encryption_datasets }}"
+      no_log: "{{ zfs_sensitive_logging_disabled }}"
+
+    - name: Configure keylocation property
+      community.general.zfs:
+        name: "{{ item.dataset }}"
+        state: present
+        extra_zfs_properties:
+          keylocation: "file://{{ zfs_encryption_keys_directory }}/{{ item.dataset | replace('/', '_') }}.key"
+      loop: "{{ zfs_encryption_datasets }}"
+
+    - name: Enable zfskeys service
+      community.general.sysrc:
+        name: zfskeys_enable
+        state: present
+        value: "YES"
+
+    - name: Force execution of notified handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: Create data pools legacy mountpoint links
+  ansible.builtin.file:
+    src: "/{{ item }}"
+    dest: "/mnt/{{ item }}"
+    state: link
+    owner: root
+    group: wheel
+  loop: "{{ zfs_data_pools }}"
+  tags: [data, pools, mountpoint, legacy]
+
+- name: Disable periodic-based zpool scrubbing
+  community.general.sysrc:
+    name: daily_scrub_zfs_enable
+    state: present
+    value: "NO"
+    path: /usr/local/etc/periodic.conf
+  tags: [zpool, scrub, periodic, config]
+
+- name: Install cron-based zpool scrub jobs
+  ansible.builtin.cron:
+    name: "{{ item.pool }} pool scrub"
+    cron_file: "/usr/local/etc/cron.d/scrub-{{ item.pool }}"
+    minute: "{{ item.minute | default(omit) }}"
+    hour: "{{ item.hour | default(omit) }}"
+    day: "{{ item.day | default(omit) }}"
+    weekday: "{{ item.weekday | default(omit) }}"
+    special_time: "{{ item.special_time | default(omit) }}"
+    user: root
+    job: "/sbin/zpool scrub {{ item.pool }}"
+  loop: "{{ zfs_pools_scrub_schedules }}"
+  tags: [zpool, scrub, cron, config]
+
+- name: Configure devd alerts
+  tags: [devd, config]
+  block:
+    - name: Create local devd directory
+      ansible.builtin.file:
+        path: /usr/local/etc/devd
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
+    - name: Install devd ZFS alerting rules
+      ansible.builtin.copy:
+        src: devd-zfs.conf
+        dest: /usr/local/etc/devd/zfs.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+      notify: Restart devd
+      tags: [alerts]
+
+- name: Configure zpool capacity monitoring
+  tags: [zpool, capacity]
+  block:
+    - name: Install zpool capacity monitoring script
+      ansible.builtin.template:
+        src: monitor-zpool-capacity
+        dest: "{{ zfs_installation_path }}/monitor-zpool-capacity"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
+
+    - name: Install zpool capacity alert job
+      ansible.builtin.cron:
+        name: Zpool capacity alert
+        cron_file: /usr/local/etc/cron.d/alert-zpool-capacity
+        minute: "{{ zfs_pools_capacity_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ zfs_pools_capacity_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ zfs_pools_capacity_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ zfs_pools_capacity_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ zfs_pools_capacity_monitoring_schedule.special_time | default(omit) }}"
+        user: root
+        job: "{{ zfs_installation_path }}/monitor-zpool-capacity"
+      tags: [alert, cron]
+
+- name: Import snapshotting & replication common tasks
+  ansible.builtin.import_tasks: zrepl_common.yml
+  tags: [snapshotting, replication, config, common]
+
+- name: Import snapshotting & replication source tasks
+  ansible.builtin.import_tasks: zrepl_source.yml
+  tags: [snapshotting, replication, config, source]
+
+- name: Configure base boot-time settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: vfs.zfs.vdev.async_write_max_active
+      value: "{{ zfs_vdev_async_write_max_active }}"
+      description: Set per vdev maximum async write I/O operations
+    - key: vfs.zfs.vdev.async_write_min_active
+      value: "{{ zfs_vdev_async_write_min_active }}"
+      description: Set per vdev minimum async write I/O operations
+    - key: vm.lowmem_period
+      value: "{{ zfs_lowmem_callback_period }}"
+      description: Set low memory callback period
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [config, boot-time]
+
+- name: Configure extra boot-time settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop: "{{ zfs_extra_boot_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [config, boot-time]
+
+- name: Configure base runtime settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: vfs.zfs.arc.max
+      value: "{{ arc_max_bytes }}"
+      description: Set maximum ARC size
+    - key: vfs.zfs.arc.min
+      value: "{{ arc_min_bytes }}"
+      description: Set minimum ARC size
+    - key: vfs.timestamp_precision
+      value: "{{ zfs_file_timestamp_precision }}"
+      description: Set file timestamp precision
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  vars:
+    gb_to_bytes: "{{ 1024 * 1024 * 1024 }}"
+    memtotal_gb: "{{ (ansible_facts['memtotal_mb'] | float) / 1024.0 }}"
+    arc_max_gb: >-
+      {{ (memtotal_gb - (zfs_services_memory_allocation | float) - (zfs_host_memory_reservation | float))
+          if ((zfs_services_memory_allocation | float) > 0 or (zfs_host_memory_reservation | float) > 0)
+          else 0
+      }}
+    arc_max_bytes: "{{ ((arc_max_gb | float) * (gb_to_bytes | int)) | int }}"
+    arc_min_bytes: "{{ ((arc_max_bytes | int) * (zfs_arc_min_multiplier | float)) | int }}"
+  tags: [config, runtime]
+
+- name: Configure extra runtime settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ zfs_extra_runtime_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [config, runtime]
+
+- name: Install packages
+  community.general.pkgng:
+    name:
+      - sysutils/zfs-stats
+    state: latest
+    use_globs: false
+  tags: [zrepl, pkg]
