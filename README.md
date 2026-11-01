@@ -3,6 +3,8 @@ VM Bhyve
 
 Configure FreeBSD nodes to host vm-bhyve(8) managed VMs.
 
+This role assumes ZFS-based storage, which is a limitation that may be lifted in the future.
+
 Requirements
 ------------
 
