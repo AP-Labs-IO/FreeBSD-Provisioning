@@ -1,0 +1,7 @@
+---
+vm_bhyve_passthrough_devices: []
+vm_bhyve_host_checks_disabled: false
+vm_bhyve_startup_vms: []
+vm_bhyve_startup_delay: 10
+vm_bhhyve_host_shutdown_soft_timeout: 180
+vm_bhhyve_host_shutdown_hard_timeout: 240
