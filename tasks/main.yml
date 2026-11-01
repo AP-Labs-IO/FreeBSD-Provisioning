@@ -6,7 +6,6 @@
     comment: "{{ item.comment }}"
     shell: "{{ item.shell | default('/bin/sh') }}"
     password: "{{ item.password | ansible.builtin.password_hash(hashtype='sha512', salt=item.salt) }}"
-    update_password: on_create
     home: >-
       {%- if item.home is defined -%} {{ item.home }}{%- else -%} {{ users_home_prefix }}/{{ item.name }}{%- endif -%}
     create_home: "{{ (item.home is defined and item.home == '/nonexistent') | ternary(false, true) }}"
