@@ -13,6 +13,8 @@
   community.general.zfs:
     name: "{{ zfs_replication_target_dataset }}"
     state: present
+    extra_zfs_properties:
+      mountpoint: none
   tags: [replication, dataset]
 
 - name: Configure target ZFS delegation for replication
