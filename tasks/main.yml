@@ -1,0 +1,281 @@
+---
+- name: Configure installation path
+  tags: [installation-path]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: monitoring_reg_local_base
+      changed_when: false
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        monitoring_installation_path: >-
+          {{ monitoring_reg_local_base.stdout }}/{{ monitoring_installation_directory }}/{{ monitoring_namespace }}/monitoring
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ monitoring_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
+- name: Load monitoring kernel modules
+  community.general.sysrc:
+    name: "{{ item }}_load"
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+  loop:
+    - ipmi
+    - coretemp
+  notify: Reboot
+  tags: [kernel, config, modules]
+
+- name: Configure watchdogd flags
+  community.general.sysrc:
+    name: watchdogd_flags
+    state: present
+    value: "{{ monitoring_watchdogd_flags }}"
+  notify: Restart watchdogd
+  tags: [watchdog, config]
+
+- name: Install packages
+  community.general.pkgng:
+    name:
+      - net/ifstat
+      - net-im/py-apprise
+      - net-mgmt/collectd5
+      - net-mgmt/iftop
+      - security/gnupg
+      - sysutils/freeipmi
+      - sysutils/ipmitool
+      - sysutils/smartmontools
+      - textproc/jq
+    state: latest
+    use_globs: false
+  tags: [pkg]
+
+- name: Configure smartd
+  notify: Restart smartd
+  tags: [smartd]
+  block:
+    - name: Install smartd configuration
+      ansible.builtin.template:
+        src: usr/local/etc/smartd.conf.j2
+        dest: /usr/local/etc/smartd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Configure smartd flags
+      community.general.sysrc:
+        name: smartd_flags
+        state: present
+        value: "-q never -i {{ monitoring_smartd_poll_interval }}"
+
+- name: Install smartd drivedb update job
+  ansible.builtin.cron:
+    name: smartd drivedb update
+    cron_file: /usr/local/etc/cron.d/smartd-drivedb-update
+    minute: "{{ monitoring_smartd_drivedb_update_schedule.minute | default(omit) }}"
+    hour: "{{ monitoring_smartd_drivedb_update_schedule.hour | default(omit) }}"
+    day: "{{ monitoring_smartd_drivedb_update_schedule.day | default(omit) }}"
+    weekday: "{{ monitoring_smartd_drivedb_update_schedule.weekday | default(omit) }}"
+    special_time: "{{ monitoring_smartd_drivedb_update_schedule.special_time | default(omit) }}"
+    user: root
+    job: /usr/local/sbin/update-smart-drivedb
+  tags: [smartd, drivedb, update, cron]
+
+- name: Install collectd configuration
+  ansible.builtin.template:
+    src: usr/local/etc/collectd.conf.j2
+    dest: /usr/local/etc/collectd.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+  notify: Restart collectdmon
+  tags: [collectd, config]
+
+- name: Install CPU temperature script
+  ansible.builtin.copy:
+    src: collectd-cputemp
+    dest: "{{ monitoring_installation_path }}/collectd-cputemp"
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [collectd, script]
+
+- name: Install apprise configuration
+  ansible.builtin.template:
+    src: root/apprise.yml.j2
+    dest: /root/.apprise.yml
+    owner: root
+    group: wheel
+    mode: "0600"
+  tags: [apprise, config]
+
+- name: Install system reboot alert job
+  ansible.builtin.cron:
+    name: System bootup alert
+    cron_file: /usr/local/etc/cron.d/alert-reboot
+    special_time: reboot
+    user: root
+    job:
+      "/usr/local/bin/apprise \
+        --tag=reboot \
+        --notification-type=INFO \
+        --title='{{ ansible_facts['fqdn'] }} - Bootup notification' \
+        --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
+  tags: [apprise, alert, boot, cron]
+
+- name: Install smartd alerts hook
+  ansible.builtin.copy:
+    dest: /usr/local/etc/smartd_warning.d/10-apprise-notify.sh
+    owner: root
+    group: wheel
+    mode: "0755"
+    content: |
+      #!/bin/sh
+
+      /usr/local/bin/apprise \
+        --tag=smartd \
+        --notification-type=WARNING \
+        --title="$SMARTD_SUBJECT" \
+        --body="$SMARTD_FULLMESSAGE"
+  tags: [apprise, alert, smartd]
+
+- name: Configure IPMI monitoring
+  tags: [apprise, ipmi]
+  block:
+    - name: Install IPMI monitoring script
+      ansible.builtin.copy:
+        src: monitor-ipmi
+        dest: "{{ monitoring_installation_path }}/monitor-ipmi"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
+
+    - name: Install IPMI monitoring alert job
+      ansible.builtin.cron:
+        name: IPMI monitoring alert
+        cron_file: /usr/local/etc/cron.d/alert-ipmi
+        minute: "{{ monitoring_ipmi_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ monitoring_ipmi_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ monitoring_ipmi_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ monitoring_ipmi_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ monitoring_ipmi_monitoring_schedule.special_time | default(omit) }}"
+        user: root
+        job: "{{ monitoring_installation_path }}/monitor-ipmi"
+      tags: [cron]
+
+- name: Install SSH login failure alert script
+  ansible.builtin.copy:
+    src: ssh-alert
+    dest: "{{ monitoring_installation_path }}/ssh-alert"
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [apprise, alert, ssh, security]
+
+- name: Create local syslog configuration directory
+  ansible.builtin.file:
+    path: /usr/local/etc/syslog.d
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [syslog, config]
+
+- name: Configure syslog SSH login failure alerts
+  ansible.builtin.copy:
+    dest: /usr/local/etc/syslog.d/ssh.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+    content: |
+      auth.info | {{ monitoring_installation_path }}/ssh-alert
+  notify: Reload syslogd
+  tags: [syslog, alert, ssh, security]
+
+- name: Configure blocklistd
+  notify: Restart blocklistd
+  tags: [blocklistd, config, security]
+  block:
+    - name: Install blocklistd configuration
+      ansible.builtin.copy:
+        src: blocklistd.conf
+        dest: /usr/local/etc/blocklistd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Configure blocklistd flags
+      community.general.sysrc:
+        name: blocklistd_flags
+        state: present
+        value: "-c /usr/local/etc/blocklistd.conf"
+
+- name: Enable SSH blocklistd integration
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "(?i)^#?UseBlocklist"
+    line: UseBlocklist yes
+  notify: Restart sshd
+  tags: [ssh, config, blocklistd, security]
+
+- name: Configure pf
+  notify: Restart pf
+  tags: [monitoring, security, firewall]
+  block:
+    - name: Create pf local config directory
+      ansible.builtin.file:
+        path: /usr/local/etc/pf.conf.d
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
+    - name: Install pf blocklistd rules
+      ansible.builtin.copy:
+        src: pf.conf.d/blocklistd.conf
+        dest: /usr/local/etc/pf.conf.d/blocklistd.conf
+        owner: root
+        group: wheel
+        mode: "0644"
+
+    - name: Include pf blocklistd configuration
+      ansible.builtin.lineinfile:
+        path: /etc/pf.conf
+        line: include "/usr/local/etc/pf.conf.d/blocklistd.conf"
+        state: present
+        create: true
+        owner: root
+        group: wheel
+        mode: "0644"
+
+- name: Configure base services monitoring
+  tags: [apprise, base-services]
+  block:
+    - name: Install base services monitoring script
+      ansible.builtin.template:
+        src: usr/local/bin/monitor-base-services.j2
+        dest: "{{ monitoring_installation_path }}/monitor-base-services"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
+
+    - name: Install base services monitoring alert job
+      ansible.builtin.cron:
+        name: Base services monitoring alert
+        cron_file: /usr/local/etc/cron.d/alert-base-services
+        minute: "{{ monitoring_base_services_monitoring_schedule.minute | default(omit) }}"
+        hour: "{{ monitoring_base_services_monitoring_schedule.hour | default(omit) }}"
+        day: "{{ monitoring_base_services_monitoring_schedule.day | default(omit) }}"
+        weekday: "{{ monitoring_base_services_monitoring_schedule.weekday | default(omit) }}"
+        special_time: "{{ monitoring_base_services_monitoring_schedule.special_time | default(omit) }}"
+        user: root
+        job: "{{ monitoring_installation_path }}/monitor-base-services"
+      tags: [cron]

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+HOSTNAME=$(hostname)
+
+
+for jail in {{ monitoring_jails }}
+do
+    status=$(jls -j $jail --libxo=json 2>/dev/null | jq '."jail-information".jail | length')
+    if [ ${status:-0} -lt 1 ]
+    then
+        /usr/local/bin/apprise \
+            --tag=services \
+            --notification-type=FAILURE \
+            --title="Jail Down Alert: $jail" \
+            --body="Jail '$jail' is offline or unreachable on host $HOSTNAME."
+    fi
+done

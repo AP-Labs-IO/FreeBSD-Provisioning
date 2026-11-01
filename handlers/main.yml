@@ -1,0 +1,47 @@
+---
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to load new settings
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+
+- name: Restart watchdogd
+  ansible.builtin.service:
+    name: watchdogd
+    enabled: true
+    state: restarted
+
+- name: Restart smartd
+  ansible.builtin.service:
+    name: smartd
+    enabled: true
+    state: restarted
+
+- name: Restart collectdmon
+  ansible.builtin.service:
+    name: collectdmon
+    enabled: true
+    state: restarted
+
+- name: Reload syslogd
+  ansible.builtin.service:
+    name: syslogd
+    state: reloaded
+
+- name: Restart blocklistd
+  ansible.builtin.service:
+    name: blocklistd
+    enabled: true
+    state: restarted
+
+- name: Restart sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: Restart pf
+  ansible.builtin.service:
+    name: pf
+    enabled: true
+    state: restarted

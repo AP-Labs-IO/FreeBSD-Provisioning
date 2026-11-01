@@ -1,0 +1,48 @@
+---
+monitoring_namespace: ap-labs
+monitoring_installation_directory: libexec
+
+monitoring_watchdogd_flags: --pretimeout 10 --pretimeout-action log,printf
+
+monitoring_smartd_poll_interval: 300
+monitoring_smartd_alert_recipient: root
+
+monitoring_smartd_drivedb_update_schedule:
+  special_time: weekly
+monitoring_ipmi_monitoring_schedule:
+  special_time: daily
+monitoring_base_services_monitoring_schedule:
+  minute: "*/5"
+monitoring_jails_monitoring_schedule:
+  minute: "*/5"
+monitoring_extra_services_monitoring_schedule:
+  minute: "*/5"
+
+monitoring_nvme_controllers: []
+monitoring_nvme_info_temp: 65
+monitoring_nvme_critic_temp: 70
+
+monitoring_disks: []
+monitoring_disk_info_temp: 45
+monitoring_disk_critic_temp: 50
+
+monitoring_collectd_interval: 10
+monitoring_collectd_ignore_interfaces:
+  - lo0
+  - ipfw0
+  - pflog0
+  - pfsync0
+  - plip0
+  - epair
+  - bridge
+monitoring_collectd_ignore_mountpoints:
+  - /usr/src
+  - /usr/ports
+  - /var/run
+monitoring_collectd_graphite_port: 2003
+monitoring_collectd_graphite_prefix: "{{ (group_names | difference(['all', 'ungrouped']) | first | default('standalone')) }}."
+
+monitoring_alert_targets: []
+
+monitoring_jails: ""
+monitoring_extra_services: ""
