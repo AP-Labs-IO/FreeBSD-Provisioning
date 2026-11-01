@@ -23,6 +23,8 @@ Role Variables
 | vm_bhyve_host_checks_disabled | false         | Instruct the `vm(8)` tool to bypass system support checks. |
 | vm_bhyve_startup_vms          | []            | See `vm_bhyve_startup_vms` below.                          |
 | vm_bhyve_startup_delay        | 5             | Delay in seconds between each VM to autostart.             |
+| vm_bhhyve_host_shutdown_soft_timeout | 180    | Host shutdown soft timeout, according to `rc(8)`'s `rcshutdown_timeout` tunable. |
+| vm_bhhyve_host_shutdown_hard_timeout | 240    | Host shutdown hard timeout, according to `sysctl kern.init_shutdown_timeout`.    |
 
 Dependencies
 ------------
