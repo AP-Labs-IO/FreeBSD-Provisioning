@@ -1,4 +1,17 @@
 ---
+- name: Configure local base fact
+  tags: [local-base, facts]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: host_tuning_reg_local_base
+      changed_when: false
+
+    - name: Set local base fact
+      ansible.builtin.set_fact:
+        local_base: "{{ host_tuning_reg_local_base.stdout }}"
+        cacheable: true
+
 - name: Configure installation path
   tags: [installation-path]
   block:
@@ -92,7 +105,7 @@
   block:
     - name: Install storage power management script
       ansible.builtin.template:
-        src: templates/usr/local/sbin/storage-pm.j2
+        src: storage-pm.j2
         dest: "{{ host_tuning_installation_path }}/storage-pm"
         owner: root
         group: wheel
@@ -101,8 +114,8 @@
 
     - name: Install storage power management rc(8) service script
       ansible.builtin.template:
-        src: templates/etc/rc.d/storage_pm.j2
-        dest: /usr/local/etc/rc.d/storage_pm
+        src: etc/rc.d/storage_pm.j2
+        dest: "{{ ansible_facts['local_base'] }}/etc/rc.d/storage_pm"
         owner: root
         group: wheel
         mode: "0555"
