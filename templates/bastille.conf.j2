@@ -15,7 +15,7 @@ bastille_logsdir="/var/log/bastille"                                  ## default
 bastille_pf_conf="/etc/pf.conf"                                       ## default: "/etc/pf.conf"
 
 ## Bastille commands directory (assumed by bastille pkg)
-bastille_sharedir="/usr/local/share/bastille"                         ## default: "/usr/local/share/bastille"
+bastille_sharedir="{{ ansible_facts['local_base'] }}/share/bastille"                         ## default: "/usr/local/share/bastille"
 
 ## Bootstrap archives, which components of the OS to install.
 ## base  - The base OS, kernel + userland
@@ -90,8 +90,8 @@ bastille_template_vnet="default/vnet"                                 ## default
 bastille_template_vlan="default/vlan"                                 ## default: "default/vlan"
 
 ## Monitoring
-bastille_monitor_cron_path="/usr/local/etc/cron.d/bastille-monitor"                           ## default: "/usr/local/etc/cron.d/bastille-monitor"
-bastille_monitor_cron="*/5 * * * * root /usr/local/bin/bastille monitor ALL >/dev/null 2>&1"  ## default: "*/5 * * * * root /usr/local/bin/bastille monitor ALL >/dev/null 2>&1"
+bastille_monitor_cron_path="{{ ansible_facts['local_base'] }}/etc/cron.d/bastille-monitor"                           ## default: "/usr/local/etc/cron.d/bastille-monitor"
+bastille_monitor_cron="*/5 * * * * root {{ ansible_facts['local_base'] }}/bin/bastille monitor ALL >/dev/null 2>&1"  ## default: "*/5 * * * * root /usr/local/bin/bastille monitor ALL >/dev/null 2>&1"
 bastille_monitor_logfile="${bastille_logsdir}/monitor.log"                                    ## default: "${bastille_logsdir}/monitor.log"
 bastille_monitor_module=""                                                                    ## options: "uptimekuma healthchecks.io"
 bastille_monitor_url=""                                                                       ## default: ""

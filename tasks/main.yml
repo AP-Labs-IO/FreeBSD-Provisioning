@@ -1,4 +1,17 @@
 ---
+- name: Configure local base fact
+  tags: [local-base, facts]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: bastille_reg_local_base
+      changed_when: false
+
+    - name: Set local base fact
+      ansible.builtin.set_fact:
+        local_base: "{{ bastille_reg_local_base.stdout }}"
+        cacheable: true
+
 - name: Load OS version-specific role constants
   ansible.builtin.include_vars:
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
@@ -17,8 +30,8 @@
 
 - name: Install Bastille configuration
   ansible.builtin.template:
-    src: usr/local/etc/bastille/bastille.conf.j2
-    dest: /usr/local/etc/bastille/bastille.conf
+    src: bastille.conf.j2
+    dest: "{{ ansible_facts['local_base'] }}/etc/bastille/bastille.conf"
     owner: root
     group: wheel
     mode: "0644"
