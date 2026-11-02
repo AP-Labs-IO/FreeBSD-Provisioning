@@ -15,7 +15,7 @@
     - name: Install jails monitoring alert job
       ansible.builtin.cron:
         name: Jails monitoring alert
-        cron_file: /usr/local/etc/cron.d/alert-jails
+        cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-jails"
         minute: "{{ monitoring_jails_monitoring_schedule.minute | default(omit) }}"
         hour: "{{ monitoring_jails_monitoring_schedule.hour | default(omit) }}"
         day: "{{ monitoring_jails_monitoring_schedule.day | default(omit) }}"
