@@ -11,11 +11,11 @@ Requirements
 Role Variables
 --------------
 
-| Variable                             | Default value                        | Description                                                                      |
-|--------------------------------------|--------------------------------------|----------------------------------------------------------------------------------|
-| bootstrap_sensitive_logging_disabled | true                                 | Boolean that dictates whether task output considered sensitive is logged or not. |
+| Variable                             | Default value                              | Description                                                                      |
+|--------------------------------------|--------------------------------------------|----------------------------------------------------------------------------------|
+| bootstrap_sensitive_logging_disabled | true                                       | Boolean that dictates whether task output considered sensitive is logged or not. |
 | bootstrap_toor_shell                 | {{ ansible_facts['local_base'] }}/bin/bash | toor's shell.                                                                    |
-| bootstrap_core_packages              | See `bootstrap_core_packages` below. | See `bootstrap_core_packages` below.                                             |
+| bootstrap_core_packages              | See `bootstrap_core_packages` below.       | See `bootstrap_core_packages` below.                                             |
 
 Dependencies
 ------------
