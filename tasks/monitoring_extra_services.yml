@@ -5,7 +5,7 @@
   block:
     - name: Install extra services monitoring script
       ansible.builtin.template:
-        src: usr/local/bin/monitor-extra-services.j2
+        src: monitor-extra-services.j2
         dest: "{{ monitoring_installation_path }}/monitor-extra-services"
         owner: root
         group: wheel

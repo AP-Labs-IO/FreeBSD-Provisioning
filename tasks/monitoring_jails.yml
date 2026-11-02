@@ -5,7 +5,7 @@
   block:
     - name: Install jails monitoring script
       ansible.builtin.template:
-        src: usr/local/bin/monitor-jails.j2
+        src: monitor-jails.j2
         dest: "{{ monitoring_installation_path }}/monitor-jails"
         owner: root
         group: wheel
