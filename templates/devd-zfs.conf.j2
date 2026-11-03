@@ -1,7 +1,7 @@
 notify 10 {
     match "system"    "ZFS";
     match "type"      "ereport\.fs\.zfs\.(checksum|io|data|dio_verify_rd|dio_verify_wr|deadman)";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=WARNING \
         --title='ZFS I/O Error on $(hostname)' \
@@ -12,7 +12,7 @@ notify 10 {
 notify 10 {
     match "system"    "ZFS";
     match "type"      "(resource\.fs\.zfs\.statechange|ereport\.fs\.zfs\.(vdev\..+|io_failure))";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS Pool State Change on $(hostname)' \
@@ -23,7 +23,7 @@ notify 10 {
 notify 10 {
 	match "system"		"ZFS";
 	match "type"		"ereport.fs.zfs.probe_failure";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS Probe Failure on $(hostname)' \
@@ -34,7 +34,7 @@ notify 10 {
 notify 10 {
 	match "system"		"ZFS";
 	match "type"		"ereport.fs.zfs.vdev_spare";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=INFO \
         --title='ZFS Disk Replacement on $(hostname)' \
@@ -45,7 +45,7 @@ notify 10 {
 notify 10 {
 	match "system"		"ZFS";
 	match "type"		"ereport.fs.zfs.log_replay";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS Intent Log Failure on $(hostname)' \
@@ -56,7 +56,7 @@ notify 10 {
 notify 10 {
     match "system"    "ZFS";
     match "type"      "ereport.fs.zfs.zpool";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS Pool Load Failure on $(hostname)' \
@@ -67,7 +67,7 @@ notify 10 {
 notify 10 {
 	match "system"		"ZFS";
 	match "type"		"sysevent.fs.zfs.scrub_start";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=INFO \
         --title='ZFS Pool Scrub Start on $(hostname)' \
@@ -78,7 +78,7 @@ notify 10 {
 notify 10 {
 	match "system"		"ZFS";
 	match "type"		"sysevent.fs.zfs.scrub_paused";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=INFO \
         --title='ZFS Pool Scrub Pause on $(hostname)' \
@@ -89,7 +89,7 @@ notify 10 {
 notify 10 {
     match "system"    "ZFS";
     match "type"      "ereport.fs.zfs.scrub_abort";
-    action "/usr/local/bin/apprise \
+    action "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS Pool Scrub Abort on $(hostname)' \
@@ -100,7 +100,7 @@ notify 10 {
 notify 10 {
     match "system"    "ZFS";
     match "type"      "ereport.fs.zfs.scrub_finish";
-    action "[ $scrub_errors -eq 0 ] && /usr/local/bin/apprise \
+    action "[ $scrub_errors -eq 0 ] && {{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=Info \
         --title='ZFS Pool Scrub Finish on $(hostname)' \
@@ -111,7 +111,7 @@ notify 10 {
 notify 10 {
     match "system"    "ZFS";
     match "type"      "ereport.fs.zfs.scrub_finish";
-    action "[ $scrub_errors -gt 0 ] && /usr/local/bin/apprise \
+    action "[ $scrub_errors -gt 0 ] && {{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=zfs \
         --notification-type=FAILURE \
         --title='ZFS SCRUB COMPLETED WITH ERRORS' \

@@ -66,7 +66,7 @@
     - name: Install snapshotting & replication monitoring alert job
       ansible.builtin.cron:
         name: ZFS snapshotting & replication monitoring alert
-        cron_file: /usr/local/etc/cron.d/alert-replication
+        cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-replication"
         minute: "{{ zfs_replication_monitoring_schedule.minute | default(omit) }}"
         hour: "{{ zfs_replication_monitoring_schedule.hour | default(omit) }}"
         day: "{{ zfs_replication_monitoring_schedule.day | default(omit) }}"
