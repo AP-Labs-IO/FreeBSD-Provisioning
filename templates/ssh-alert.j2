@@ -9,7 +9,7 @@ then
     TARGET_USER=$(echo "$LOG_LINE" | awk -F'from ' '{ print $1; }' | awk '{ print $NF; }')
     REMOTE_IP=$(echo "$LOG_LINE" | awk -F'from ' '{ print $2; }' | awk '{ print $1; }')
 
-    /usr/local/bin/apprise \
+    {{ ansible_facts['local_base'] }}/bin/apprise \
         --config /root/.apprise.yml \
         --tag=security \
         --notification-type=WARNING \
