@@ -1,6 +1,6 @@
 ---
-- name: Configure local base fact
-  tags: [local-base, facts]
+- name: Configure installation paths
+  tags: [installation-path, local-base, facts]
   block:
     - name: Query local base
       ansible.builtin.command: sysctl -n user.localbase
@@ -12,18 +12,10 @@
         local_base: "{{ monitoring_reg_local_base.stdout }}"
         cacheable: true
 
-- name: Configure installation path
-  tags: [installation-path]
-  block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: monitoring_reg_local_base
-      changed_when: false
-
     - name: Set installation path
       ansible.builtin.set_fact:
         monitoring_installation_path: >-
-          {{ monitoring_reg_local_base.stdout }}/{{ monitoring_installation_directory }}/{{ monitoring_namespace }}/monitoring
+          {{ ansible_facts['local_base'] }}/{{ monitoring_installation_directory }}/{{ monitoring_namespace }}/monitoring
 
     - name: Create installation path
       ansible.builtin.file:
