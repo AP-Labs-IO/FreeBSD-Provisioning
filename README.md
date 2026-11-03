@@ -100,7 +100,7 @@ Additionally, this helper script, installed at the `{{ bastille_ops_path }}/depl
 * Applies any requested tags to the jail.
 
 License
---------
+-------
 
 All Rights Reserved. Proprietary and Confidential.
 
