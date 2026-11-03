@@ -82,7 +82,7 @@ Run the master orchestration playbook against your target inventory environment:
 ```
 
 License
---------
+-------
 
 All Rights Reserved. Proprietary and Confidential.
 
