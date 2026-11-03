@@ -10,7 +10,7 @@ then
     REMOTE_IP=$(echo "$LOG_LINE" | awk -F'from ' '{ print $2; }' | awk '{ print $1; }')
 
     {{ ansible_facts['local_base'] }}/bin/apprise \
-        --config /root/.apprise.yml \
+        --config=/root/.apprise.yml \
         --tag=security \
         --notification-type=WARNING \
         --title="SSH Login Failure on $HOSTNAME" \
