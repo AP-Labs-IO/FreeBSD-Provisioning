@@ -1,5 +1,5 @@
 ---
-- name: Configure local base
+- name: Configure local base fact
   tags: [local-base, facts]
   block:
     - name: Query local base
