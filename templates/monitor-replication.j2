@@ -3,10 +3,10 @@
 
 HOSTNAME=$(hostname)
 
-STATUS_JSON=$(/usr/local/bin/zrepl status --mode raw 2>/dev/null)
+STATUS_JSON=$({{ ansible_facts['local_base'] }}/bin/zrepl status --mode raw 2>/dev/null)
 if [ -z "$STATUS_JSON" ]
 then
-    /usr/local/bin/apprise \
+    {{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=replication \
         --notification-type=FAILURE \
         --title="zrepl daemon offline on $HOSTNAME" \
@@ -14,7 +14,7 @@ then
     exit 1
 fi
 
-SNAPSHOTTING_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+SNAPSHOTTING_ERRORS=$(echo "$STATUS_JSON" | {{ ansible_facts['local_base'] }}/bin/jq -r '
     [ .Jobs[] | select(.type == "push")
       | select(.push.Snapshotting.Type == "periodic" and .push.Snapshotting.Periodic.Error != null and .push.Snapshotting.Periodic.Error != "")
       | .push.Snapshotting.Periodic.Error
@@ -22,14 +22,14 @@ SNAPSHOTTING_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
 ' 2>/dev/null)
 if [ -n "$SNAPSHOTTING_ERRORS" ]
 then
-    /usr/local/bin/apprise \
+    {{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=replication \
         --notification-type=FAILURE \
         --title="ZFS snapshotting failure on $HOSTNAME" \
         --body="Warning: ZFS snapshotting errors:\n$SNAPSHOTTING_ERRORS"
 fi
 
-REPLICATION_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
+REPLICATION_ERRORS=$(echo "$STATUS_JSON" | {{ ansible_facts['local_base'] }}/bin/jq -r '
     [ .Jobs[] | select(.type == "push") | .push.Replication | select(. != null) | (
         [
           (if (.WaitReconnectError != null) then .WaitReconnectError.Err else null end),
@@ -39,7 +39,7 @@ REPLICATION_ERRORS=$(echo "$STATUS_JSON" | /usr/local/bin/jq -r '
 ' 2>/dev/null)
 if [ -n "$REPLICATION_ERRORS" ]
 then
-    /usr/local/bin/apprise \
+    {{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=replication \
         --notification-type=FAILURE \
         --title="ZFS replication failure on $HOSTNAME" \

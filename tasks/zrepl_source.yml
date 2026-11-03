@@ -55,8 +55,8 @@
   tags: [snapshotting, replication, monitoring]
   block:
     - name: Install snapshotting & replication monitoring script
-      ansible.builtin.copy:
-        src: monitor-replication
+      ansible.builtin.template:
+        src: monitor-replication.j2
         dest: "{{ zfs_installation_path }}/monitor-replication"
         owner: root
         group: wheel
