@@ -1,6 +1,6 @@
 ---
-- name: Configure local base fact
-  tags: [local-base, facts]
+- name: Configure installation paths
+  tags: [installation-path, local-base, facts]
   block:
     - name: Query local base
       ansible.builtin.command: sysctl -n user.localbase
@@ -12,18 +12,10 @@
         local_base: "{{ host_tuning_reg_local_base.stdout }}"
         cacheable: true
 
-- name: Configure installation path
-  tags: [installation-path]
-  block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: host_tuning_reg_local_base
-      changed_when: false
-
     - name: Set installation path
       ansible.builtin.set_fact:
         host_tuning_installation_path: >-
-          {{ host_tuning_reg_local_base.stdout }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
+          {{ ansible_facts['local_base'] }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
 
     - name: Create installation path
       ansible.builtin.file:
