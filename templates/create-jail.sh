@@ -74,7 +74,7 @@ fi
 
 tmp_name=$1
 targe_name=$2
-interface=$3
+bridge=$3
 shift 3
 
 : ${release:="${DEFAULT_RELEASE}"}
@@ -92,7 +92,7 @@ then
     exit 3
 fi
 
-bastille create --bridge --static-mac --clone ${tmp_name} ${release} "${ip_options}" ${interface}
+bastille create --bridge --static-mac --clone ${tmp_name} ${release} "${ip_options}" ${bridge}
 if [ "${tmp_name}" != "${targe_name}" ]
 then
     bastille stop ${tmp_name}
