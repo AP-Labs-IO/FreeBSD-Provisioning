@@ -76,7 +76,7 @@
       mode: "0750"
   tags: [deployments]
 
-- name: Copy jails creation script
+- name: Copy jails creation helper script
   ansible.builtin.template:
     src: create-jail.sh
     dest: "{{ bastille_ops_path }}/deployments/scripts/create-bastille-jail.sh"
