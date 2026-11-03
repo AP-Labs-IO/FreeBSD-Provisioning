@@ -89,6 +89,16 @@ Run the master orchestration playbook against your target inventory environment:
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags bastille playbook.yml
 ```
 
+Included is a simple helper script that aims to simplify the process of creating clone jails that potentially use dashes in their names, which the `/usr/share/examples/jails/jib` script employed by Bastille when first creating a jail does not allow.
+
+Additionally, this helper script, installed at the `{{ bastille_ops_path }}/deployments/scripts/create-bastille-jail.s` path, performs the following actions for the target jail:
+
+* Attaches it to the provided network bridge.
+* Bootstraps the Bastille templates repository defined by the `bastille_templates_repository` variable.
+* Applies the requested template to the jail.
+* Copies any requested tree of files into the jail.
+* Applies any requested tags to the jail.
+
 License
 --------
 
