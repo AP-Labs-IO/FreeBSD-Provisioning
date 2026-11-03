@@ -28,8 +28,8 @@
   block:
     - name: Install zrepl configuration
       ansible.builtin.template:
-        src: usr/local/etc/zrepl/zrepl_{{ type }}.yml.j2
-        dest: /usr/local/etc/zrepl/zrepl.yml
+        src: zrepl_{{ type }}.yml.j2
+        dest: "{{ ansible_facts['local_base'] }}/etc/zrepl/zrepl.yml"
         owner: root
         group: wheel
         mode: "0644"
@@ -51,7 +51,7 @@
 
 - name: Remove zrepl's syslog configuration
   ansible.builtin.file:
-    path: /usr/local/etc/syslog.d/zrepl.conf
+    path: "{{ ansible_facts['local_base'] }}/etc/syslog.d/zrepl.conf"
     state: absent
   notify: Reload syslogd
   tags: [zrepl, config]
