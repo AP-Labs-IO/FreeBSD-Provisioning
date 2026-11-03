@@ -113,7 +113,7 @@
 
 - name: Install apprise configuration
   ansible.builtin.template:
-    src: root/apprise.yml.j2
+    src: apprise.yml.j2
     dest: /root/.apprise.yml
     owner: root
     group: wheel
