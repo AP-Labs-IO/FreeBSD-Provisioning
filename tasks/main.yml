@@ -1,6 +1,6 @@
 ---
-- name: Configure local base
-  tags: [local-base, facts]
+- name: Configure installation paths
+  tags: [installation-path, local-base, facts]
   block:
     - name: Query local base
       ansible.builtin.command: sysctl -n user.localbase
@@ -12,18 +12,10 @@
         local_base: "{{ zfs_reg_local_base.stdout }}"
         cacheable: true
 
-- name: Configure installation path
-  tags: [installation-path]
-  block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: zfs_reg_local_base
-      changed_when: false
-
     - name: Set installation path
       ansible.builtin.set_fact:
         zfs_installation_path: >-
-          {{ zfs_reg_local_base.stdout }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
+          {{ ansible_facts['local_base'] }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
 
     - name: Create installation path
       ansible.builtin.file:
