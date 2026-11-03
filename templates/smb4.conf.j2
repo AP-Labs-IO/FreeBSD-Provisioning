@@ -16,4 +16,4 @@
     fruit:metadata = stream
     fruit:resource = stream
 
-    include = /usr/local/etc/smb4_shares.conf
+    include = {{ ansible_facts['local_base'] }}/etc/smb4_shares.conf
