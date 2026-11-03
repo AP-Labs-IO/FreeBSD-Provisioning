@@ -24,7 +24,7 @@ Role Variables
 | zfs_installation_directory                   | libexec                                    | Installation directory.                                                          |
 | zfs_namespace                                | ap-labs                                    | Installation subdirectory.                                                       |
 | zfs_data_pools                               | []                                         | List of data pools names to import.                                              |
-| zfs_encryption_keys_directory                | /root/.zfskeys                             | Directory where ZFS encryption keys are kept.                                    |
+| zfs_encryption_keys_directory                | /etc/zfs/keys                              | Directory where ZFS encryption keys are kept.                                    |
 | zfs_encryption_datasets                      | []                                         | See `zfs_encryption_datasets` below.                                             |
 | zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                           |
 | zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                              |
