@@ -1,0 +1,121 @@
+---
+- name: Configure installation paths
+  tags: [installation-path, local-base, facts]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: host_tuning_reg_local_base
+      changed_when: false
+
+    - name: Set local base fact
+      ansible.builtin.set_fact:
+        local_base: "{{ host_tuning_reg_local_base.stdout }}"
+        cacheable: true
+
+    - name: Set installation path
+      ansible.builtin.set_fact:
+        host_tuning_installation_path: >-
+          {{ ansible_facts['local_base'] }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
+
+    - name: Create installation path
+      ansible.builtin.file:
+        path: "{{ host_tuning_installation_path }}"
+        state: directory
+        owner: root
+        group: wheel
+        mode: "0755"
+
+- name: Disable powerd
+  community.general.sysrc:
+    name: powerd_enable
+    state: present
+    value: "NO"
+  tags: [power, powerd, performance, tuning]
+
+- name: Set CPU AC power idle state
+  community.general.sysrc:
+    name: performance_cx_lowest
+    state: present
+    value: "{{ host_tuning_performance_cx_lowest }}"
+  notify: Reboot
+  tags: [power, c-state, ac, performance, tuning]
+
+- name: Set CPU non-AC power idle state
+  community.general.sysrc:
+    name: economy_cx_lowest
+    state: present
+    value: "{{ host_tuning_economy_cx_lowest }}"
+  notify: Reboot
+  tags: [power, c-state, non-ac, performance, tuning]
+
+- name: Set CPU package-level power control
+  ansible.posix.sysctl:
+    name: machdep.hwpstate_pkg_ctrl
+    state: present
+    value: "{{ host_tuning_cpu_package_level_power_control }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  notify: Reboot
+  tags: [power, c-state, performance, tuning]
+
+- name: CPU microcode boot-time updates configuration
+  when: ansible_facts['architecture'] in ['amd64', 'i386']
+  notify: Reboot
+  tags: [cpu, microcode, firmware]
+  block:
+    - name: Install packages
+      community.general.pkgng:
+        name: sysutils/cpu-microcode
+        state: latest
+        use_globs: false
+      tags: [pkg]
+
+    - name: Enable microcode updates
+      community.general.sysrc:
+        name: cpu_microcode_load
+        state: present
+        value: "YES"
+        path: /boot/loader.conf
+      tags: [loader]
+
+    - name: Configure microcode firmware file
+      community.general.sysrc:
+        name: cpu_microcode_name
+        state: present
+        value: "{{ microcode_firmware_file }}"
+        path: /boot/loader.conf
+      vars:
+        cpu_vendor_string: "{{ ansible_facts['processor'] | join(' ') }}"
+        microcode_firmware_file: >-
+          {{ ('Intel' in cpu_vendor_string) | ternary('/boot/firmware/intel-ucode.bin', '/boot/firmware/amd-ucode.bin') }}
+      tags: [loader]
+
+- name: Storage power management configuration
+  when: host_tuning_storage_pm_enabled
+  notify: Configure storage power management
+  tags: [storage, power, management]
+  block:
+    - name: Install storage power management script
+      ansible.builtin.template:
+        src: storage-pm.j2
+        dest: "{{ host_tuning_installation_path }}/storage-pm"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
+
+    - name: Install storage power management rc(8) service script
+      ansible.builtin.template:
+        src: etc/rc.d/storage_pm.j2
+        dest: "{{ ansible_facts['local_base'] }}/etc/rc.d/storage_pm"
+        owner: root
+        group: wheel
+        mode: "0555"
+      tags: [rc]
+
+    - name: Enable storage power management service
+      community.general.sysrc:
+        name: storage_pm_enable
+        state: present
+        value: "YES"
+      tags: [service]
