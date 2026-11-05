@@ -5,7 +5,7 @@
   block:
     - name: Install extra services monitoring script
       ansible.builtin.template:
-        src: usr/local/bin/monitor-extra-services.j2
+        src: monitor-extra-services.j2
         dest: "{{ monitoring_installation_path }}/monitor-extra-services"
         owner: root
         group: wheel
@@ -15,7 +15,7 @@
     - name: Install extra services monitoring alert job
       ansible.builtin.cron:
         name: Extra services monitoring alert
-        cron_file: /usr/local/etc/cron.d/alert-extra-services
+        cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-extra-services"
         minute: "{{ monitoring_extra_services_monitoring_schedule.minute | default(omit) }}"
         hour: "{{ monitoring_extra_services_monitoring_schedule.hour | default(omit) }}"
         day: "{{ monitoring_extra_services_monitoring_schedule.day | default(omit) }}"

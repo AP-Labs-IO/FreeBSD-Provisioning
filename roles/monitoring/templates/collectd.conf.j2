@@ -1,6 +1,6 @@
 Hostname "{{ ansible_facts['fqdn'] }}"
 BaseDir "/var/db/collectd"
-PluginDir "/usr/local/lib/collectd"
+PluginDir "{{ ansible_facts['local_base'] }}/lib/collectd"
 Interval {{ monitoring_collectd_interval }}
 
 # ==============================================================================

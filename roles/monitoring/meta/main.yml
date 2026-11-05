@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   role_name: monitoring
+  namespace: ap_labs
   author: Juan Manuel Palacios Plaza
   description: Configure monitoring on a FreeBSD node.
   license: All Rights Reserved. Proprietary and Confidential.

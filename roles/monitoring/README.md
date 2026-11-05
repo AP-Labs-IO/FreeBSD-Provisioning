@@ -113,6 +113,10 @@ Example Requirements
 - name: bootstrap
   src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
   version: main
+
+- name: monitoring
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/monitoring.git
+  version: main
 ```
 
 Example Playbook
@@ -157,7 +161,7 @@ Run the extra services monitoring tasks once the target services have been deplo
 ```
 
 License
---------
+-------
 
 All Rights Reserved. Proprietary and Confidential.
 

@@ -3,11 +3,11 @@
 HOSTNAME=$(hostname)
 
 
-for svc in {{ monitoring_extra_services }}
+for svc in {{ monitoring_base_services }}
 do
     if ! service "$svc" status >/dev/null 2>&1
     then
-        /usr/local/bin/apprise \
+        {{ ansible_facts['local_base'] }}/bin/apprise \
             --tag=services \
             --notification-type=FAILURE \
             --title="Service down Alert: $svc" \
