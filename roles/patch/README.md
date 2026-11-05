@@ -1,5 +1,5 @@
 Patch
-=========
+=====
 
 FreeBSD OS patching via `freebsd-update(8)`.
 
@@ -12,7 +12,7 @@ Requirements
   * With key-based SSH access.
   * A functional `become` setup.
 
-The last set of requirements can be easily met by running the `bootstrap` as a precursor to this role.
+The last set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one.
 
 Role Variables
 --------------
@@ -23,6 +23,31 @@ Dependencies
 ------------
 
 * Bootstrap role.
+
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+
+- name: patch
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/patch.git
+  version: main
+```
 
 Example Playbook
 ----------------
@@ -39,9 +64,18 @@ Example Playbook
 
 - name: Patch Operating System
   hosts: all
-  become: true
   roles:
     - { role: patch, tags: [patch] }
+```
+
+Execution
+---------
+
+Run the master orchestration playbook against your target inventory environment:
+
+```sh
+-> ansible-galaxy role install -r requirements.yml -p ./roles
+-> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags patch playbook.yml
 ```
 
 License

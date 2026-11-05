@@ -1,0 +1,2 @@
+---
+patch_freebsd_15_or_newer: "{{ ansible_facts['distribution_major_version'] is ansible.builtin.version('15', '>=') }}"
