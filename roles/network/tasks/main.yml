@@ -1,40 +1,192 @@
 ---
+- name: Configure base loader settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+    sysctl_file: /boot/loader.conf
+    reload: false
+  loop:
+    - key: kern.ipc.maxsockbuf
+      value: "{{ network_max_socket_buffer_size }}"
+      description: Max socket buffer size
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [loader, config]
+
 - name: Start rtsold
   ansible.builtin.service:
     name: rtsold
     enabled: true
     state: started
-  when: network_enable_rtsold
-  tags: [rtsold, config]
+  when: network_rtsold_enabled
+  tags: [rtsold, config, service]
+
+- name: Remove stock configuration
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: "(?i)^ifconfig_(?!({{ network_preserve_custom_configurations }}))"
+    state: absent
+  when: network_remove_stock_configuration
+  tags: [reset, config]
 
 - name: Rename interfaces
   community.general.sysrc:
     name: "ifconfig_{{ item.src }}_name"
     state: present
     value: "{{ item.dst }}"
-  loop: "{{ network_renamed_interfaces | default([]) }}"
+  loop: "{{ network_renamed_interfaces }}"
   loop_control:
     label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
-  register: network_reg_rename
+  notify: Reboot
   tags: [interfaces, rename, config]
 
-- name: Configure cloned interfaces
+- name: Configure base interfaces IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}"
+    state: present
+    value: >1-
+     {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4))) -%}
+      {%- else -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
+      {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
+  loop: "{{ network_base_interfaces }}"
+  loop_control:
+    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
+  notify: Reboot
+  tags: [interfaces, base, ipv4, config]
+
+- name: Configure base interfaces IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}_ipv6"
+    state: present
+    value: "inet6 {{ item.ip6 }}"
+  loop: "{{ network_base_interfaces }}"
+  loop_control:
+    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
+  when: item.ip6 is defined
+  notify: Reboot
+  tags: [interfaces, base, ipv6, config]
+
+- name: Create VLAN interfaces
+  community.general.sysrc:
+    name: "vlans_{{ item.parent }}"
+    state: present
+    value: "{{ item.vlans | map(attribute='tag') | list | join(' ') }}"
+  loop: "{{ network_vlan_interfaces }}"
+  loop_control:
+    label: "Configuring VLANs for parent: {{ item.parent }}"
+  notify: Reboot
+  tags: [interfaces, vlan, config]
+
+- name: Configure VLANs IPv4
+  community.general.sysrc:
+    name: "ifconfig_{{ item.parent }}_{{ item.tag }}"
+    state: present
+    value: "{{ item.ip4 }}"
+  vars:
+    vlans_matrix: >-
+      [
+        {% for row in network_vlan_interfaces %}
+          {% set outer_loop = loop %}
+          {% for vlan in row.vlans %}
+            {
+              "parent": "{{ row.parent }}",
+              "tag": "{{ vlan.tag }}",
+              "ip4": "{%- set tokens = [] -%}
+                      {%- if vlan.ip4 is defined and vlan.ip4 | length > 0 -%}
+                        {%- set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) -%}
+                      {%- else -%}
+                        {%- set _ = tokens.append('up') -%}
+                      {%- endif -%}
+                      {%- if vlan.mtu is defined and vlan.mtu | string | length > 0 -%}
+                        {%- set _ = tokens.append('mtu %s' | format(vlan.mtu)) -%}
+                      {%- endif -%}
+                      {%- if vlan.opts is defined and vlan.opts | string | length > 0 -%}
+                        {%- set _ = tokens.append('%s' | format(vlan.opts)) -%}
+                      {%- endif -%}
+                      {{- tokens | join(' ') | trim -}}"
+            }{% if not (loop.last and outer_loop.last) %},{% endif %}
+          {% endfor %}
+        {% endfor %}
+      ]
+  loop: "{{ vlans_matrix | from_yaml | default([]) }}"
+  loop_control:
+    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 | default('up') }}"
+  notify: Reboot
+  tags: [interfaces, vlan, ipv4, config]
+
+- name: Configure VLANs IPv6
+  community.general.sysrc:
+    name: "ifconfig_{{ item.parent }}_{{ item.tag }}_ipv6"
+    state: present
+    value: "inet6 {{ item.ip6 }}"
+  vars:
+    vlans_matrix: >-
+      [
+        {% for row in network_vlan_interfaces %}
+          {% for vlan in row.vlans %}
+            {
+              "parent": "{{ row.parent }}",
+              "tag": "{{ vlan.tag }}",
+      {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
+              "ip6": "{{ vlan.ip6 }}"
+      {%- endif -%}
+            },
+          {% endfor %}
+        {% endfor %}
+      ]
+  loop: "{{ vlans_matrix | from_yaml | default([]) }}"
+  loop_control:
+    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 | default('none') }}"
+  when: item.ip6 is defined
+  notify: Reboot
+  tags: [interfaces, vlan, ipv6, config]
+
+- name: Create cloned interfaces
   community.general.sysrc:
     name: cloned_interfaces
-    state: present
-    value: "{{ (network_bridge_interfaces | default([]) | map(attribute='name') | list) | join(' ') }}"
-  register: network_reg_cloned
+    state: "{{ (cloned_interfaces | length > 0) | ternary('present', 'absent') }}"
+    value: "{{ cloned_interfaces | join(' ') }}"
+  vars:
+    cloned_interfaces: "{{ network_bridge_interfaces | map(attribute='name') | list }}"
+  notify: Reboot
   tags: [interfaces, cloned, config]
 
 - name: Configure bridges IPv4
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}"
     state: present
-    value: "addm {{ item.members | join(' addm ') }} up stp {{ item.members | first }}{% if item.ip4 is defined %} {{ item.ip4 }}{% endif %}"
-  loop: "{{ network_bridge_interfaces | default([]) }}"
+    value: >1-
+      {%- set tokens = [] -%}
+      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4))) -%}
+      {%- endif -%}
+      {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
+      {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
+        {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
+      {%- endif -%}
+      {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
+        {%- set _ = tokens.append('up') -%}
+      {%- endif -%}
+      {%- if item.opts is defined and item.opts | string | length > 0 -%}
+        {%- set _ = tokens.append(item.opts) -%}
+      {%- endif -%}
+      {{- tokens | join(' ') | trim -}}
+  loop: "{{ network_bridge_interfaces }}"
   loop_control:
     label: "Configuring bridge IPv4: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
-  register: network_reg_bridges_ip4
+  notify: Reboot
   tags: [interfaces, bridge, ipv4, config]
 
 - name: Configure bridges IPv6
@@ -42,43 +194,61 @@
     name: "ifconfig_{{ item.name }}_ipv6"
     state: present
     value: "inet6 {{ item.ip6 }}"
-  loop: "{{ network_bridge_interfaces | default([]) }}"
+  loop: "{{ network_bridge_interfaces }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.name }} -> Members: {{ item.members | join(', ') }}"
+    label: "Configuring bridge IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
   when: item.ip6 is defined
-  register: network_reg_bridges_ip6
+  notify: Reboot
   tags: [interfaces, bridge, ipv6, config]
 
-- name: Activate interfaces
+- name: Configure default route IPv4
   community.general.sysrc:
-    name: "ifconfig_{{ item }}"
-    state: present
-    value: "up"
-  loop: "{{ network_target_interfaces | unique | list }}"
-  vars:
-    network_renamed_interfaces: "{{ network_renamed_interfaces | default([]) | map(attribute='dst') | list }}"
-    network_bridge_members: "{{ network_bridge_interfaces | default([]) | map(attribute='members') | flatten | list }}"
-    network_target_interfaces: "{{ network_renamed_interfaces + network_bridge_members }}"
-  loop_control:
-    label: "Link state up: {{ item }}"
-  register: network_reg_activate
-  tags: [interfaces, link, config]
+    name: defaultrouter
+    state: "{{ network_default_route_ipv4 is defined | ternary('present', 'absent') }}"
+    value: "{{ network_default_route_ipv4 | default('') }}"
+  notify: Reboot
+  tags: [route, config, ipv4]
 
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to activate new network settings
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (network_reg_rename.changed | default(false) | bool) or
-    (network_reg_cloned.changed | default(false) | bool) or
-    (network_reg_bridges_ip4.changed | default(false) | bool) or
-    (network_reg_bridges_ip6.changed | default(false) | bool) or
-    (network_reg_activate.changed | default(false) | bool)
-  tags: [reboot]
+- name: Configure default route IPv6
+  community.general.sysrc:
+    name: ipv6_defaultrouter
+    state: "{{ network_default_route_ipv6 is defined | ternary('present', 'absent') }}"
+    value: "{{ network_default_route_ipv6 | default('') }}"
+  notify: Reboot
+  tags: [route, config, ipv6]
 
-- name: Disable packet filtering on bridge interfaces
+- name: Configure DNS resolver
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    owner: root
+    group: wheel
+    mode: "0644"
+    content: |
+      {% if network_dns_resolver.domain is defined and network_dns_resolver.domain | length > 0 %}
+      domain {{ network_dns_resolver.domain }}
+      {% endif %}
+      {% if network_dns_resolver.search is defined and network_dns_resolver.search | length > 0 %}
+      search {{ network_dns_resolver.search }}
+      {% endif %}
+      {% if network_dns_resolver.nameservers is defined and network_dns_resolver.nameservers | length > 0 %}
+      {% for ns in network_dns_resolver.nameservers %}
+      nameserver {{ ns }}
+      {% endfor %}
+      {% endif %}
+      {% if network_dns_resolver.options is defined and network_dns_resolver.options | length > 0 %}
+      options {{ network_dns_resolver.options }}
+      {% endif %}
+  when: network_dns_resolver is defined
+  notify:
+    - Disable dynamic DNS resolver reconfiguration
+    - Apply new resolvconf configuration
+  tags: [resolver, config]
+
+- name: Force execution of notified handlers
+  ansible.builtin.meta: flush_handlers
+  tags: [resolver, config]
+
+- name: Configure base runtime settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
@@ -90,7 +260,16 @@
     - key: net.link.bridge.pfil_member
       value: 0
       description: Prevent packet filtering on interfaces members of a bridge
+    - key: net.inet.tcp.sendspace
+      value: "{{ network_send_buffer_size }}"
+      description: Initial send socket buffer size
+    - key: net.inet.tcp.recvspace
+      value: "{{ network_receive_buffer_size }}"
+      description: Initial receive socket buffer size
+    - key: net.inet.tcp.delayed_ack
+      value: "{{ network_receive_delayed_ack }}"
+      description: TCP ACK delay
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  when: network_disable_bridge_filtering
-  tags: [kernel, config]
+  when: network_bridge_filtering_disabled
+  tags: [runtime, config]

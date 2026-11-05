@@ -1,3 +1,17 @@
 ---
-network_enable_rtsold: true
-network_disable_bridge_filtering: true
+network_max_socket_buffer_size: 16777216
+
+network_rtsold_enabled: true
+
+network_remove_stock_configuration: false
+network_renamed_interfaces: []
+
+network_base_interfaces: []
+network_vlan_interfaces: []
+network_bridge_interfaces: []
+
+network_bridge_filtering_disabled: true
+
+network_send_buffer_size: 1048576
+network_receive_buffer_size: 1048576
+network_receive_delayed_ack: 0
