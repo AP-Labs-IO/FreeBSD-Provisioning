@@ -1,0 +1,15 @@
+version: 1
+
+urls:
+{% for target in monitoring_alert_targets %}
+  - {{ target.url }}:
+{% if target.config is defined and target.config | length > 0 %}
+{% for key, value in target.config.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+      tags:
+{% for tag in target.tags %}
+        - {{ tag }}
+{% endfor %}
+{% endfor %}

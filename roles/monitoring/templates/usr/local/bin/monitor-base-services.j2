@@ -1,0 +1,16 @@
+#!/bin/sh
+
+HOSTNAME=$(hostname)
+
+
+for svc in {{ monitoring_base_services }}
+do
+    if ! service "$svc" status >/dev/null 2>&1
+    then
+        /usr/local/bin/apprise \
+            --tag=services \
+            --notification-type=FAILURE \
+            --title="Service down Alert: $svc" \
+            --body="Service '$svc' is not running on host $HOSTNAME."
+    fi
+done
