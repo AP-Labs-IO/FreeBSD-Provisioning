@@ -1,0 +1,32 @@
+---
+- name: Apply OS patches (freebsd-update)
+  ansible.builtin.command: freebsd-update --not-running-from-cron fetch install
+  environment:
+    PAGER: cat
+  register: patch_reg_patches
+  when: not freebsd_15
+  changed_when: "'Installing updates:' in patch_reg_patches.stdout"
+  failed_when:
+    - patch_reg_patches.rc != 0
+    - "'No updates needed' not in patch_reg_patches.stdout"
+  tags: [patch]
+
+- name: Update base packages (pkgbase)
+  community.general.pkgng:
+    pkgsite: FreeBSD-base
+    name: "*"
+    state: latest
+    cached: false
+  when: freebsd_15
+  tags: [patch]
+
+- name: Reboot
+  ansible.builtin.reboot:
+    msg: Rebooting to apply OS patches
+    connect_timeout: 5
+    reboot_timeout: 600
+    pre_reboot_delay: 5
+  when: >
+    (patch_reg_patches.changed | default(false) | bool) or
+    (force_reboot | default(false) | bool)
+  tags: [reboot]
