@@ -64,36 +64,63 @@
       description: Drop TCP packets with SYN+FIN bits set
   loop_control:
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  tags: [kernel, config]
+  tags: [config]
 
-- name: Check if PIDs are randomized
-  ansible.builtin.command: sysctl -n kern.randompid
-  register: kernel_reg_check_randompids
-  changed_when: false
-  tags: [kernel, pid]
+- name: Configure PID randomization
+  tags: [pid, randomization]
+  block:
+    - name: Check if PIDs are randomized
+      ansible.builtin.command: sysctl -n kern.randompid
+      register: runtime_reg_check_randompids
+      changed_when: false
 
-- name: Set PID randomization
-  ansible.posix.sysctl:
-    name: kern.randompid
-    state: present
-    value: 1
-  when: kernel_reg_check_randompids.stdout | trim | int < 1
-  changed_when: true
-  tags: [kernel, config, pid]
+    - name: Set PID randomization
+      ansible.posix.sysctl:
+        name: kern.randompid
+        state: present
+        value: 1
+      when: runtime_reg_check_randompids.stdout | trim | int < 1
+      changed_when: true
 
-- name: Set mac_do(4) rules
-  ansible.posix.sysctl:
-    name: security.mac.do.rules
-    state: present
-    value: "{{ mac_do_rules }}"
-  tags: [kernel, mac_do, config]
+- name: Configure mac_do(4) policy
+  when: runtime_mac_do_rules is defined
+  tags: [mac_do, config]
+  block:
+    - name: Check if mac_do kernel module is loaded
+      ansible.builtin.command: kldstat -q -m mac_do
+      register: runtime_reg_check_mac_do
+      changed_when: false
+      failed_when: runtime_reg_check_mac_do.rc < 0
 
-- name: Configure extra kernel state
+    - name: Set mac_do(4) rules
+      ansible.posix.sysctl:
+        name: security.mac.do.rules
+        state: present
+        value: "{{ runtime_mac_do_rules }}"
+      when: runtime_reg_check_mac_do.rc == 0
+
+- name: Configure kernel tunning settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ extra_runtime_kernel_state }}"
+  loop:
+    - key: kern.ipc.soacceptqueue
+      value: "{{ runtime_somaxconn_size }}"
+      description: Max pending socket connections queue size
+    - key: kern.kq_calloutmax
+      value: "{{ runtime_kq_calloutmax }}"
+      description: Maximum number of callouts allocated for kqueue
   loop_control:
-    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
+- name: Configure extra kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ runtime_extra_kernel_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   tags: [kernel, config]
