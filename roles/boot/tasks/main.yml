@@ -5,98 +5,126 @@
     state: present
     value: "YES"
     path: /boot/loader.conf
-  loop: "{{ kernel_modules }}"
-  register: boot_reg_modules
-  tags: [kernel, config, modules]
+  loop: "{{ boot_kernel_modules }}"
+  notify: Reboot
+  tags: [kernel, modules, config]
 
-- name: Configure boot-time kernel tunables
+- name: Configure extra loader settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ kernel_tunables }}"
+  loop: "{{ boot_extra_loader_settings }}"
   loop_control:
-    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
-  register: boot_reg_tunables
-  tags: [kernel, config, tunables]
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
+  tags: [loader, config]
 
-- name: Configure basic system settings
+- name: Configure keymap
+  community.general.sysrc:
+    name: keymap
+    state: present
+    value: "{{ boot_keymap }}"
+  notify: Reboot
+  tags: [keymap, config]
+
+- name: Configure timezone
+  notify: Reboot
+  tags: [timezone, config]
+  block:
+    - name: Query current timezone
+      ansible.builtin.slurp:
+        src: /var/db/zoneinfo
+      register: boot_reg_current_tz
+      failed_when: false
+
+    - name: Set timezone
+      ansible.builtin.command: "/usr/sbin/tzsetup -s {{ boot_timezone }}"
+      when: boot_timezone != (boot_reg_current_tz.content | default('') | b64decode | trim)
+      changed_when: true
+
+- name: Configure extra early rc(8) settings
   community.general.sysrc:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ system_settings }}"
+  loop: "{{ boot_extra_rc_settings }}"
   loop_control:
-    label: "{{ item.key }} -> {{ item.value }}"
-  register: boot_reg_basic_settings
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  notify: Reboot
   tags: [rc, config]
+
+- name: Start ntpd
+  ansible.builtin.service:
+    name: ntpd
+    enabled: true
+    state: started
+  tags: [ntpd, service]
+
+- name: Start moused
+  ansible.builtin.service:
+    name: moused
+    enabled: true
+    state: started
+  when: boot_moused_enabled
+  tags: [moused, service]
 
 - name: Mount EFI partition
   ansible.posix.mount:
     fstype: msdosfs
-    src: /dev/gpt/efiboot0
+    src: "{{ boot_efi_partition }}"
     path: /boot/efi
     opts: rw,noauto
-    state: mounted
+    state: present
   tags: [efi, mount]
 
-- name: Check for stock swap devices
-  ansible.builtin.command: swapinfo
-  register: boot_reg_active_stock_swaps
-  changed_when: false
+- name: Disable stock swap
+  when: boot_swap_devices is defined
   tags: [reset, swap]
+  block:
+    - name: Check for stock swap devices
+      ansible.builtin.command: swapinfo
+      register: boot_reg_active_stock_swaps
+      changed_when: false
 
-- name: Deactivate stock swap devices
-  ansible.builtin.command: "swapoff {{ item }}"
-  loop: "{{ active_stock_swaps }}"
-  vars:
-    device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
-    active_devices: "{{ device_lines | map('split') | map('first') | list }}"
-    active_stock_swaps: "{{ active_devices | difference(swap_devices) }}"
-  when: active_stock_swaps | length > 0
-  changed_when: true
-  tags: [reset, swap]
+    - name: Deactivate stock swap devices
+      ansible.builtin.command: "swapoff {{ item }}"
+      loop: "{{ active_stock_swaps }}"
+      vars:
+        device_lines: "{{ boot_reg_active_stock_swaps.stdout_lines | reject('search', '^Device') | reject('search', '^Total') | list }}"
+        active_devices: "{{ device_lines | map('split') | map('first') | list }}"
+        active_stock_swaps: "{{ active_devices | difference(boot_swap_devices) }}"
+      when: active_stock_swaps | default([]) | length > 0
+      changed_when: true
 
-- name: Remove stock swap devices from fstab
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    regexp: "^#?(?!({{ swap_devices | join('|') }})).+swap"
-    state: absent
-  tags: [reset, swap]
+    - name: Remove stock swap devices from fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: "^#?(?!({{ boot_swap_devices | join('|') }})).+swap"
+        state: absent
 
-- name: Configure custom swap devices
-  ansible.posix.mount:
-    fstype: swap
-    src: "{{ item }}"
-    path: none
-    opts: sw
-    state: present
-  loop: "{{ swap_devices }}"
-  tags: [swap, mount]
-
-- name: Check active custom swap devices
-  ansible.builtin.command: swapinfo
-  register: boot_reg_check_swap
-  changed_when: false
+- name: Configure custom swap
+  when: boot_swap_devices is defined
   tags: [swap]
+  block:
+    - name: Record custom swap mounts
+      ansible.posix.mount:
+        fstype: swap
+        src: "{{ item }}"
+        path: none
+        opts: sw
+        state: present
+      loop: "{{ boot_swap_devices }}"
 
-- name: Activate inactive custom swap devices
-  ansible.builtin.command: "swapon {{ item }}"
-  loop: "{{ swap_devices }}"
-  when: item not in boot_reg_check_swap.stdout
-  changed_when: true
-  tags: [swap]
+    - name: Check active custom swap devices
+      ansible.builtin.command: swapinfo
+      register: boot_reg_check_swap
+      changed_when: false
 
-- name: Reboot
-  ansible.builtin.reboot:
-    msg: Rebooting to load new kernel modules and/or tunables
-    connect_timeout: 5
-    reboot_timeout: 600
-    pre_reboot_delay: 5
-  when: >
-    (boot_reg_modules.changed | default(false) | bool) or
-    (boot_reg_tunables.changed | default(false) | bool) or
-    (boot_reg_basic_settings.changed | default(false) | bool)
-  tags: [reboot]
+    - name: Activate inactive custom swap devices
+      ansible.builtin.command: "swapon {{ item }}"
+      loop: "{{ boot_swap_devices }}"
+      when: item not in boot_reg_check_swap.stdout
+      changed_when: true
