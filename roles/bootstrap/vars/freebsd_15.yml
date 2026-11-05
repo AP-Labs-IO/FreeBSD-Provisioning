@@ -1,0 +1,3 @@
+---
+bootstrap_ports_repository_name: FreeBSD-ports
+bootstrap_ports_kmods_repository_name: FreeBSD-ports-kmods

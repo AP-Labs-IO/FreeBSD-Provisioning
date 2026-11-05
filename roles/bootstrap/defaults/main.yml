@@ -1,0 +1,8 @@
+---
+bootstrap_sensitive_logging_disabled: true
+bootstrap_core_packages:
+  - shells/bash
+  - shells/bash-completion
+  - shells/bash-completion-freebsd
+  - shells/bash-completion-zfs
+bootstrap_toor_shell: "{{ ansible_facts['local_base'] }}/bin/bash"

@@ -1,0 +1,154 @@
+---
+- name: Configure Python
+  tags: [pkg, python]
+  block:
+    - name: Check if Python is installed
+      ansible.builtin.raw: ASSUME_ALWAYS_YES=yes pkg info -eq lang/python3
+      register: bootstrap_reg_python_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install Python
+      ansible.builtin.raw: pkg install -y lang/python3
+      when: bootstrap_reg_python_check.rc != 0
+      changed_when: true
+
+- name: Gather facts
+  ansible.builtin.setup:
+  tags: [facts, setup]
+
+- name: Load OS version-specific constants
+  ansible.builtin.include_vars:
+    file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
+  tags: [config]
+
+- name: Configure local base fact
+  tags: [local-base, facts]
+  block:
+    - name: Query local base
+      ansible.builtin.command: sysctl -n user.localbase
+      register: bootstrap_reg_local_base
+      changed_when: false
+
+    - name: Set local base fact
+      ansible.builtin.set_fact:
+        local_base: "{{ bootstrap_reg_local_base.stdout }}"
+        cacheable: true
+
+- name: Set hostname
+  community.general.sysrc:
+    name: hostname
+    state: present
+    value: "{{ ansible_facts['fqdn'] }}"
+  tags: [hostname, config]
+
+- name: Add root SSH key
+  ansible.posix.authorized_key:
+    user: root
+    key: "{{ lookup('ansible.builtin.file', 'keys/root_ed25519.pub') }}"
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
+  tags: [ssh, keys]
+
+- name: Configure SSH
+  notify: Restart sshd
+  tags: [ssh, config]
+  block:
+    - name: Disable password-based SSH authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "(?i)^#?PasswordAuthentication"
+        line: PasswordAuthentication no
+
+    - name: Enable key-based only SSH authentication for root
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "(?i)^#?PermitRootLogin"
+        line: PermitRootLogin prohibit-password
+
+- name: Create Ansible user
+  ansible.builtin.user:
+    name: "{{ bootstrap_ansible_user.name }}"
+    uid: "{{ bootstrap_ansible_user.uid | default(omit) }}"
+    comment: "{{ bootstrap_ansible_user.comment }}"
+    groups: wheel
+    append: true
+    shell: "{{ bootstrap_ansible_user.shell | default('/bin/sh') }}"
+    password: "{{ bootstrap_ansible_user.password | ansible.builtin.password_hash(hashtype='sha512', salt=bootstrap_ansible_user.salt) }}"
+    update_password: on_create
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
+  tags: [ansible, user]
+
+- name: Add Ansible user SSH key
+  ansible.posix.authorized_key:
+    user: "{{ bootstrap_ansible_user.name }}"
+    key: "{{ lookup('ansible.builtin.file', 'keys/' + bootstrap_ansible_user.name + '_' + bootstrap_ansible_user.key_type + '.pub') }}"
+  no_log: "{{ bootstrap_sensitive_logging_disabled }}"
+  tags: [ansible, user, ssh, key]
+
+- name: Create pkg repos directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts['local_base'] }}/etc/pkg/repos"
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [pkg, config]
+
+- name: Configure 'latest' pkg ports repository
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts['local_base'] }}/etc/pkg/repos/FreeBSD.conf"
+    block: |
+      {{ bootstrap_ports_repository_name }}: {
+          url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest"
+      }
+      {{ bootstrap_ports_kmods_repository_name }}: {
+          url: "pkg+https://pkg.FreeBSD.org/${ABI}/kmods_latest_${VERSION_MINOR}",
+      }
+    insertafter: EOF
+    prepend_newline: true
+    append_newline: true
+    create: true
+    owner: root
+    group: wheel
+    mode: "0644"
+  tags: [pkg, config]
+
+- name: Install core packages
+  community.general.pkgng:
+    pkgsite: "{{ bootstrap_ports_repository_name }}"
+    name: "{{ ['lang/python3'] + bootstrap_core_packages }}"
+    state: latest
+    use_globs: false
+  tags: [pkg]
+
+- name: Configure toor's shell
+  tags: [toor, shell]
+  block:
+    - name: Query toor's shell
+      ansible.builtin.command: awk -F ':' '$0 ~ /^toor/ { print $NF; }' /etc/passwd
+      register: bootstrap_reg_toor_shell
+      changed_when: false
+
+    - name: Set toor's shell
+      ansible.builtin.command: "chsh -s {{ bootstrap_toor_shell }} toor"
+      when: bootstrap_toor_shell not in bootstrap_reg_toor_shell.stdout
+      changed_when: true
+
+- name: Copy root shell configuration files
+  ansible.builtin.copy:
+    src: "shell/{{ item.src }}"
+    dest: "/root/{{ item.dst }}"
+    owner: root
+    group: wheel
+    mode: "0644"
+  loop: "{{ shell_config_files }}"
+  tags: [root, shell, config]
+
+- name: Create local cron jobs directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts['local_base'] }}/etc/cron.d"
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+  tags: [cron, config]

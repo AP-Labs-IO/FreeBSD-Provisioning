@@ -1,0 +1,92 @@
+Bootstrap
+=========
+
+Bootstraps a fresh FreeBSD installation for SSH key based Ansible management via a designated Ansible user.
+
+Requirements
+------------
+
+* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
+
+Role Variables
+--------------
+
+| Variable                             | Default value                              | Description                                                                      |
+|--------------------------------------|--------------------------------------------|----------------------------------------------------------------------------------|
+| bootstrap_sensitive_logging_disabled | true                                       | Boolean that dictates whether task output considered sensitive is logged or not. |
+| bootstrap_toor_shell                 | {{ ansible_facts['local_base'] }}/bin/bash | toor's shell.                                                                    |
+| bootstrap_core_packages              | See `bootstrap_core_packages` below.       | See `bootstrap_core_packages` below.                                             |
+
+Dependencies
+------------
+
+* SSH key of type `ed25519` located at the the top-level `files/keys/root_ed25519.pub` path.
+* Global variables provided by the consumer of the role:
+  * `bootstrap_ansible_user`: Dictionary with attributes:
+    * `name`: The administrator's username.
+    * `uid`: Optional UID of the administrator, defaulting to the next available `uid`.
+    * `comment`: The administrator's full name.
+    * `shell`: Full path to the chosen administrator's shell.
+    * `password`: `ansible-vault` encrypted password for the administrator.
+    * `salt`: Password salt in plain-text form.
+    * `key_type`: Optional SSH key type.
+  * `bootstrap_core_packages`: List of "core" packages to install early, including the chosen shell for the `toor` user. Default:
+    * `shells/bash`
+    * `shells/bash-completion`
+    * `shells/bash-completion-freebsd`
+    * `shells/bash-completion-zfs`
+* SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
+
+Example Ansible Configuration
+-----------------------------
+
+```ini
+[defaults]
+roles_path = ./roles
+
+[privilege_escalation]
+become = true
+```
+
+Example Requirements
+--------------------
+
+```yaml
+---
+- name: bootstrap
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
+  version: main
+```
+
+Example Playbook
+----------------
+
+```yaml
+- name: Bootstrap Node
+  hosts: all
+  become: false
+  gather_facts: false
+  vars: { ansible_user: root }
+  roles:
+    - { role: bootstrap, tags: [bootstrap] }
+```
+
+Execution
+---------
+
+Run the master orchestration playbook against your target inventory environment:
+
+```sh
+-> ansible-galaxy role install -r requirements.yml -p ./roles
+-> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
+```
+
+License
+-------
+
+All Rights Reserved. Proprietary and Confidential.
+
+Author Information
+------------------
+
+Juan Manuel Palacios (<jmpalacios@gmail.com>).
