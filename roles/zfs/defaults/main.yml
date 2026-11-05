@@ -6,7 +6,7 @@ zfs_installation_directory: libexec
 
 zfs_data_pools: []
 
-zfs_encryption_keys_directory: /root/.zfskeys
+zfs_encryption_keys_directory: /etc/zfs/keys
 zfs_encryption_datasets: []
 
 zfs_pools_scrub_schedules: []

@@ -13,7 +13,7 @@ Requirements
   * A functional `become` setup.
 * The `net-im/py-apprise` tool with a working configuration.
 
-The bootstrap set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the local `monitoring` role.
+The bootstrap set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the `ap_labs.monitoring` role.
 
 Role Variables
 --------------
@@ -24,7 +24,7 @@ Role Variables
 | zfs_installation_directory                   | libexec                                    | Installation directory.                                                          |
 | zfs_namespace                                | ap-labs                                    | Installation subdirectory.                                                       |
 | zfs_data_pools                               | []                                         | List of data pools names to import.                                              |
-| zfs_encryption_keys_directory                | /root/.zfskeys                             | Directory where ZFS encryption keys are kept.                                    |
+| zfs_encryption_keys_directory                | /etc/zfs/keys                              | Directory where ZFS encryption keys are kept.                                    |
 | zfs_encryption_datasets                      | []                                         | See `zfs_encryption_datasets` below.                                             |
 | zfs_pools_scrub_schedules                    | []                                         | See `zfs_pools_scrub_schedules` below.                                           |
 | zfs_pools_capacity_monitoring_schedule       | minute: 0                                  | See `zfs_pools_capacity_monitoring_schedule` below.                              |
@@ -134,6 +134,14 @@ Example Requirements
 - name: bootstrap
   src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
   version: main
+
+- name: monitoring
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/monitoring.git
+  version: main
+
+- name: zfs
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/zfs.git
+  version: main
 ```
 
 Example Playbook
@@ -185,7 +193,7 @@ Run the master orchestration playbook against your target inventory environment:
 ```
 
 License
---------
+-------
 
 All Rights Reserved. Proprietary and Confidential.
 
