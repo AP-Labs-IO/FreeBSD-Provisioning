@@ -1,0 +1,6 @@
+---
+- name: Lint Ansible Roles
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - bootstrap
