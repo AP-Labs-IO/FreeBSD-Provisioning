@@ -1,0 +1,4 @@
+---
+nfs_client_access_cache: 5
+nfs_client_bufpackets: 64
+nfs_client_extra_kernel_settings: []

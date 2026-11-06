@@ -1,18 +1,42 @@
 ---
-- name: Set NFS caching to 5 seconds
-  community.general.sysrc:
-    name: nfs_access_cache
-    state: present
-    value: 5
-  tags: [config]
+- name: Configure NFS client
+  notify: Restart NFS client
+  tags: [client, config]
+  block:
+    - name: Set NFS access cache
+      community.general.sysrc:
+        name: nfs_access_cache
+        state: present
+        value: "{{ nfs_client_access_cache }}"
 
-- name: Start NFS client
-  ansible.builtin.service:
-    name: nfsclient
-    pattern: nfscl
-    enabled: true
-    state: started
-  tags: [client]
+    - name: Set NFS buffer packets
+      community.general.sysrc:
+        name: nfs_bufpackets
+        state: present
+        value: "{{ nfs_client_bufpackets }}"
+
+- name: Configure base kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop:
+    - key: vfs.nfs.enable_uidtostring
+      value: 1
+      description: Send numeric owner_names
+  loop_control:
+    label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
+
+- name: Configure extra kernel settings
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    state: present
+    value: "{{ item.value }}"
+  loop: "{{ nfs_client_extra_kernel_settings }}"
+  loop_control:
+    label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
+  tags: [kernel, config]
 
 - name: Mount NFS shares
   ansible.posix.mount:
@@ -21,7 +45,7 @@
     path: "{{ item.path }}"
     opts: "{{ item.opts }}"
     state: mounted
-  loop: "{{ nfs_shares }}"
+  loop: "{{ nfs_client_shares }}"
   loop_control:
     label: "{{ item.host }}:{{ item.src }} -> {{ item.path }}"
   tags: [shares, mount, config]

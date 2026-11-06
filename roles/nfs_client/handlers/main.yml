@@ -1,0 +1,7 @@
+---
+- name: Restart NFS client
+  ansible.builtin.service:
+    name: nfsclient
+    pattern: nfscl
+    enabled: true
+    state: restarted
