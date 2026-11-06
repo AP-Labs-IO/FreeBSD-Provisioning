@@ -1,0 +1,61 @@
+global:
+  logging:
+    - type: stdout
+      level: info
+      format: human
+      time: false
+
+jobs:
+{% for schedule in zfs_snapshotting_schedules %}
+{% set prefix = schedule.prefix if schedule.prefix is defined else schedule.name ~ '_' %}
+  - name: {{ schedule.name }}
+    type: {{ schedule.type | default('push') }}
+    connect:
+{% if schedule.connect_raw is defined and schedule.connect_raw | length > 0 %}
+{% for key, value in schedule.connect_raw.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
+      type: ssh+stdinserver
+      host: {{ zfs_replication_target_host }}
+      port: {{ zfs_replication_target_port }}
+      user: {{ zfs_replication_user.name }}
+      identity_file: /home/{{ zfs_replication_user.name }}/.ssh/{{ zfs_replication_keyname }}
+      options:
+        - StrictHostKeyChecking=yes
+{% endif %}
+    filesystems:
+{% for dataset in schedule.datasets %}
+      "{{ dataset }}": true
+{% endfor %}
+    snapshotting:
+      type: {{ schedule.snapshotting | default('periodic') }}
+      prefix: {{ prefix }}
+      interval: {{ schedule.interval }}
+    send:
+{% if schedule.send is defined and schedule.send | length > 0 %}
+{% for key, value in schedule.send.items() %}
+      {{ key }}: {{ value }}
+{% endfor %}
+{% else %}
+      send_properties: true
+{% endif %}
+    pruning:
+      keep_sender:
+{% if schedule.pruning.sender_raw is defined %}
+{{ schedule.pruning.sender_raw | to_nice_yaml(indent=2) | indent(8, first=True) }}
+{% else %}
+        - type: not_replicated
+        - type: grid
+          grid: {{ schedule.pruning.sender_grid }}
+          regex: "^{{ prefix }}"
+{% endif %}
+      keep_receiver:
+{% if schedule.pruning.receiver_raw is defined %}
+{{ schedule.pruning.receiver_raw | to_nice_yaml(indent=2) | indent(8, first=True) }}
+{% else %}
+        - type: grid
+          grid: {{ schedule.pruning.receiver_grid }}
+          regex: "^{{ prefix }}"
+{% endif %}
+{% endfor %}

@@ -1,0 +1,38 @@
+---
+zfs_sensitive_logging_disabled: true
+
+zfs_namespace: ap-labs
+zfs_installation_directory: libexec
+
+zfs_data_pools: []
+
+zfs_encryption_keys_directory: /root/.zfskeys
+zfs_encryption_datasets: []
+
+zfs_pools_scrub_schedules: []
+zfs_pools_capacity_monitoring_schedule:
+  minute: 0
+zfs_replication_monitoring_schedule:
+  minute: "*/15"
+
+zfs_zpool_capacity_thresholds:
+  notice: 70
+  warning: 80
+  critical: 90
+
+zfs_replication_user:
+  name: replicator
+  group: replicator
+zfs_replication_target_port: 22
+zfs_snapshotting_schedules: []
+
+zfs_vdev_async_write_max_active: 5
+zfs_vdev_async_write_min_active: 1
+zfs_lowmem_callback_period: 0
+zfs_extra_boot_settings: []
+
+zfs_services_memory_allocation: 0
+zfs_host_memory_reservation: 0
+zfs_arc_min_multiplier: 0.25
+zfs_file_timestamp_precision: 3
+zfs_extra_runtime_settings: []
