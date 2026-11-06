@@ -13,3 +13,4 @@
     - zfs
     - users
     - samba_server
+    - nfs_server
