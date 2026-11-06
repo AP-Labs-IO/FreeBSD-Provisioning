@@ -1,0 +1,9 @@
+---
+nfs_server_fha_write_locality: 0
+
+nfs_server_extra_loader_settings: []
+
+nfs_server_nfsd_flags: -t
+nfs_server_exports_file_path: nfs_server/exports
+
+nfs_server_extra_kernel_settings: []
