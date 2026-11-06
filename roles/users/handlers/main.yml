@@ -1,0 +1,9 @@
+---
+- name: Remove /nonexistent directory
+  ansible.builtin.file:
+    path: /nonexistent
+    state: absent
+
+- name: Recompile mail aliases database
+  ansible.builtin.command: newaliases
+  changed_when: true
