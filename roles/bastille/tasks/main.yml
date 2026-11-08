@@ -78,7 +78,7 @@
 
 - name: Copy jails creation helper script
   ansible.builtin.template:
-    src: create-jail.sh
+    src: create-jail.sh.j2
     dest: "{{ bastille_ops_path }}/deployments/scripts/create-bastille-jail.sh"
     owner: root
     group: wheel
