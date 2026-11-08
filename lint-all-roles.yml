@@ -16,3 +16,4 @@
     - nfs_server
     - nfs_client
     - vm_bhyve
+    - bastille
