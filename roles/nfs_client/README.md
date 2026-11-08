@@ -6,13 +6,12 @@ Configure an NFS client and mount shares.
 Requirements
 ------------
 
-* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
 * An already bootstrapped FreeBSD environment, i.e.:
   * With a Python runtime.
   * With key-based SSH access.
   * A functional `become` setup.
 
-The last set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one.
+The last set of requirements can be easily met by running the `ap_labs.freebsd_provisioning.bootstrap` role as a precursor to this one.
 
 Role Variables
 --------------
@@ -42,25 +41,8 @@ Example Ansible Configuration
 -----------------------------
 
 ```ini
-[defaults]
-roles_path = ./roles
-
 [privilege_escalation]
 become = true
-```
-
-Example Requirements
---------------------
-
-```yaml
----
-- name: bootstrap
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
-  version: main
-
-- name: nfs_client
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/nfs_client.git
-  version: main
 ```
 
 Example Playbook
@@ -74,12 +56,12 @@ Example Playbook
   gather_facts: false
   vars: { ansible_user: root }
   roles:
-    - { role: bootstrap, tags: [bootstrap] }
+    - { role: ap_labs.freebsd_provisioning.bootstrap, tags: [bootstrap] }
 
 - name: Configure NFS shares
   hosts: all
   roles:
-    - { role: nfs_client, tags: [nfs_client] }
+    - { role: ap_labs.freebsd_provisioning.nfs_client, tags: [nfs_client] }
 ```
 
 Execution
@@ -88,16 +70,5 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-galaxy role install -r requirements.yml -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags nfs_client playbook.yml
 ```
-
-License
--------
-
-All Rights Reserved. Proprietary and Confidential.
-
-Author Information
-------------------
-
-Juan Manuel Palacios (<jmpalacios@gmail.com>).

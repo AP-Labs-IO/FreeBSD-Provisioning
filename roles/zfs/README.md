@@ -6,14 +6,13 @@ Configure FreeBSD nodes with ZFS services.
 Requirements
 ------------
 
-* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
 * An already bootstrapped FreeBSD environment, i.e.:
   * With a Python runtime.
   * With key-based SSH access.
   * A functional `become` setup.
 * The `net-im/py-apprise` tool with a working configuration.
 
-The bootstrap set of requirements can be easily met by running the `ap_labs.bootstrap` role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the `ap_labs.monitoring` role.
+The bootstrap set of requirements can be easily met by running the `ap_labs.freebsd_provisioning.bootstrap` role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the `ap_labs.freebsd_provisioning.monitoring` role.
 
 Role Variables
 --------------
@@ -119,29 +118,8 @@ Example Ansible Configuration
 -----------------------------
 
 ```ini
-[defaults]
-roles_path = ./roles
-
 [privilege_escalation]
 become = true
-```
-
-Example Requirements
---------------------
-
-```yaml
----
-- name: bootstrap
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
-  version: main
-
-- name: monitoring
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/monitoring.git
-  version: main
-
-- name: zfs
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/zfs.git
-  version: main
 ```
 
 Example Playbook
@@ -155,29 +133,29 @@ Example Playbook
   gather_facts: false
   vars: { ansible_user: root }
   roles:
-    - { role: bootstrap, tags: [bootstrap] }
+    - { role: ap_labs.freebsd_provisioning.bootstrap, tags: [bootstrap] }
 
 - name: Configure Monitoring
   hosts: all:!replication
   roles:
-    - { role: monitoring, tags: [monitoring] }
+    - { role: ap_labs.freebsd_provisioning.monitoring, tags: [monitoring] }
 
 - name: Configure ZFS Services
   hosts: all:!replication
   roles:
-    - { role: zfs, tags: [zfs] }
+    - { role: ap_labs.freebsd_provisioning.zfs, tags: [zfs] }
 
 - name: Configure ZFS replication targets
   hosts: replication
   tasks:
     - name: Import snapshotting & replication common tasks
       ansible.builtin.import_role:
-        name: zfs
+        name: ap_labs.freebsd_provisioning.zfs
         tasks_from: zrepl_common.yml
 
     - name: Import snapshotting & replication target tasks
       ansible.builtin.import_role:
-        name: zfs
+        name: ap_labs.freebsd_provisioning.zfs
         tasks_from: zrepl_target.yml
   tags: [zfs]
 ```
@@ -188,16 +166,5 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-galaxy role install -r requirements.yml -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml -i inventory/replication.yml --tags bootstrap --tags monitoring --tags zfs playbook.yml
 ```
-
-License
--------
-
-All Rights Reserved. Proprietary and Confidential.
-
-Author Information
-------------------
-
-Juan Manuel Palacios (<jmpalacios@gmail.com>).

@@ -6,7 +6,7 @@ Bootstraps a fresh FreeBSD installation for SSH key based Ansible management via
 Requirements
 ------------
 
-* A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
+As described in the top-level `README.md` file.
 
 Role Variables
 --------------
@@ -41,21 +41,8 @@ Example Ansible Configuration
 -----------------------------
 
 ```ini
-[defaults]
-roles_path = ./roles
-
 [privilege_escalation]
 become = true
-```
-
-Example Requirements
---------------------
-
-```yaml
----
-- name: bootstrap
-  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
-  version: main
 ```
 
 Example Playbook
@@ -77,16 +64,5 @@ Execution
 Run the master orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-galaxy role install -r requirements.yml -p ./roles
 -> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
 ```
-
-License
--------
-
-All Rights Reserved. Proprietary and Confidential.
-
-Author Information
-------------------
-
-Juan Manuel Palacios (<jmpalacios@gmail.com>).
