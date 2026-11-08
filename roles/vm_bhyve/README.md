@@ -3,6 +3,8 @@ VM Bhyve
 
 Configure FreeBSD nodes to host vm-bhyve(8) managed VMs.
 
+This role assumes ZFS-based storage, which is a limitation that may be lifted in the future.
+
 Requirements
 ------------
 
@@ -53,6 +55,10 @@ Example Requirements
 - name: bootstrap
   src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/bootstrap.git
   version: main
+
+- name: vm_bhyve
+  src: git+ssh://git@gitlab.lan/ap-labs/ansible-roles/vm_bhyve.git
+  version: main
 ```
 
 Example Playbook
@@ -85,7 +91,7 @@ Run the master orchestration playbook against your target inventory environment:
 ```
 
 License
---------
+-------
 
 All Rights Reserved. Proprietary and Confidential.
 

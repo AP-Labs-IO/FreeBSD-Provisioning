@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  namespace: ap_labs
   role_name: vm_bhyve
   author: Juan Manuel Palacios Plaza
   description: Configure FreeBSD nodes to host vm-bhyve(8) managed VMs.
