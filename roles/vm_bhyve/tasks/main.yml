@@ -1,0 +1,102 @@
+---
+- name: Load the bhyve kernel module
+  community.general.sysrc:
+    name: vmm_load
+    state: present
+    value: "YES"
+    path: /boot/loader.conf
+  notify: Reboot
+  tags: [bhyve, module, config]
+
+- name: Reserve PCI passthrough devices
+  community.general.sysrc:
+    name: pptdevs
+    state: "{{ (vm_bhyve_passthrough_devices | length > 0) | ternary('present', 'absent') }}"
+    value: "{{ vm_bhyve_passthrough_devices | join(' ') }}"
+    path: /boot/loader.conf
+  notify: Reboot
+  tags: [kernel, config, modules]
+
+- name: Expose zvols as device files
+  ansible.posix.sysctl:
+    name: vfs.zfs.vol.mode
+    state: present
+    value: 2
+    sysctl_file: /boot/loader.conf
+    reload: false
+  notify: Reboot
+  tags: [config, zvols]
+
+- name: Enable automatic tap device activation
+  ansible.posix.sysctl:
+    name: net.link.tap.up_on_open
+    state: present
+    value: 1
+  tags: [tap, config]
+
+- name: Install packages
+  community.general.pkgng:
+    name:
+      - sysutils/vm-bhyve
+      - sysutils/bhyve-firmware
+      - sysutils/edk2@bhyve
+      - sysutils/tmux
+    state: latest
+    use_globs: false
+  tags: [pkg]
+
+- name: Enable vm-bhyve
+  community.general.sysrc:
+    name: vm_enable
+    state: present
+    value: "YES"
+  tags: [enable, config]
+
+- name: Disable system support checks
+  community.general.sysrc:
+    name: vm_disable_host_checks
+    state: "{{ (vm_bhyve_host_checks_disabled == true) | ternary('present', 'absent') }}"
+    value: "YES"
+  tags: [support, checks, config]
+
+- name: Configure vm-bhyve dataset
+  community.general.sysrc:
+    name: vm_dir
+    state: present
+    value: "zfs:{{ vm_bhyve_dataset }}"
+  tags: [dataset, config]
+
+- name: Create vm-bhyve dataset
+  community.general.zfs:
+    name: "{{ vm_bhyve_dataset }}"
+    state: present
+  tags: [dataset, config]
+
+- name: Configure startup VMs
+  community.general.sysrc:
+    name: vm_list
+    state: "{{ (vm_bhyve_startup_vms | length > 0) | ternary('present', 'absent') }}"
+    value: "{{ vm_bhyve_startup_vms | join(' ') }}"
+  tags: [vms, startup, config]
+
+- name: Configure VM startup delay
+  community.general.sysrc:
+    name: vm_delay
+    state: present
+    value: "{{ vm_bhyve_startup_delay }}"
+  tags: [vms, startup, delay, config]
+
+- name: Configure host shutdown timeouts
+  tags: [shutdown, timeout, config]
+  block:
+  - name: Configure host shutdown soft timeout
+    community.general.sysrc:
+      name: rcshutdown_timeout
+      state: present
+      value: "{{ vm_bhhyve_host_shutdown_soft_timeout }}"
+
+  - name: Configure host shutdown hard timeout
+    ansible.posix.sysctl:
+      name: kern.init_shutdown_timeout
+      state: present
+      value: "{{ vm_bhhyve_host_shutdown_hard_timeout }}"
