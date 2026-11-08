@@ -1,7 +1,9 @@
 ---
-bastille_prefix: /usr/local/bastille
+bastille_prefix: "{{ ansible_facts['local_base'] }}/bastille"
 bastille_tzdata: ""
 bastille_zfs_enable: "YES"
 bastille_zfs_zpool: "zroot"
-bastille_releases:
-  - 14.4-RELEASE
+bastille_default_release: 14.4-RELEASE
+bastille_default_ip_options: DHCP SLAAC
+
+bastille_ops_path: /root

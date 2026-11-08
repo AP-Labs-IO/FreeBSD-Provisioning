@@ -3,10 +3,10 @@
 set -e
 
 
-BASTILLE_ROOT=/usr/local/bastille
-DEFAULT_USERLAND="14.4-RELEASE"
-DEFAULT_IP_OPTIONS="DHCP SLAAC"
-TEMPLATES_REPO="git@gitlab.lan:ap-labs/bastille-templates.git"
+BASTILLE_PREFIX={{ bastille_prefix }}
+DEFAULT_RELEASE={{ bastille_default_release }}
+DEFAULT_IP_OPTIONS="{{ bastille_default_ip_options }}"
+TEMPLATES_REPO={{ bastille_templates_repository }}
 
 
 usage() {
@@ -14,7 +14,7 @@ usage() {
 create-jail-bastille.sh [options] <tempName> <targetName> <bridge> [extra arguments]
 
     Options:
-        -u          -- Jail userland. Default: ${DEFAULT_USERLAND}.
+        -r          -- Jail release. Default: ${DEFAULT_RELEASE}.
         -i          -- IP options. Default: "${DEFAULT_IP_OPTIONS}".
         -T          -- Template to apply to the target jail.
         -F          -- Tree of extra files to copy into the target jail.
@@ -32,11 +32,11 @@ EOF
 }
 
 
-while getopts ":u:i:T:F:t:xh" opt
+while getopts ":r:i:T:F:t:xh" opt
 do
     case $opt in
-    u)
-        userland=$OPTARG
+    r)
+        release=$OPTARG
         ;;
     i)
         ip_options=$OPTARG
@@ -74,10 +74,10 @@ fi
 
 tmp_name=$1
 targe_name=$2
-interface=$3
+bridge=$3
 shift 3
 
-: ${userland:="${DEFAULT_USERLAND}"}
+: ${release:="${DEFAULT_RELEASE}"}
 : ${ip_options:="${DEFAULT_IP_OPTIONS}"}
 : ${tmp_name:="${targe_name}"}
 
@@ -92,14 +92,14 @@ then
     exit 3
 fi
 
-bastille create --bridge --static-mac --clone ${tmp_name} ${userland} "${ip_options}" ${interface}
+bastille create --bridge --static-mac --clone ${tmp_name} ${release} "${ip_options}" ${bridge}
 if [ "${tmp_name}" != "${targe_name}" ]
 then
     bastille stop ${tmp_name}
 
     bastille rename ${tmp_name} ${targe_name}
-    sed -i '' -E -e '/^ifconfig_e0b_.+_name/s/-/_/g' ${BASTILLE_ROOT}/jails/${targe_name}/root/etc/rc.conf
-    rm -rf ${BASTILLE_ROOT}/jails/${tmp_name}
+    sed -i '' -E -e '/^ifconfig_e0b_.+_name/s/-/_/g' ${BASTILLE_PREFIX}/jails/${targe_name}/root/etc/rc.conf
+    rm -rf ${BASTILLE_PREFIX}/jails/${tmp_name}
 
     bastille start ${targe_name}
 fi

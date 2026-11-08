@@ -1,5 +1,7 @@
 ---
 galaxy_info:
+  role_name: bastille
+  namespace: ap_labs
   author: Juan Manuel Palacios Plaza
   description: Configure FreeBSD nodes to host Bastille jails.
   license: All Rights Reserved. Proprietary and Confidential.
