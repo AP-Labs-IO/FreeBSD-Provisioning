@@ -1,0 +1,8 @@
+Ansible FreeBSD Infrastructure Suite
+Copyright 2026 Juan Manuel Palacios Plaza
+
+This product includes infrastructure automation code developed by
+Juan Manuel Palacios Plaza (https://github.com/jmpalacios).
+
+This framework utilizes and configures open-source components, including:
+- Bastille (https://bastillebsd.org/projects/bastille/).

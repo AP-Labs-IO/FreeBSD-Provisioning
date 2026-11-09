@@ -85,7 +85,11 @@ The AI acted as an expert peer-reviewer and sounding board, but the final archit
 
 ## License
 
-All Rights Reserved. Proprietary and Confidential.
+Apache-2.0
+
+Copyright 2026 Juan Manuel Palacios Plaza.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://apache.org
 
 ## Author Information
 

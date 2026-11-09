@@ -6,6 +6,8 @@ readme: README.md
 authors:
   - Juan Manuel Palacios Plaza <jmpalacios@gmail.com>
 description: Unified Ansible collection for FreeBSD provisioning and configuration.
+license:
+  - Apache-2.0
 tags:
   - freebsd
   - provisioning
