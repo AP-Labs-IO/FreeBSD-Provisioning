@@ -35,6 +35,7 @@ Role Variables
 | monitoring_collectd_socket_path               | /var/run/collectd.sock                              | Path to the collectd UNIX socket.                          |
 | monitoring_collectd_socket_group              | wheel                                               | Group ownership of the collectd UNIX socket.               |
 | monitoring_collectd_socket_perms              | 0770                                                | Permissions of the collectd UNIX socket.                   |
+| monitoring_devfs_ruleset_number               | 10                                                  | `devfs(8)` ruleset number for unprivileged disk temperature monitoring. |
 | monitoring_collectd_ignore_interfaces         | See `monitoring_collectd_ignore_interfaces` below.  | See `monitoring_collectd_ignore_interfaces` below.         |
 | monitoring_collectd_ignore_mountpoints        | See `monitoring_collectd_ignore_mountpoints` below. | See `monitoring_collectd_ignore_mountpoints` below.        |
 | monitoring_collectd_graphite_port             | 2003                                                | See `monitoring_collectd_graphite_port` below.             |

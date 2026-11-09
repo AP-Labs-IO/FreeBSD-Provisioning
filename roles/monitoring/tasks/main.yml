@@ -124,6 +124,52 @@
     mode: "0755"
   tags: [collectd, script]
 
+- name: Configure unprivileged disk temperature monitoring devfs ruleset
+  tags: [devfs, rules]
+  notify: Restart devfs
+  block:
+  - name: Add unprivileged disk temperature monitoring devfs rules
+    ansible.builtin.blockinfile:
+      path: /etc/devfs.rules
+      create: true
+      mode: "0644"
+      block: |
+        [{{ monitoring_devfs_ruleset_name }}={{ monitoring_devfs_ruleset_number }}]
+        add path 'xpt*' mode 0660 group operator
+        add path 'pass*' mode 0660 group operator
+
+  - name: Check existing devfs system ruleset configuration
+    ansible.builtin.command: sysrc -n devfs_system_ruleset
+    register: monitoring_current_devfs_ruleset
+    failed_when: false
+    changed_when: false
+
+  - name: Configure devfs system ruleset
+    community.general.sysrc:
+      name: devfs_system_ruleset
+      value: "{{ monitoring_devfs_ruleset_name }}"
+    when: monitoring_current_devfs_ruleset.stdout == ""
+
+  - name: Warn if a conflicting ruleset configuration exists
+    ansible.builtin.debug:
+      msg: >
+        [WARNING]: devfs_system_ruleset is already set to '{{ monitoring_current_devfs_ruleset.stdout }}'.
+        To prevent trampling, you must manually include the '{{ monitoring_devfs_ruleset_name }}' ruleset
+        into the former to enable unprivileged disk temperature monitoring.
+    when:
+      - monitoring_current_devfs_ruleset.stdout != ""
+      - monitoring_current_devfs_ruleset.stdout != monitoring_devfs_ruleset_name
+
+- name: Install disk temperature script
+  ansible.builtin.copy:
+    src: collectd-disktemp
+    dest: "{{ monitoring_installation_path }}/collectd-disktemp"
+    owner: root
+    group: wheel
+    mode: "0755"
+  notify: Restart collectdmon
+  tags: [collectd, script]
+
 - name: Install apprise configuration
   ansible.builtin.template:
     src: apprise.yml.j2

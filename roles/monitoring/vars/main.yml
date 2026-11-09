@@ -13,3 +13,4 @@
 # limitations under the License.
 ---
 monitoring_base_services: watchdogd smartd collectd blocklistd
+monitoring_devfs_ruleset_name: monitoring_unprivileged_disk_temperature

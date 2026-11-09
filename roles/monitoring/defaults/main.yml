@@ -43,6 +43,7 @@ monitoring_collectd_interval: 10
 monitoring_collectd_socket_path: /var/run/collectd-unixsock
 monitoring_collectd_socket_group: wheel
 monitoring_collectd_socket_perms: "0770"
+monitoring_devfs_ruleset_number: 10
 monitoring_collectd_ignore_interfaces:
   - lo0
   - ipfw0
