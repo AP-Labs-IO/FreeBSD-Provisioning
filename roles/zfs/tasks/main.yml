@@ -144,7 +144,7 @@
   block:
     - name: Install zpool capacity monitoring script
       ansible.builtin.template:
-        src: monitor-zpool-capacity
+        src: monitor-zpool-capacity.j2
         dest: "{{ zfs_installation_path }}/monitor-zpool-capacity"
         owner: root
         group: wheel
