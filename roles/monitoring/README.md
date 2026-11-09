@@ -50,7 +50,6 @@ In a default setup, this construction results in an installation path of `/usr/l
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `monitoring_watchdogd_flags`: String listing the launch flags for the `watchdogd(8)` service.
   * `monitoring_smartd_poll_interval`: Interger listing the `smartd(8)` disk polling interval.

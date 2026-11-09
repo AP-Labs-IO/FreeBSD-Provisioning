@@ -32,7 +32,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `users_accounts`: List of dictionaries of users to create, with attributes:
     * `name`: The user's username.

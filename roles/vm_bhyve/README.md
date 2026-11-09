@@ -30,7 +30,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `vm_bhyve_passthrough_devices`: List of PCI devices to reserve for PCI passthrough via the `pptdevs` `loader.conf(5)` variable, in standard `bus/slot/function` notation.
   * `vm_bhyve_startup_vms`: List of VMs to autostart up on system boot.

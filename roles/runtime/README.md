@@ -25,7 +25,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `runtime_mac_do_rules`: String with the desired `mac_do(4)` configuration.
   * `runtime_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:

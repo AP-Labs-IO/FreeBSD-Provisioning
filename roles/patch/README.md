@@ -21,7 +21,7 @@ None.
 Dependencies
 ------------
 
-* Bootstrap role.
+None.
 
 Example Ansible Configuration
 -----------------------------

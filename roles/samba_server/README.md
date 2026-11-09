@@ -28,7 +28,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `samba_server_workgroup`: Samba workgroup.
   * `samba_server_description`: Optional descrition for the Samba server, defaulting to the `%h` substitution.

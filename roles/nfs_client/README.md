@@ -25,7 +25,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `nfs_client_shares`: List of dictionaries of NFS shares to mount, with attributes:
     * `host`: Host that exports the target NFS share.

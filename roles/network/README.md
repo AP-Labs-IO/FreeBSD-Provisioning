@@ -33,7 +33,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `network_preserve_custom_configurations`: Regular expression segment that matches the custom network configurations that should NOT be removed from `/etc/rc.conf` when `network_remove_stock_configuration` is set to `true`, e.g.: `(igb|vtnet)([0-9]+_name|[0-9]+_[0-9]+)|bridge|.+up`. This pattern is first prepended with an `ifconfig_` clause anchored to the beginning of the line, and then negated with "negative lookahead", causing the full regular expression to skip all lines matched by the full regular expression. For the example provided, the preserved configurations would be:
     * Renaming of any `igb` or `vtnet` interface, e.g. `ifconfig_igb0_name="$customName"` or `ifconfig_vtnet1="$customName"`.

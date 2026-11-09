@@ -50,7 +50,6 @@ At present, zrepl configuration installed by this role is limited to a single re
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `zfs_encryption_datasets`: List of dictionaries describing the encrypted ZFS datasets and their encryption keys, with attributes:
     * `dataset`: The full path of the ZFS dataset.

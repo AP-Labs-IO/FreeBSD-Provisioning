@@ -27,7 +27,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `nfs_server_extra_loader_settings`: List of dictionaries of extra `loader(8)` settings to configure, with attributes:
     * `key`: Name of the loader setting to set via `sysctl(8)`.

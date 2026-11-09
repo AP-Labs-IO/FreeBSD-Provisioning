@@ -34,7 +34,6 @@ In a default setup, this construction results in an installation path of `/usr/l
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `host_tuning_storage_pm_ata_devices`: Array of dictionaries describing the ATA storage devices for which power management is desired, with attributes:
     * `node`: String listing the node name of the target disk to configure, e.g. `ada0`.

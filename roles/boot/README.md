@@ -27,7 +27,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `boot_kernel_modules`: List of strings with the names of the kernel modules to load.
   * `boot_extra_loader_settings`: List of dictionaries of extra `loader(8)` settings to configure, with attributes:

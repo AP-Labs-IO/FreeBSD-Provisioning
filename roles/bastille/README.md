@@ -29,7 +29,6 @@ Role Variables
 Dependencies
 ------------
 
-* Bootstrap role.
 * Global variables provided by the consumer of the role:
   * `bastille_releases`: List of strings with the names of the FreeBSD releases that Bastille should bootstrap.
   * `bastille_templates_repository`: URL of the Bastille templates repository to use for the deployment of jails.
