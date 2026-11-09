@@ -72,6 +72,17 @@ Example playbooks for projects consuming individual roles within this collection
 
 ---
 
+## Acknowledgments & AI Assistance
+
+While this automation suite is entirely self-authored and engineered by me, I would like to disclose my use of generative AI tools (specifically Google Gemini) as an interactive collaborator during the development process.
+
+I want to emphasize that this framework was not built via blind copy-and-paste automation. Instead, every architectural layout, structural decision, configuration task, etc., was the result of:
+
+* **Extensive Domain Research:** Months of deep-diving into vanilla FreeBSD systems configuration, OpenZFS & storage fundamentals, network topologies, and Ansible runtime behaviors.
+* **Rigorous Validation:** Every single Ansible technique and Jinja2 syntax suggestion was exhaustively tested, debugged, and refined on physical testbeds before integration.
+
+The AI acted as an expert peer-reviewer and sounding board, but the final architectural assembly, validation criteria, and operational execution are entirely my own.
+
 ## License
 
 All Rights Reserved. Proprietary and Confidential.
