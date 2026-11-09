@@ -20,7 +20,7 @@
 - name: Install packages
   community.general.pkgng:
     name:
-      - devel/git
+      - devel/git@default
       - sysutils/bastille
       - sysutils/htop
       - sysutils/tree
