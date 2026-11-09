@@ -162,7 +162,7 @@ Example Playbook
 Execution
 ---------
 
-Run the master orchestration playbook against your target inventory environment:
+Run the orchestration playbook against your target inventory environment:
 
 ```sh
 -> ansible-playbook -v --diff -i inventory/$env.yml -i inventory/replication.yml --tags bootstrap --tags monitoring --tags zfs playbook.yml
