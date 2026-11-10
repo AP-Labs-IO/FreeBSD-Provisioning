@@ -46,7 +46,7 @@ Configure the collection in your Ansible project's `requirements.yml` file as a 
 ```yaml
 ---
 collections:
-  - name: git+ssh://git@github.com/AP-Labs-IO/freebsd-provisioning.git
+  - name: git+ssh://git@github.com/AP-Labs-IO/FreeBSD-Provisioning.git
     version: main
 ```
 
