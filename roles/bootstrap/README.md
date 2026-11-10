@@ -64,5 +64,5 @@ Execution
 Run the orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap playbook.yml
 ```

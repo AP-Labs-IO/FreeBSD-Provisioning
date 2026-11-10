@@ -129,17 +129,17 @@ Execution
 Run the orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags monitoring playbook.yml
 ```
 
 Run the jail monitoring tasks once the target jails have been deployed:
 
 ```sh
--> ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-jails playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-jails playbook.yml
 ```
 
 Run the extra services monitoring tasks once the target services have been deployed:
 
 ```sh
--> ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-extra-services playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags monitoring-extra-services playbook.yml
 ```

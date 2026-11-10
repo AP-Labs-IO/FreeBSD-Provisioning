@@ -66,7 +66,7 @@ Execution
 Run the orchestration playbook against your target inventory environment:
 
 ```sh
--> ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags bastille playbook.yml
+ansible-playbook -v --diff -i inventory/$env.yml --tags bootstrap --tags bastille playbook.yml
 ```
 
 Included is a simple helper script that aims to simplify the process of creating clone jails that potentially use dashes in their names, which the `/usr/share/examples/jails/jib` script employed by Bastille when first creating a jail does not allow.

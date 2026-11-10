@@ -53,7 +53,7 @@ collections:
 Install it via `ansible-galaxy`:
 
 ```bash
--> ansible-galaxy collection install -r requirements.yml
+ansible-galaxy collection install -r requirements.yml
 ```
 
 ---
