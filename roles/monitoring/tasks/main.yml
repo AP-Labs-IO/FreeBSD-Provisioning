@@ -122,6 +122,7 @@
     owner: root
     group: wheel
     mode: "0755"
+  notify: Restart collectdmon
   tags: [collectd, script]
 
 - name: Configure unprivileged disk temperature monitoring devfs ruleset
