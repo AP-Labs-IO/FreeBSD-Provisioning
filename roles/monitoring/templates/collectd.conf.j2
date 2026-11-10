@@ -72,7 +72,7 @@ LoadPlugin aggregation
 # ==============================================================================
 LoadPlugin exec
 <Plugin exec>
-    Exec "nobody" "{{ monitoring_installation_path }}/collectd-cputemp"
+    Exec "nobody:nobody" "{{ monitoring_installation_path }}/collectd-cputemp"
     Exec "nobody:operator" "{{ monitoring_installation_path }}/collectd-disktemp"
 </Plugin>
 
