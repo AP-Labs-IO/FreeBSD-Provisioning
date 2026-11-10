@@ -1,1 +1,5 @@
+*.pyc
+*.retry
 .ansible/
+collections/
+molecule/*/molecule.yml.bkp
