@@ -23,9 +23,17 @@ Interval {{ monitoring_collectd_interval }}
 WriteQueueLimitLow 50000
 WriteQueueLimitHigh 50000
 
+LoadPlugin unixsock
+<Plugin unixsock>
+    SocketFile "{{ monitoring_collectd_socket_path }}"
+    SocketGroup "{{ monitoring_collectd_socket_group }}"
+    SocketPerms "{{ monitoring_collectd_socket_perms }}"
+    DeleteSocket true
+</Plugin>
+
 LoadPlugin syslog
 <Plugin syslog>
-    LogLevel err
+    LogLevel info
     NotifyLevel WARNING
 </Plugin>
 
@@ -64,7 +72,8 @@ LoadPlugin aggregation
 # ==============================================================================
 LoadPlugin exec
 <Plugin exec>
-    Exec "nobody" "{{ monitoring_installation_path }}/collectd-cputemp"
+    Exec "nobody:nobody" "{{ monitoring_installation_path }}/collectd-cputemp"
+    Exec "nobody:operator" "{{ monitoring_installation_path }}/collectd-disktemp"
 </Plugin>
 
 LoadPlugin interface
