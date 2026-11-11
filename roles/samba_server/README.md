@@ -67,12 +67,12 @@ Example Playbook
   gather_facts: false
   vars: { ansible_user: root }
   roles:
-    - { role: ap_labs.freebsd_provisioningbootstrap, tags: [bootstrap] }
+    - { role: ap_labs.freebsd_provisioning.bootstrap, tags: [bootstrap] }
 
 - name: Configure Samba Server
   hosts: all
   roles:
-    - { role: ap_labs.freebsd_provisioningsamba_server, tags: [samba_server] }
+    - { role: ap_labs.freebsd_provisioning.samba_server, tags: [samba_server] }
 ```
 
 Execution
