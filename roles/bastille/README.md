@@ -1,7 +1,7 @@
 Bastille
 ========
 
-Configure FreeBSD nodes to host Bastille jails.
+Configure FreeBSD nodes to host [Bastille](https://bastillebsd.org/projects/bastille/) jails.
 
 Requirements
 ------------
