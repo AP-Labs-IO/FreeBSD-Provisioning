@@ -5,4 +5,9 @@ This product includes infrastructure automation code developed by
 Juan Manuel Palacios Plaza (https://github.com/jmpalacios).
 
 This framework utilizes and configures open-source components, including:
+- OpenZFS https://openzfs.org/wiki/Main_Page.
+- Samba (https://gitlab.com/samba-freebsd/samba).
+- Apprise (https://github.com/caronc/apprise).
+- vm-bhyve (https://github.com/freebsd/vm-bhyve).
 - Bastille (https://bastillebsd.org/projects/bastille/).
+- Apprise (https://github.com/caronc/apprise).
