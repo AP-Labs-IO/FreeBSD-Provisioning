@@ -10,32 +10,32 @@ The collection is broken down into modular roles designed to be executed sequent
 
 ### Foundational Setup
 
-* **`bootstrap`**: Initial node provisioning. Extended documentation for the role can be found in the `roles/bootstrap/README.md` file.
-* **`patch`**: Host OS updates. Extended documentation for the role can be found in the `roles/patch/README.md` file.
-* **`host_tuning`**: Limited host hardware configuration. Extended documentation for the role can be found in the `roles/host_tuning/README.md` file.
-* **`boot`**: Boot-time configuration. Extended documentation for the role can be found in the `roles/boot/README.md` file.
+* **`bootstrap`**: Initial node provisioning. Extended documentation for the role can be found in the [`roles/bootstrap/README.md`](roles/bootstrap/README.md) file.
+* **`patch`**: Host OS updates. Extended documentation for the role can be found in the [`roles/patch/README.md`](roles/patch/README.md) file.
+* **`host_tuning`**: Limited host hardware configuration. Extended documentation for the role can be found in the [`roles/host_tuning/README.md`](roles/host_tuning/README.md) file.
+* **`boot`**: Boot-time configuration. Extended documentation for the role can be found in the [`roles/boot/README.md`](roles/boot/README.md) file.
 
 ### Runtime Configuration & Tuning
 
-* **`runtime`**: Runtime tuning. Extended documentation for the role can be found in the `roles/runtime/README.md` file.
-* **`network`**: Network configuration. Extended documentation for the role can be found in the `roles/network/README.md` file.
-* **`users`**: Users & groups. Extended documentation for the role can be found in the `roles/users/README.md` file..
+* **`runtime`**: Runtime tuning. Extended documentation for the role can be found in the [`roles/runtime/README.md`](roles/runtime/README.md) file.
+* **`network`**: Network configuration. Extended documentation for the role can be found in the [`roles/network/README.md`](roles/network/README.md) file.
+* **`users`**: Users & groups. Extended documentation for the role can be found in the [`roles/users/README.md`](roles/users/README.md) file..
 
 ### Storage & File Sharing
 
-* **`zfs`**: ZFS pools & datasets management. Extended documentation for the role can be found in the `roles/zfs/README.md` file.
-* **`nfs_server`**: NFSv4 server & shares configuration. Extended documentation for the role can be found in the `roles/nfs_server/README.md` file.
-* **`nfs_client`**: NFS client & automatic shares mounting. Extended documentation for the role can be found in the `roles/nfs_client/README.md` file.
-* **`samba_server`**: Samba server, shares, & users management. Extended documentation for the role can be found in the `roles/samba_server/README.md` file.
+* **`zfs`**: ZFS pools & datasets management. Extended documentation for the role can be found in the [`roles/zfs/README.md`](roles/zfs/README.md) file.
+* **`nfs_server`**: NFSv4 server & shares configuration. Extended documentation for the role can be found in the [`roles/nfs_server/README.md`](roles/nfs_server/README.md) file.
+* **`nfs_client`**: NFS client & automatic shares mounting. Extended documentation for the role can be found in the [`roles/nfs_client/README.md`](roles/nfs_client/README.md) file.
+* **`samba_server`**: Samba server, shares, & users management. Extended documentation for the role can be found in the [`roles/samba_server/README.md`](roles/samba_server/README.md) file.
 
 ## Virtualization
 
-* **`vm_bhyve`**: Bhyve VMs management via the `sysutils/vm-bhyve` package. Extended documentation for the role can be found in the `roles/vm_bhyve/README.md` file.
-* **`bastille`**: Jails management via the `sysutils/bastille` package. Extended documentation for the role can be found in the `roles/bastille/README.md` file.
+* **`vm_bhyve`**: Bhyve VMs management via the `sysutils/vm-bhyve` package. Extended documentation for the role can be found in the [`roles/vm_bhyve/README.md`](roles/vm_bhyve/README.md) file.
+* **`bastille`**: Jails management via the `sysutils/bastille` package. Extended documentation for the role can be found in the [`roles/bastille/README.md`](roles/bastille/README.md) file.
 
 ### Observability
 
-* **`monitoring`**: Basic monitoring for the host's security, hardware, storage, and services layers. Extended documentation for the role can be found in the `roles/monitoring/README.md` file.
+* **`monitoring`**: Basic monitoring for the host's security, hardware, storage, and services layers. Extended documentation for the role can be found in the [`roles/monitoring/README.md`](roles/monitoring/README.md) file.
 
 ---
 

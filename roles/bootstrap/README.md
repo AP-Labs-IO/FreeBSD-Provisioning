@@ -6,7 +6,7 @@ Bootstraps a fresh FreeBSD installation for SSH key based Ansible management via
 Requirements
 ------------
 
-As described in the top-level `README.md` file.
+As described in the top-level [`README.md`](../../README.md) file.
 
 Role Variables
 --------------
