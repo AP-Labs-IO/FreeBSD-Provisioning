@@ -1,7 +1,7 @@
 VM Bhyve
 ========
 
-Configure FreeBSD nodes to host vm-bhyve managed VMs.
+Configure FreeBSD nodes to host [vm-bhyve](https://github.com/freebsd/vm-bhyve) managed VMs.
 
 This role assumes ZFS-based storage, which is a limitation that may be lifted in the future.
 

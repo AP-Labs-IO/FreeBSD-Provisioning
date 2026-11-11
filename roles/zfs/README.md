@@ -1,7 +1,7 @@
 ZFS
 ===
 
-Configure FreeBSD nodes with ZFS services.
+Configure FreeBSD nodes with [ZFS](https://openzfs.org/wiki/Main_Page) services.
 
 Requirements
 ------------
@@ -10,7 +10,7 @@ Requirements
   * With a Python runtime.
   * With key-based SSH access.
   * A functional `become` setup.
-* The `net-im/py-apprise` tool with a working configuration.
+* The [`net-im/py-apprise`](https://github.com/caronc/apprise) tool with a working configuration.
 
 The bootstrap set of requirements can be easily met by running the [`ap_labs.freebsd_provisioning.bootstrap`](../bootstrap/README.md) role as a precursor to this one, while installation and configuration for the `net-im/py-apprise` tool can be accomplished by running the [`ap_labs.freebsd_provisioning.monitoring`](../monitoring/README.md) role.
 

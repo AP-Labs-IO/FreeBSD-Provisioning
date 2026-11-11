@@ -88,7 +88,7 @@ Dependencies
   * `monitoring_collectd_graphite_host`: Mandatory string listing the Graphite host where `collectd(8)` metrics are sent.
   * `monitoring_collectd_graphite_port`: Integer listing the Graphite port of the `monitoring_collectd_graphite_host` target.
   * `monitoring_collectd_graphite_prefix`: Graphite metrics prefix, defaulting to the target node's first inventory group, or the literal `standalone` string if the node does not belong to any inventory group.
-  * `monitoring_alert_targets`: List of dictionaries describing the Apprise notification targets, with attributes:
+  * `monitoring_alert_targets`: List of dictionaries describing the [Apprise](https://github.com/caronc/apprise) notification targets, with attributes:
     * `url`: String holding any supported Apprise URL.
     * `config`: Optional dictionary with keys and values appropriate for the target Apprise URL.
     * `tags`: List of strings holding the Apprise tags that apply to the target URL.
