@@ -15,7 +15,13 @@
 - name: Import local base computation
   ansible.builtin.include_tasks:
     file: local_base.yml
+    apply:
+      tags:
+        - always
+        - local-base
+        - facts
   when: ansible_facts['local_base'] is not defined
+  tags: [local-base, facts]
 
 - name: Install replication SSH public key
   ansible.posix.authorized_key:
