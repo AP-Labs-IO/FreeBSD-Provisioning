@@ -15,15 +15,15 @@
 - name: Configure installation paths
   tags: [installation-path, local-base, facts]
   block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: zfs_reg_local_base
-      changed_when: false
-
-    - name: Set local base fact
-      ansible.builtin.set_fact:
-        local_base: "{{ zfs_reg_local_base.stdout }}"
-        cacheable: true
+    - name: Import local base computation
+      ansible.builtin.include_tasks:
+        file: local_base.yml
+        apply:
+          tags:
+            - always
+            - local-base
+            - facts
+      when: ansible_facts['local_base'] is not defined
 
     - name: Set installation path
       ansible.builtin.set_fact:

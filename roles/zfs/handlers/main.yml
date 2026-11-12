@@ -38,11 +38,6 @@
     enabled: true
     state: restarted
 
-- name: Reload syslogd
-  ansible.builtin.service:
-    name: syslogd
-    state: reloaded
-
 - name: Reboot
   ansible.builtin.reboot:
     msg: Rebooting to load new settings

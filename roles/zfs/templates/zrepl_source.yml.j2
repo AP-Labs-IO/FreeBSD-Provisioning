@@ -13,10 +13,9 @@
 # limitations under the License.
 global:
   logging:
-    - type: stdout
+    - type: syslog
       level: info
       format: human
-      time: false
 
 jobs:
 {% for schedule in zfs_snapshotting_schedules %}
