@@ -61,10 +61,3 @@
           value: "{{ zfs_replication_user.group }}"
       loop_control:
         label: "zrepl_{{ item.flag }} -> {{ item.value }}"
-
-- name: Remove zrepl's syslog configuration
-  ansible.builtin.file:
-    path: "{{ ansible_facts['local_base'] }}/etc/syslog.d/zrepl.conf"
-    state: absent
-  notify: Reload syslogd
-  tags: [zrepl, config]
