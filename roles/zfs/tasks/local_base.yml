@@ -6,5 +6,5 @@
 
 - name: Set local base fact
   ansible.builtin.set_fact:
-  local_base: "{{ zfs_reg_local_base.stdout }}"
-  cacheable: true
+    local_base: "{{ zfs_reg_local_base.stdout }}"
+    cacheable: true
