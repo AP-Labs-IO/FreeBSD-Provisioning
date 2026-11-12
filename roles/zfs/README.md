@@ -34,12 +34,12 @@ Role Variables
 | zfs_vdev_async_write_max_active              | 5                                          | Maximum async write I/O operations per vdev.                                     |
 | zfs_vdev_async_write_min_active              | 1                                          | Minimum async write I/O operations per vdev.                                     |
 | zfs_lowmem_callback_period                   | 0                                          | Low memory callback period.                                                      |
-| zfs_extra_boot_settings                      | []                                         | See `zfs_extra_boot_settings` below.                                             |
+| zfs_extra_loader_settings                    | []                                         | See `zfs_extra_loader_settings` below.                                           |
 | zfs_services_memory_allocation               | 0                                          | See `zfs_services_memory_allocation` below.                                      |
 | zfs_host_memory_reservation                  | 0                                          | See `zfs_host_memory_reservation` below.                                         |
 | zfs_arc_min_multiplier                       | 0.25                                       | See `zfs_arc_min_multiplier` below.                                              |
 | zfs_file_timestamp_precision                 | 3                                          | File timestamp precision, according to `sysctl -d vfs.timestamp_precision`.      |
-| zfs_extra_runtime_settings                   | []                                         | See `zfs_extra_runtime_settings` below.                                          |
+| zfs_extra_kernel_settings                    | []                                         | See `zfs_extra_kernel_settings`  below.                                          |
 
 As a first step, the role queries the target node's "local base", i.e. the result of `sysctl -n user.localbase`, and uses that plus the `zfs_installation_directory` & `zfs_namespace` variables above, and the role's name, to construct the full path where scripts will be installed.
 
@@ -100,14 +100,14 @@ Dependencies
       * `sender_grid`: zrepl-compatible "sender" pruning grid, mandatory only if `sender_raw` is not defined.
       * `receiver_raw`: Optional arbitrary YAML object or list fully describing a custom "receiver" pruning policy, compatible with zrepl's pruning requirements.
       * `receiver_grid`: zrepl-compatible "receiver" pruning grid, mandatory only if `receiver_raw` is not defined.
-  * `zfs_extra_boot_settings`: List of dictionaries of extra boot-time ZFS tuning settings, with attributes:
+  * `zfs_extra_loader_settings`: List of dictionaries of extra `loader(8)` settings to configure, with attributes:
     * `key`: Name of the boot-time ZFS setting to set in `/boot/loader.conf` via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
   * `zfs_services_memory_allocation`: Amount of memory in GiB consumed by hosted services to be exclude from the ARC, defaulting to `0`. See `zfs_host_memory_reservation` below for further explanations.
   * `zfs_host_memory_reservation`: Amount of memory in GiB to reserve for miscellaneous host operations and to be excluded from the ARC, defaulting to `0`. If both this variable and `zfs_services_memory_allocation` are `0`, the corresponding `vfs.zfs.arc.max` & `vfs.zfs.arc.min` `sysctl(8)` settings are left at their corresponding defaults (`0` in each case), which enables OpenZFS' dynamic ARC management.
   * `zfs_arc_min_multiplier`: Fraction, in the range from `0` to `1`, of the resulting `vfs.zfs.arc.max` `sysctl(8)` setting, i.e. `host total memory - zfs_services_memory_allocation - zfs_host_memory_reservation`, used to compute the amount of memory to assign to `vfs.zfs.arc.min`. This variable has no effect if both `zfs_host_memory_reservation` & `zfs_host_memory_reservation` are `0`.
-  * `zfs_extra_runtime_settings`: List of dictionaries of extra runtime ZFS tuning settings, with attributes:
+  * `zfs_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:
     * `key`: Name of the runtime ZFS setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.

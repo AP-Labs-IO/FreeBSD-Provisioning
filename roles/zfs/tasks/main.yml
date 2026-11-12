@@ -207,18 +207,18 @@
   notify: Reboot
   tags: [config, boot-time]
 
-- name: Configure extra boot-time settings
+- name: Configure extra loader settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
     sysctl_file: /boot/loader.conf
     reload: false
-  loop: "{{ zfs_extra_boot_settings }}"
+  loop: "{{ zfs_extra_loader_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
   notify: Reboot
-  tags: [config, boot-time]
+  tags: [loader, config]
 
 - name: Configure base runtime settings
   ansible.posix.sysctl:
@@ -249,15 +249,15 @@
     arc_min_bytes: "{{ ((arc_max_bytes | int) * (zfs_arc_min_multiplier | float)) | int }}"
   tags: [config, runtime]
 
-- name: Configure extra runtime settings
+- name: Configure extra kernel settings
   ansible.posix.sysctl:
     name: "{{ item.key }}"
     state: present
     value: "{{ item.value }}"
-  loop: "{{ zfs_extra_runtime_settings }}"
+  loop: "{{ zfs_extra_kernel_settings }}"
   loop_control:
     label: "{{ item.description ~ ': ' if item.description is defined else '' }}{{ item.key }} -> {{ item.value }}"
-  tags: [config, runtime]
+  tags: [kernel, config]
 
 - name: Install packages
   community.general.pkgng:
