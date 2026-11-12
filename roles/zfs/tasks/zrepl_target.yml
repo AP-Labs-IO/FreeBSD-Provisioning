@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: Import local base computation
+  ansible.builtin.include_tasks:
+    file: local_base.yml
+  when: ansible_facts['local_base'] is not defined
+
 - name: Install replication SSH public key
   ansible.posix.authorized_key:
     user: "{{ zfs_replication_user.name }}"

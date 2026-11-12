@@ -1,0 +1,10 @@
+---
+- name: Query local base
+  ansible.builtin.command: sysctl -n user.localbase
+  register: zfs_reg_local_base
+  changed_when: false
+
+- name: Set local base fact
+  ansible.builtin.set_fact:
+  local_base: "{{ zfs_reg_local_base.stdout }}"
+  cacheable: true
