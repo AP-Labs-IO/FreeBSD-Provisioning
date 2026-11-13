@@ -69,7 +69,7 @@ Dependencies
     * `group`: The user's main group.
     * `gid`: Optional GID of the group, defaulting to the next available GID.
   * `zfs_replication_target_host`: FQDN of the host to target for replication.
-  * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
+  * `zfs_replication_target_dataset`: Full ZFS dataset name on the `zfs_replication_target_host` that will be receiving the replicated snapshots.
   * `zfs_snapshotting_schedules`: List of dictionaries of zrepl snapshotting and replication schedules, with attributes:
     * `name`: Name of the schedule, compatible with zrepl's schedule naming requirements.
     * `type`: Optional type of zrepl schedule, defaulting to `push`.
@@ -106,7 +106,7 @@ Dependencies
     * `description`: Optional description of the effect of setting `key` to `value` via `sysctl(8)`.
   * `zfs_services_memory_allocation`: Amount of memory in GiB consumed by hosted services to be exclude from the ARC, defaulting to `0`. See `zfs_host_memory_reservation` below for further explanations.
   * `zfs_host_memory_reservation`: Amount of memory in GiB to reserve for miscellaneous host operations and to be excluded from the ARC, defaulting to `0`. If both this variable and `zfs_services_memory_allocation` are `0`, the corresponding `vfs.zfs.arc.max` & `vfs.zfs.arc.min` `sysctl(8)` settings are left at their corresponding defaults (`0` in each case), which enables OpenZFS' dynamic ARC management.
-  * `zfs_arc_min_multiplier`: Fraction, in the range from `0` to `1`, of the resulting `vfs.zfs.arc.max` `sysctl(8)` setting, i.e. `host total memory - zfs_services_memory_allocation - zfs_host_memory_reservation`, used to compute the amount of memory to assign to `vfs.zfs.arc.min`. This variable has no effect if both `zfs_host_memory_reservation` & `zfs_host_memory_reservation` are `0`.
+  * `zfs_arc_min_multiplier`: Decimal, in the range from `0` to `1`, of the resulting `vfs.zfs.arc.max` `sysctl(8)` setting, i.e. `host total memory - zfs_services_memory_allocation - zfs_host_memory_reservation`, used to compute the amount of memory to assign to `vfs.zfs.arc.min`. This variable has no effect if both `zfs_host_memory_reservation` & `zfs_host_memory_reservation` are `0`.
   * `zfs_extra_kernel_settings`: List of dictionaries of extra kernel runtime settings to configure via `sysctl(8)`, with attributes:
     * `key`: Name of the runtime ZFS setting to set via `sysctl(8)`.
     * `value`: Value for `key` to set via the corresponding `sysctl(8)` invocation.
