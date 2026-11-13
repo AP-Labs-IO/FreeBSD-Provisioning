@@ -61,8 +61,8 @@
     state: present
     value: >1-
      {%- set tokens = [] -%}
-      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
-        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s up' | format(item.ip4))) -%}
+      {%- if item.ipv4 is defined and item.ipv4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ipv4) | ternary(item.ipv4, 'inet %s up' | format(item.ipv4))) -%}
       {%- else -%}
         {%- set _ = tokens.append('up') -%}
       {%- endif -%}
@@ -75,7 +75,7 @@
       {{- tokens | join(' ') | trim -}}
   loop: "{{ network_base_interfaces }}"
   loop_control:
-    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ip4 | default('up') }}"
+    label: "Configuring base interfaces IPv4: {{ item.name }} -> {{ item.ipv4 | default('up') }}"
   notify: Reboot
   tags: [interfaces, base, ipv4, config]
 
@@ -83,11 +83,11 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}_ipv6"
     state: present
-    value: "inet6 {{ item.ip6 }}"
+    value: "inet6 {{ item.ipv6 }}"
   loop: "{{ network_base_interfaces }}"
   loop_control:
-    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
-  when: item.ip6 is defined
+    label: "Configuring base interfaces IPv6: {{ item.name }} -> {{ item.ipv6 | default('none') }}"
+  when: item.ipv6 is defined
   notify: Reboot
   tags: [interfaces, base, ipv6, config]
 
@@ -106,7 +106,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.parent }}_{{ item.tag }}"
     state: present
-    value: "{{ item.ip4 }}"
+    value: "{{ item.ipv4 }}"
   vars:
     vlans_matrix: >-
       [
@@ -116,9 +116,9 @@
             {
               "parent": "{{ row.parent }}",
               "tag": "{{ vlan.tag }}",
-              "ip4": "{%- set tokens = [] -%}
-                      {%- if vlan.ip4 is defined and vlan.ip4 | length > 0 -%}
-                        {%- set _ = tokens.append(('DHCP' in vlan.ip4) | ternary(vlan.ip4, 'inet %s up' | format(vlan.ip4))) -%}
+              "ipv4": "{%- set tokens = [] -%}
+                      {%- if vlan.ipv4 is defined and vlan.ipv4 | length > 0 -%}
+                        {%- set _ = tokens.append(('DHCP' in vlan.ipv4) | ternary(vlan.ipv4, 'inet %s up' | format(vlan.ipv4))) -%}
                       {%- else -%}
                         {%- set _ = tokens.append('up') -%}
                       {%- endif -%}
@@ -135,7 +135,7 @@
       ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ip4 | default('up') }}"
+    label: "Configuring VLAN IPv4: {{ item.parent }}.{{ item.tag }} -> {{ item.ipv4 | default('up') }}"
   notify: Reboot
   tags: [interfaces, vlan, ipv4, config]
 
@@ -143,7 +143,7 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.parent }}_{{ item.tag }}_ipv6"
     state: present
-    value: "inet6 {{ item.ip6 }}"
+    value: "inet6 {{ item.ipv6 }}"
   vars:
     vlans_matrix: >-
       [
@@ -152,8 +152,8 @@
             {
               "parent": "{{ row.parent }}",
               "tag": "{{ vlan.tag }}",
-      {%- if vlan.ip6 is defined and vlan.ip6 | length > 0 -%}
-              "ip6": "{{ vlan.ip6 }}"
+      {%- if vlan.ipv6 is defined and vlan.ipv6 | length > 0 -%}
+              "ipv6": "{{ vlan.ipv6 }}"
       {%- endif -%}
             },
           {% endfor %}
@@ -161,8 +161,8 @@
       ]
   loop: "{{ vlans_matrix | from_yaml | default([]) }}"
   loop_control:
-    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ip6 | default('none') }}"
-  when: item.ip6 is defined
+    label: "Configuring VLAN IPv6: {{ item.parent }}.{{ item.tag }} -> {{ item.ipv6 | default('none') }}"
+  when: item.ipv6 is defined
   notify: Reboot
   tags: [interfaces, vlan, ipv6, config]
 
@@ -182,14 +182,14 @@
     state: present
     value: >1-
       {%- set tokens = [] -%}
-      {%- if item.ip4 is defined and item.ip4 | length > 0 -%}
-        {%- set _ = tokens.append(('DHCP' in item.ip4) | ternary(item.ip4, 'inet %s' | format(item.ip4))) -%}
+      {%- if item.ipv4 is defined and item.ipv4 | length > 0 -%}
+        {%- set _ = tokens.append(('DHCP' in item.ipv4) | ternary(item.ipv4, 'inet %s' | format(item.ipv4))) -%}
       {%- endif -%}
       {%- set _ = tokens.append('addm ' ~ item.members | join(' addm ') ~ ' stp ' ~ item.members | first) -%}
       {%- if item.mtu is defined and item.mtu | string | length > 0 -%}
         {%- set _ = tokens.append('mtu %s' | format(item.mtu)) -%}
       {%- endif -%}
-      {%- if item.ip4 is not defined or 'DHCP' not in item.ip4 -%}
+      {%- if item.ipv4 is not defined or 'DHCP' not in item.ipv4 -%}
         {%- set _ = tokens.append('up') -%}
       {%- endif -%}
       {%- if item.opts is defined and item.opts | string | length > 0 -%}
@@ -206,11 +206,11 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.name }}_ipv6"
     state: present
-    value: "inet6 {{ item.ip6 }}"
+    value: "inet6 {{ item.ipv6 }}"
   loop: "{{ network_bridge_interfaces }}"
   loop_control:
-    label: "Configuring bridge IPv6: {{ item.name }} -> {{ item.ip6 | default('none') }}"
-  when: item.ip6 is defined
+    label: "Configuring bridge IPv6: {{ item.name }} -> {{ item.ipv6 | default('none') }}"
+  when: item.ipv6 is defined
   notify: Reboot
   tags: [interfaces, bridge, ipv6, config]
 
