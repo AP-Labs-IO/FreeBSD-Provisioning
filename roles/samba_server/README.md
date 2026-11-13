@@ -22,7 +22,7 @@ Role Variables
 | samba_server_version                    | 424             | Samba version to install, as expressed by the corresponding FreeBSD package, e.g. `net/samba424`. |
 | samba_server_xattr_maxsize              | 2097152         | Maximum size for the "smbd max xattr size" `smb.conf(5)` setting.                                 |
 | samba_server_icon                       | Xserve          | Network icon for the Samba server.                                                                |
-| samba_server_shares                     | []              | See `samba_serser_shares` below.                                                                  |
+| samba_server_shares                     | []              | See `samba_server_shares` below.                                                                  |
 | samba_server_users                      | []              | See `samba_server_users` below.                                                                   |
 
 Dependencies
@@ -31,7 +31,7 @@ Dependencies
 * Global variables provided by the consumer of the role:
   * `samba_server_workgroup`: Samba workgroup.
   * `samba_server_description`: Optional descrition for the Samba server, defaulting to the `%h` substitution.
-  * `samba_serser_shares`: List of dictionaries of SMB shares to export, with attributes:
+  * `samba_server_shares`: List of dictionaries of SMB shares to export, with attributes:
     * `name`: Name of the share.
     * `comment`: Optional comment describing the share, defaulting to the `name` attribute.
     * `path`: Filesystem path to the share.
@@ -39,7 +39,7 @@ Dependencies
     * `read_only`: Optional boolean string that determines whether the share is read only, according to `smb.conf(5)`, defaulting to `"no"`.
     * `guests`: Optional boolean string that determines whether the share allows guest usage, according to `smb.conf(5)`, defaulting to `"no"`.
     * `time_machine`: Optional boolean that determines whether the share advertises Time Machine support to Mac clients, according to `vfs_fruit(8)`, defaulting to `false`.
-    * `shawdow_copies`: Optional dictionary that defines the support offered for shadow copies, according to `smb.conf(5)`. If defined, it should contain attributes:
+    * `shadow_copies`: Optional dictionary that defines the support offered for shadow copies, according to `smb.conf(5)`. If defined, it should contain attributes:
       * `snapdir`: Optional path to the snapshots directory, defaulting to `.zfs/snapshot`.
       * `format`: The format specification for snapshot names, according to `vfs_shadow_copy2(8)`.
       * `sort`: Optional string controlling the sort order of shadow copies, defaulting to `"desc"`.
