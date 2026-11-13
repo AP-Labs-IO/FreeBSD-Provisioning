@@ -66,7 +66,7 @@ Dependencies
   * `zfs_replication_user`: Dictionary describing the user who will perform replication, with attributes:
     * `name`: The user's username.
     * `uid`: Optional UID of the user, defaulting to the next available UID.
-    * `name`: The user's main group.
+    * `group`: The user's main group.
     * `gid`: Optional GID of the group, defaulting to the next available GID.
   * `zfs_replication_target_host`: FQDN of the host to target for replication.
   * `zfs_replication_target_dataset`: Full path of the ZFS dataset on the `zfs_replication_target_host` that will be receiving replicated snapshots.
