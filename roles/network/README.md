@@ -63,8 +63,8 @@ Dependencies
     * `ip4`: Optional IPv4 configuration of the bridge interface.
     * `ip6`: Optional IPv6 configuration of the bridge interface.
     * `opts`: Optional interface configurations.
-  * `network_default_route_ip4`: IPv4 default router.
-  * `network_default_route_ip6`: IPv6 default router.
+  * `network_default_route_ipv4`: IPv4 default router.
+  * `network_default_route_ipv6`: IPv6 default router.
   * `network_dns_resolver`: Dictionary proving a static DNS resolver configuration, according to `resolv.conf(5)`, with attributes:
     * `domain`: The local domain name.
     * `search`: Space-separated list of domain names for hostname lookups.
