@@ -16,6 +16,7 @@ Role Variables
 | bootstrap_sensitive_logging_disabled | true                                       | Boolean that dictates whether task output considered sensitive is logged or not. |
 | bootstrap_toor_shell                 | {{ ansible_facts['local_base'] }}/bin/bash | toor's shell.                                                                    |
 | bootstrap_core_packages              | See `bootstrap_core_packages` below.       | See `bootstrap_core_packages` below.                                             |
+| bootstrap_shell_config_files         | []                                         | See `bootstrap_shell_config_files` below.                                        |
 
 Dependencies
 ------------
@@ -35,6 +36,9 @@ Dependencies
     * `shells/bash-completion`
     * `shells/bash-completion-freebsd`
     * `shells/bash-completion-zfs`
+  * `bootstrap_shell_config_files`: List of dictionaries of shell configuration files to install for the root user, with attributes:
+    * `src`: Path of the shell configuration file within the project's `files/shell` directory.
+    * `dest`: Optional destination path of the shell configuration file within the target user's home directory, not including the leading `.`. Defaults to the corresponding `src` attribute of omitted.
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Ansible Configuration

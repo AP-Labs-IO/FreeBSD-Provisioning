@@ -36,9 +36,9 @@
     owner: "{{ item.0.name }}"
     group: "{{ item.0.name }}"
     mode: "0644"
-  loop: "{{ users_accounts_sanitized | product(shell_config_files) | list }}"
+  loop: "{{ users_accounts_sanitized | product(users_shell_config_files) | list }}"
   loop_control:
-    label: "User: {{ item.0.name }} -> File: {{ item.1.dst }}"
+    label: "User: {{ item.0.name }} -> File: {{ dest }}"
   vars:
     users_accounts_json: >-
       [
@@ -49,9 +49,9 @@
     users_accounts_sanitized: "{{ users_accounts_json | from_json }}"
     dest: >-
       {%- if item.0.home is defined and item.0.home | length > 0 -%}
-      {{ item.0.home }}/{{ item.1.dst }}
+      {{ item.0.home }}/.{{ item.1.dest | default(item.1.src) }}
       {%- else -%}
-      {{ users_home_prefix }}/{{ item.0.name }}/{{ item.1.dst }}
+      {{ users_home_prefix }}/{{ item.0.name }}/.{{ item.1.dest | default(item.1.src) }}
       {%- endif -%}
   when: item.0.home | length == 0 or item.0.home != '/nonexistent'
   tags: [shell, config]

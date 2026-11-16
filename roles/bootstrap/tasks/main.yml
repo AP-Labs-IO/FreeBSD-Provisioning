@@ -150,11 +150,15 @@
 - name: Copy root shell configuration files
   ansible.builtin.copy:
     src: "shell/{{ item.src }}"
-    dest: "/root/{{ item.dst }}"
+    dest: "{{ dest }}"
     owner: root
     group: wheel
     mode: "0644"
-  loop: "{{ shell_config_files }}"
+  loop: "{{ bootstrap_shell_config_files }}"
+  loop_control:
+    label: "User: {{ item.src }} -> File: {{ dest }}"
+  vars:
+    dest: "/root/.{{ item.dest | default(item.src) }}"
   tags: [root, shell, config]
 
 - name: Create local cron jobs directory
