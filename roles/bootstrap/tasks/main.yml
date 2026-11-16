@@ -158,7 +158,7 @@
   loop_control:
     label: "User: {{ item.src }} -> File: {{ dest }}"
   vars:
-    dest: "/root/.{{ item.dst | default(item.src) }}"
+    dest: "/root/.{{ item.dest | default(item.src) }}"
   tags: [root, shell, config]
 
 - name: Create local cron jobs directory

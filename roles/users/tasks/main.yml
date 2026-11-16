@@ -49,9 +49,9 @@
     users_accounts_sanitized: "{{ users_accounts_json | from_json }}"
     dest: >-
       {%- if item.0.home is defined and item.0.home | length > 0 -%}
-      {{ item.0.home }}/.{{ item.1.dst | default(item.1.src) }}
+      {{ item.0.home }}/.{{ item.1.dest | default(item.1.src) }}
       {%- else -%}
-      {{ users_home_prefix }}/{{ item.0.name }}/.{{ item.1.dst | default(item.1.src) }}
+      {{ users_home_prefix }}/{{ item.0.name }}/.{{ item.1.dest | default(item.1.src) }}
       {%- endif -%}
   when: item.0.home | length == 0 or item.0.home != '/nonexistent'
   tags: [shell, config]
