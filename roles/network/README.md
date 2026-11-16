@@ -41,7 +41,7 @@ Dependencies
     * Any "up" interface, e.g. `ifconfig_lagg0="up"`.
   * `network_renamed_interfaces`: List of dictionaries of network interfaces to rename, with attributes:
     * `src`: The original name of the interface.
-    * `dst`: The desired name of the interface.
+    * `dest`: The desired name of the interface.
   * `network_base_interfaces`:
     * `name`: Desired name for the interface.
     * `mtu`: Optional MTU setting for the interface.

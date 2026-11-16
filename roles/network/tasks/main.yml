@@ -48,10 +48,10 @@
   community.general.sysrc:
     name: "ifconfig_{{ item.src }}_name"
     state: present
-    value: "{{ item.dst }}"
+    value: "{{ item.dest }}"
   loop: "{{ network_renamed_interfaces }}"
   loop_control:
-    label: "Renaming interface: {{ item.src }} -> {{ item.dst }}"
+    label: "Renaming interface: {{ item.src }} -> {{ item.dest }}"
   notify: Reboot
   tags: [interfaces, rename, config]
 
