@@ -38,7 +38,7 @@
     mode: "0644"
   loop: "{{ users_accounts_sanitized | product(users_shell_config_files) | list }}"
   loop_control:
-    label: "User: {{ item.0.name }} -> File: {{ item.1.dst }}"
+    label: "User: {{ item.0.name }} -> File: {{ dest }}"
   vars:
     users_accounts_json: >-
       [
