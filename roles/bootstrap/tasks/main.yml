@@ -154,7 +154,7 @@
     owner: root
     group: wheel
     mode: "0644"
-  loop: "{{ shell_config_files }}"
+  loop: "{{ bootstrap_shell_config_files }}"
   tags: [root, shell, config]
 
 - name: Create local cron jobs directory

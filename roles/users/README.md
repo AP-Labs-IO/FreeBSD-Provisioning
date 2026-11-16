@@ -22,6 +22,7 @@ Role Variables
 | users_accounts                   | []               | See `users_accounts` below.                    |
 | users_groups                     | []               | See `users_groups` below.                      |
 | users_extra_group_memberships    | []               | See `users_extra_group_memberships` below.     |
+| users_shell_config_files         | []               | See `users_shell_config_files` below.          |
 | users_minuid                     | 1000             | Minimum user id used by `pw(8)`.               |
 | users_maxuid                     | 9999             | Maximum user id used by `pw(8)`.               |
 | users_mingid                     | 1000             | Minimum group id used by `pw(8)`.              |
@@ -49,6 +50,9 @@ Dependencies
   * `users_extra_group_memberships`: List of dictionaries of users extra group memberships, with attributes:
     * `user`: The user's username.
     * `groups`: List of groups the target user should be added to.
+  * `users_shell_config_files`: List of dictionaries of shell configuration files to install for the target user, with attributes:
+    * `src`: Path of the shell configuration file within the project's `files/shell` directory.
+    * `dst`: Destination path of the shell configuration file within the target user's home directory.
   * `users_smarthost_hostname`: FQDN for the `dma(8)` `SMARTHOST`.
   * `users_smarthost_port`: TCP port of the `dma(8)` `SMARTHOST`.
   * `users_smarthost_username`: Username for the `dma(8)` `SMARTHOST`.
