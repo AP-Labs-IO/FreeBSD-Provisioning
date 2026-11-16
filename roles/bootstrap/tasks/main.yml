@@ -150,7 +150,7 @@
 - name: Copy root shell configuration files
   ansible.builtin.copy:
     src: "shell/{{ item.src }}"
-    dest: "/root/.{{ item.dst | default(item.src) }}"
+    dest: "{{ dest }}"
     owner: root
     group: wheel
     mode: "0644"
