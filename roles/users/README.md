@@ -52,7 +52,7 @@ Dependencies
     * `groups`: List of groups the target user should be added to.
   * `users_shell_config_files`: List of dictionaries of shell configuration files to install for the target user, with attributes:
     * `src`: Path of the shell configuration file within the project's `files/shell` directory.
-    * `dst`: Destination path of the shell configuration file within the target user's home directory.
+    * `dst`: Optional destination path of the shell configuration file within the target user's home directory, not including the leading `.`. Defaults to the corresponding `src` attribute of omitted.
   * `users_smarthost_hostname`: FQDN for the `dma(8)` `SMARTHOST`.
   * `users_smarthost_port`: TCP port of the `dma(8)` `SMARTHOST`.
   * `users_smarthost_username`: Username for the `dma(8)` `SMARTHOST`.

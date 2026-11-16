@@ -38,7 +38,7 @@ Dependencies
     * `shells/bash-completion-zfs`
   * `bootstrap_shell_config_files`: List of dictionaries of shell configuration files to install for the root user, with attributes:
     * `src`: Path of the shell configuration file within the project's `files/shell` directory.
-    * `dst`: Destination path of the shell configuration file within the target user's home directory.
+    * `dst`: Optional destination path of the shell configuration file within the target user's home directory, not including the leading `.`. Defaults to the corresponding `src` attribute of omitted.
 * SSH key for each administrator user, located at a  `files/keys/{{ name }}_{{ type }}.pub` path that matches each administrator's `name` & `key_type` attributes.
 
 Example Ansible Configuration
