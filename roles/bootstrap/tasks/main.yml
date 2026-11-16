@@ -155,6 +155,10 @@
     group: wheel
     mode: "0644"
   loop: "{{ bootstrap_shell_config_files }}"
+  loop_control:
+    label: "User: {{ item.src }} -> File: {{ dest }}"
+  vars:
+    dest: "/root/.{{ item.dst | default(item.src) }}"
   tags: [root, shell, config]
 
 - name: Create local cron jobs directory
