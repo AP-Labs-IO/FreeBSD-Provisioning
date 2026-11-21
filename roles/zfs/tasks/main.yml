@@ -99,15 +99,30 @@
     - name: Force execution of notified handlers
       ansible.builtin.meta: flush_handlers
 
-- name: Create data pools legacy mountpoint links
-  ansible.builtin.file:
-    src: "/{{ item }}"
-    dest: "/mnt/{{ item }}"
-    state: link
-    owner: root
-    group: wheel
-  loop: "{{ zfs_data_pools }}"
+- name: Configure legacy data pool mountpoint links
   tags: [data, pools, mountpoint, legacy]
+  block:
+    - name: Query data pool mountpoints
+      ansible.builtin.command:
+        cmd: "zfs get -H -o value mountpoint {{ item }}"
+      register: zfs_reg_data_pool_mountpoints
+      changed_when: false
+      check_mode: false
+      loop: "{{ zfs_data_pools }}"
+
+    - name: Create data pools legacy mountpoint links
+      ansible.builtin.file:
+        src: "{{ item.stdout }}"
+        dest: "/mnt/{{ item.item }}"
+        state: link
+        owner: root
+        group: wheel
+      loop: "{{ zfs_reg_data_pool_mountpoints.results }}"
+      loop_control:
+        label: "{{ item.item }} -> {{ item.stdout | default('skipped') }}"
+      when:
+        - item.stdout is defined
+        - item.stdout not in ['none', 'legacy', '-']
 
 - name: Disable periodic-based zpool scrubbing
   community.general.sysrc:
