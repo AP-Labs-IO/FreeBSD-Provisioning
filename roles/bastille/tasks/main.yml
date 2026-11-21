@@ -36,7 +36,6 @@
       - devel/git@default
       - sysutils/bastille
       - sysutils/htop
-      - sysutils/tree
     state: latest
     use_globs: false
   tags: [pkg]
