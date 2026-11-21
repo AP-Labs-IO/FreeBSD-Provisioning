@@ -123,6 +123,7 @@
       when:
         - item.stdout is defined
         - item.stdout not in ['none', 'legacy', '-']
+        - item.stdout != '/mnt/' ~ item.item
 
 - name: Disable periodic-based zpool scrubbing
   community.general.sysrc:
