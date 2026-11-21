@@ -99,9 +99,9 @@
     - name: Force execution of notified handlers
       ansible.builtin.meta: flush_handlers
 
-- name: Configure legacy data pool mountpoint links
+- name: Configure data pools /mnt mountpoint links
   when: zfs_create_data_pools_mnt_symlinks
-  tags: [data, pools, mountpoint, legacy]
+  tags: [data, pools, mountpoint, symlink]
   block:
     - name: Query data pool mountpoints
       ansible.builtin.command:
@@ -111,7 +111,7 @@
       check_mode: false
       loop: "{{ zfs_data_pools }}"
 
-    - name: Create data pools legacy mountpoint links
+    - name: Create data pools /mnt mountpoint links
       ansible.builtin.file:
         src: "{{ item.stdout }}"
         dest: "/mnt/{{ item.item }}"
