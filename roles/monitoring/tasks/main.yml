@@ -65,7 +65,6 @@
       - net-im/py-apprise
       - net-mgmt/collectd5
       - net-mgmt/iftop
-      - security/gnupg
       - sysutils/freeipmi
       - sysutils/ipmitool
       - sysutils/smartmontools
