@@ -22,6 +22,8 @@ zfs_data_pools: []
 zfs_encryption_keys_directory: /etc/zfs/keys
 zfs_encryption_datasets: []
 
+zfs_create_data_pools_mnt_symlinks: false
+
 zfs_pools_scrub_schedules: []
 zfs_pools_capacity_monitoring_schedule:
   minute: 0

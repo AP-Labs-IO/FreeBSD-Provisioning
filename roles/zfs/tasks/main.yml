@@ -100,6 +100,7 @@
       ansible.builtin.meta: flush_handlers
 
 - name: Configure legacy data pool mountpoint links
+  when: zfs_create_data_pools_mnt_symlinks
   tags: [data, pools, mountpoint, legacy]
   block:
     - name: Query data pool mountpoints
