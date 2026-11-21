@@ -286,3 +286,10 @@
     label: "{{ item.description }}: {{ item.key }} -> {{ item.value }}"
   when: network_bridge_filtering_disabled
   tags: [runtime, config]
+
+- name: Install packages
+  community.general.pkgng:
+    name: "{{ network_connectivity_packages }}"
+    state: latest
+    use_globs: false
+  tags: [pkg]

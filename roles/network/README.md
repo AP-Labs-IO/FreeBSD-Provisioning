@@ -29,6 +29,7 @@ Role Variables
 | network_send_buffer_size           | 1048576       | Initial send socket buffer size, according to ` sysctl net.inet.tcp.sendspace`.                                         |
 | network_receive_buffer_size        | 1048576       | Initial receive socket buffer size, according to ` sysctl net.inet.tcp.recvspace`.                                      |
 | network_receive_delayed_ack        | 0             | TCP ACK delay, according to ` sysctl net.inet.tcp.delayed_ack`.                                                         |
+| network_packages                   | See `network_packages` below. | See `network_packages` below.                                                                           |
 
 Dependencies
 ------------
@@ -70,6 +71,9 @@ Dependencies
     * `search`: Space-separated list of domain names for hostname lookups.
     * `nameservers`: A list of DNS IP addresses.
     * `options`: Space-separated list of system resolver customizations.
+  * `network_packages`: List of network-oriented packages to install, defaulting to:
+    * `net/arping`
+    * `net/mtr@nox11`
 
 Example Ansible Configuration
 -----------------------------
