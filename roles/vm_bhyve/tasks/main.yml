@@ -50,10 +50,10 @@
 - name: Install packages
   community.general.pkgng:
     name:
-      - sysutils/vm-bhyve
       - sysutils/bhyve-firmware
       - sysutils/edk2@bhyve
       - sysutils/tmux
+      - sysutils/vm-bhyve
     state: latest
     use_globs: false
   tags: [pkg]

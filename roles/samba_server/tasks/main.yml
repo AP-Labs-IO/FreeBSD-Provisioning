@@ -28,8 +28,8 @@
 - name: Install packages
   community.general.pkgng:
     name:
-      - net/samba{{ samba_server_version }}
       - net/avahi-app
+      - net/samba{{ samba_server_version }}
     state: latest
     use_globs: false
   tags: [pkg]
