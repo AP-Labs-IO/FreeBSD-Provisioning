@@ -1,6 +1,6 @@
 # FreeBSD Infrastructure Provisioning Collection
 
-This Ansible collection provides a comprehensive framework for bootstrapping, configuring, securing, and maintaining **FreeBSD** nodes. It consolidates system initialization & configuration, runtime performance tuning, storage management, network layouts, file sharing, and monitoring into a single namespace.
+This Ansible collection provides a comprehensive framework for bootstrapping, configuring, securing, and maintaining **FreeBSD** nodes. It consolidates system initialization & configuration, runtime performance tuning, storage management, network layouts, file sharing, and monitoring into a single namespace that provides porpuse-specific roles, each of which aims to accomplish its task in minimalistic fashion, relying on as many system built-in tools as possible and not bringing in any 3rd-party dependencies unless strictly necessary to accomplish its task(s).
 
 ---
 
