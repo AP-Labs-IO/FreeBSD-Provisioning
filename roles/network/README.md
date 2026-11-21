@@ -16,20 +16,20 @@ The last set of requirements can be easily met by running the [`ap_labs.freebsd_
 Role Variables
 --------------
 
-| Variable                           | Default value | Description                                                                                                             |
-|----------------------------------  |---------------|-------------------------------------------------------------------------------------------------------------------------|
-| network_max_socket_buffer_size     | 16777216      | Max socket buffer size, according to `sysctl kern.ipc.maxsockbuf`.                                                      |
-| network_rtsold_enabled             | true          | Boolean toggle to enable the Router Solicitation daemon.                                                                |
-| network_remove_stock_configuration | false         | Boolean toggle to to remove the node's stock network configuration. See `network_preserve_custom_configurations` below. |
-| network_renamed_interfaces         | []            | See `network_renamed_interfaces` below.                                                                                 |
-| network_base_interfaces            | []            | See `network_base_interfaces` below.                                                                                    |
-| network_vlan_interfaces            | []            | See `network_vlan_interfaces` below.                                                                                    |
-| network_bridge_interfaces          | []            | See `network_bridge_interfaces` below.                                                                                  |
-| network_bridge_filtering_disabled  | true          | Boolean toggle to disable packet filtering on bridge interfaces.                                                        |
-| network_send_buffer_size           | 1048576       | Initial send socket buffer size, according to ` sysctl net.inet.tcp.sendspace`.                                         |
-| network_receive_buffer_size        | 1048576       | Initial receive socket buffer size, according to ` sysctl net.inet.tcp.recvspace`.                                      |
-| network_receive_delayed_ack        | 0             | TCP ACK delay, according to ` sysctl net.inet.tcp.delayed_ack`.                                                         |
-| network_packages                   | See `network_packages` below. | See `network_packages` below.                                                                           |
+| Variable                           | Default value                 | Description                                                                                                             |
+|----------------------------------  |-------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| network_max_socket_buffer_size     | 16777216                      | Max socket buffer size, according to `sysctl kern.ipc.maxsockbuf`.                                                      |
+| network_rtsold_enabled             | true                          | Boolean toggle to enable the Router Solicitation daemon.                                                                |
+| network_remove_stock_configuration | false                         | Boolean toggle to to remove the node's stock network configuration. See `network_preserve_custom_configurations` below. |
+| network_renamed_interfaces         | []                            | See `network_renamed_interfaces` below.                                                                                 |
+| network_base_interfaces            | []                            | See `network_base_interfaces` below.                                                                                    |
+| network_vlan_interfaces            | []                            | See `network_vlan_interfaces` below.                                                                                    |
+| network_bridge_interfaces          | []                            | See `network_bridge_interfaces` below.                                                                                  |
+| network_bridge_filtering_disabled  | true                          | Boolean toggle to disable packet filtering on bridge interfaces.                                                        |
+| network_send_buffer_size           | 1048576                       | Initial send socket buffer size, according to ` sysctl net.inet.tcp.sendspace`.                                         |
+| network_receive_buffer_size        | 1048576                       | Initial receive socket buffer size, according to ` sysctl net.inet.tcp.recvspace`.                                      |
+| network_receive_delayed_ack        | 0                             | TCP ACK delay, according to ` sysctl net.inet.tcp.delayed_ack`.                                                         |
+| network_packages                   | See `network_packages` below. | See `network_packages` below.                                                                                           |
 
 Dependencies
 ------------
