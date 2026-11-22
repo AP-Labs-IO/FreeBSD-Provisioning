@@ -106,10 +106,10 @@
     community.general.sysrc:
       name: rcshutdown_timeout
       state: present
-      value: "{{ vm_bhhyve_host_shutdown_soft_timeout }}"
+      value: "{{ vm_bhyve_host_shutdown_soft_timeout }}"
 
   - name: Configure host shutdown hard timeout
     ansible.posix.sysctl:
       name: kern.init_shutdown_timeout
       state: present
-      value: "{{ vm_bhhyve_host_shutdown_hard_timeout }}"
+      value: "{{ vm_bhyve_host_shutdown_hard_timeout }}"
