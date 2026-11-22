@@ -17,6 +17,7 @@
 
     workgroup = {{ samba_server_workgroup }}
     server string = {{ samba_server_description | default('%h') }}
+    multicast dns register = no
 
     use sendfile = yes
     smbd max xattr size = {{ samba_server_xattr_maxsize }}
