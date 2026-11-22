@@ -70,7 +70,7 @@
   vars:
     gb_to_bytes: "{{ 1024 * 1024 * 1024 }}"
     memtotal_gb: "{{ (ansible_facts['memtotal_mb'] | float) / 1024.0 }}"
-    drc_high_watermark: "{{ ((memtotal_gb * gb_to_bytes * 0.015) // 64) | int }}"
+    drc_high_watermark: "{{ (((memtotal_gb | float) * (gb_to_bytes | int) * 0.015) // 64) | int }}"
   tags: [kernel, config]
 
 - name: Configure extra kernel settings
