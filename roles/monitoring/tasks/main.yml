@@ -179,19 +179,26 @@
     mode: "0600"
   tags: [apprise, config]
 
-- name: Install system reboot alert job
-  ansible.builtin.cron:
-    name: System bootup alert
-    cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-reboot"
-    special_time: reboot
-    user: root
-    job:
-      "{{ ansible_facts['local_base'] }}/bin/apprise \
-        --tag=reboot \
-        --notification-type=INFO \
-        --title='{{ ansible_facts['fqdn'] }} - Bootup notification' \
-        --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
-  tags: [apprise, alert, boot, cron]
+- name: Configure system reboot monitoring
+  tags: [apprise, alerts, reboot]
+  block:
+    - name: Install system reboot alert script
+      ansible.builtin.template:
+        src: monitor-reboot.j2
+        dest: "{{ monitoring_installation_path }}/monitor-reboot"
+        owner: root
+        group: wheel
+        mode: "0755"
+      tags: [script]
+
+    - name: Install system reboot alert job
+      ansible.builtin.cron:
+        name: System reboot alert
+        cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-reboot"
+        special_time: reboot
+        user: root
+        job: "{{ monitoring_installation_path }}/monitor-reboot"
+      tags: [cron]
 
 - name: Install smartd alerts hook
   ansible.builtin.copy:
@@ -207,10 +214,10 @@
         --notification-type=WARNING \
         --title="$SMARTD_SUBJECT" \
         --body="$SMARTD_FULLMESSAGE"
-  tags: [apprise, alert, smartd]
+  tags: [apprise, alerts, smartd]
 
 - name: Configure IPMI monitoring
-  tags: [apprise, ipmi]
+  tags: [apprise, alerts, ipmi]
   block:
     - name: Install IPMI monitoring script
       ansible.builtin.template:
@@ -241,7 +248,7 @@
     owner: root
     group: wheel
     mode: "0755"
-  tags: [apprise, alert, ssh, security]
+  tags: [apprise, alerts, ssh, security]
 
 - name: Create local syslog configuration directory
   ansible.builtin.file:
