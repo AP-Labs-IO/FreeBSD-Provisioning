@@ -181,7 +181,7 @@
 
 - name: Install system reboot alert job
   ansible.builtin.cron:
-    name: System bootup alert
+    name: System reboot alert
     cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-reboot"
     special_time: reboot
     user: root
@@ -189,9 +189,9 @@
       "{{ ansible_facts['local_base'] }}/bin/apprise \
         --tag=reboot \
         --notification-type=INFO \
-        --title='{{ ansible_facts['fqdn'] }} - Bootup notification' \
-        --body='{{ ansible_facts['fqdn'] }}: bootup complete.'"
-  tags: [apprise, alert, boot, cron]
+        --title='{{ ansible_facts['fqdn'] }} - Reboot notification' \
+        --body='{{ ansible_facts['fqdn'] }}: reboot complete.'"
+  tags: [apprise, alert, reboot, cron]
 
 - name: Install smartd alerts hook
   ansible.builtin.copy:
