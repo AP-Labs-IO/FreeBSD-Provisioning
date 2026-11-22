@@ -82,8 +82,8 @@
   tags: [users]
   block:
     - name: Query existing Samba users
-      ansible.builtin.shell:
-        cmd: "smbclient -L localhost -U {{ item.name }} --password '{{ item.password }}' > /dev/null 2>&1"
+      ansible.builtin.command:
+        cmd: "smbclient -L localhost -U {{ item.name }} --password '{{ item.password }}'"
       loop: "{{ samba_server_users }}"
       loop_control:
         label: "Checking user: {{ item.name }}"
@@ -93,7 +93,7 @@
       no_log: "{{ samba_server_sensitive_logging_disabled }}"
 
     - name: Synchronize user credentials
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: "smbpasswd -s -a {{ item.name }}"
         stdin: "{{ item.password }}\n{{ item.password }}\n"
       loop: "{{ samba_server_users }}"
