@@ -95,7 +95,7 @@
     - name: Synchronize user credentials
       ansible.builtin.command:
         cmd: "smbpasswd -s -a {{ item.name }}"
-        stdin: "{{ item.password }}\n{{ item.password }}\n"
+        stdin: "{{ item.password }}\n{{ item.password }}"
       loop: "{{ samba_server_users }}"
       loop_control:
         index_var: user
