@@ -191,7 +191,7 @@
         --notification-type=INFO \
         --title='{{ ansible_facts['fqdn'] }} - Reboot notification' \
         --body='{{ ansible_facts['fqdn'] }}: reboot complete.'"
-  tags: [apprise, alert, reboot, cron]
+  tags: [apprise, alerts, reboot, cron]
 
 - name: Install smartd alerts hook
   ansible.builtin.copy:
@@ -207,10 +207,10 @@
         --notification-type=WARNING \
         --title="$SMARTD_SUBJECT" \
         --body="$SMARTD_FULLMESSAGE"
-  tags: [apprise, alert, smartd]
+  tags: [apprise, alerts, smartd]
 
 - name: Configure IPMI monitoring
-  tags: [apprise, ipmi]
+  tags: [apprise, alerts, ipmi]
   block:
     - name: Install IPMI monitoring script
       ansible.builtin.template:
@@ -241,7 +241,7 @@
     owner: root
     group: wheel
     mode: "0755"
-  tags: [apprise, alert, ssh, security]
+  tags: [apprise, alerts, ssh, security]
 
 - name: Create local syslog configuration directory
   ansible.builtin.file:
