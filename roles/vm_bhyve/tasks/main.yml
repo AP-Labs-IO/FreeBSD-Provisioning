@@ -102,14 +102,14 @@
 - name: Configure host shutdown timeouts
   tags: [shutdown, timeout, config]
   block:
-  - name: Configure host shutdown soft timeout
-    community.general.sysrc:
-      name: rcshutdown_timeout
-      state: present
-      value: "{{ vm_bhyve_host_shutdown_soft_timeout }}"
+    - name: Configure host shutdown soft timeout
+      community.general.sysrc:
+        name: rcshutdown_timeout
+        state: present
+        value: "{{ vm_bhyve_host_shutdown_soft_timeout }}"
 
-  - name: Configure host shutdown hard timeout
-    ansible.posix.sysctl:
-      name: kern.init_shutdown_timeout
-      state: present
-      value: "{{ vm_bhyve_host_shutdown_hard_timeout }}"
+    - name: Configure host shutdown hard timeout
+      ansible.posix.sysctl:
+        name: kern.init_shutdown_timeout
+        state: present
+        value: "{{ vm_bhyve_host_shutdown_hard_timeout }}"
