@@ -33,3 +33,5 @@ repository: https://github.com/AP-Labs-IO/FreeBSD-Provisioning
 documentation: https://github.com/AP-Labs-IO/FreeBSD-Provisioning/blob/main/README.md
 homepage: https://github.com/AP-Labs-IO/FreeBSD-Provisioning
 issues: https://github.com/AP-Labs-IO/FreeBSD-Provisioning/issues
+build_ignore:
+  - changelogs/.plugin-cache.yaml
