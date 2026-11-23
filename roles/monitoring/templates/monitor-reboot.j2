@@ -14,7 +14,7 @@
 # limitations under the License.
 
 i=0
-until {{ ansible_facts['local_base'] }}/bin/apprise \
+until {{ ansible_facts['localbase'] }}/bin/apprise \
     --tag=reboot \
     --notification-type=INFO \
     --title='{{ ansible_facts['fqdn'] }} - Reboot notification' \

@@ -13,16 +13,16 @@
 # limitations under the License.
 ---
 - name: Configure installation paths
-  tags: [installation-path, local-base, facts]
+  tags: [installation-path, localbase, facts]
   block:
     - name: Gather local base fact
-      ap_labs.freebsd_provisioning.local_base_facts:
-      when: ansible_facts['local_base'] is not defined
+      ap_labs.freebsd_provisioning.localbase_facts:
+      when: ansible_facts['localbase'] is not defined
 
     - name: Set installation path
       ansible.builtin.set_fact:
         host_tuning_installation_path: >-
-          {{ ansible_facts['local_base'] }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
+          {{ ansible_facts['localbase'] }}/{{ host_tuning_installation_directory }}/{{ host_tuning_namespace }}/host_tuning
 
     - name: Create installation path
       ansible.builtin.file:
@@ -114,7 +114,7 @@
     - name: Install storage power management rc(8) service script
       ansible.builtin.template:
         src: etc/rc.d/storage_pm.j2
-        dest: "{{ ansible_facts['local_base'] }}/etc/rc.d/storage_pm"
+        dest: "{{ ansible_facts['localbase'] }}/etc/rc.d/storage_pm"
         owner: root
         group: wheel
         mode: "0555"

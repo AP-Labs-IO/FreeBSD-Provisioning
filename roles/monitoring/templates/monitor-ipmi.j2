@@ -13,20 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PERCENT_USED=$(echo "$({{ ansible_facts['local_base'] }}/bin/ipmitool sel info 2>/dev/null)" | awk -F: ' $1 ~ /^Percent Used/ { print int($2); }')
+PERCENT_USED=$(echo "$({{ ansible_facts['localbase'] }}/bin/ipmitool sel info 2>/dev/null)" | awk -F: ' $1 ~ /^Percent Used/ { print int($2); }')
 if [ -n "$PERCENT_USED" ] && [ "$PERCENT_USED" -gt 90 ]
 then
-    {{ ansible_facts['local_base'] }}/bin/apprise \
+    {{ ansible_facts['localbase'] }}/bin/apprise \
         --tag=ipmi \
         --notification-type=WARNING \
         --title="IPMI SEL Low Space Warning" \
         --body="Motherboard SEL is ${PERCENT_USED}% full on $(hostname). Please run 'ipmitool sel clear'."
 fi
 
-CHASSIS_STATUS=$({{ ansible_facts['local_base'] }}/bin/ipmitool chassis status 2>/dev/null | grep -i fault)
+CHASSIS_STATUS=$({{ ansible_facts['localbase'] }}/bin/ipmitool chassis status 2>/dev/null | grep -i fault)
 if echo "$CHASSIS_STATUS" | grep -q 'true'
 then
-    {{ ansible_facts['local_base'] }}/bin/apprise \
+    {{ ansible_facts['localbase'] }}/bin/apprise \
         --tag=ipmi \
         --notification-type=WARNING \
         --title="IPMI Hardware Chassis Fault" \

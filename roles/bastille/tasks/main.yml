@@ -13,9 +13,9 @@
 # limitations under the License.
 ---
 - name: Gather local base fact
-  ap_labs.freebsd_provisioning.local_base_facts:
-  when: ansible_facts['local_base'] is not defined
-  tags: [local-base, facts]
+  ap_labs.freebsd_provisioning.localbase_facts:
+  when: ansible_facts['localbase'] is not defined
+  tags: [localbase, facts]
 
 - name: Load OS version-specific role constants
   ansible.builtin.include_vars:
@@ -35,7 +35,7 @@
 - name: Install Bastille configuration
   ansible.builtin.template:
     src: bastille.conf.j2
-    dest: "{{ ansible_facts['local_base'] }}/etc/bastille/bastille.conf"
+    dest: "{{ ansible_facts['localbase'] }}/etc/bastille/bastille.conf"
     owner: root
     group: wheel
     mode: "0644"

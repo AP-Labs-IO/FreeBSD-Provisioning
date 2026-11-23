@@ -13,16 +13,16 @@
 # limitations under the License.
 ---
 - name: Configure installation paths
-  tags: [installation-path, local-base, facts]
+  tags: [installation-path, localbase, facts]
   block:
     - name: Gather local base fact
-      ap_labs.freebsd_provisioning.local_base_facts:
-      when: ansible_facts['local_base'] is not defined
+      ap_labs.freebsd_provisioning.localbase_facts:
+      when: ansible_facts['localbase'] is not defined
 
     - name: Set installation path
       ansible.builtin.set_fact:
         zfs_installation_path: >-
-          {{ ansible_facts['local_base'] }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
+          {{ ansible_facts['localbase'] }}/{{ zfs_installation_directory }}/{{ zfs_namespace }}/zfs
 
     - name: Create installation path
       ansible.builtin.file:
@@ -125,13 +125,13 @@
     name: daily_scrub_zfs_enable
     state: present
     value: "NO"
-    path: "{{ ansible_facts['local_base'] }}/etc/periodic.conf"
+    path: "{{ ansible_facts['localbase'] }}/etc/periodic.conf"
   tags: [zpool, scrub, periodic, config]
 
 - name: Install cron-based zpool scrub jobs
   ansible.builtin.cron:
     name: "{{ item.pool }} pool scrub"
-    cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/scrub-{{ item.pool }}"
+    cron_file: "{{ ansible_facts['localbase'] }}/etc/cron.d/scrub-{{ item.pool }}"
     minute: "{{ item.minute | default(omit) }}"
     hour: "{{ item.hour | default(omit) }}"
     day: "{{ item.day | default(omit) }}"
@@ -147,7 +147,7 @@
   block:
     - name: Create local devd directory
       ansible.builtin.file:
-        path: "{{ ansible_facts['local_base'] }}/etc/devd"
+        path: "{{ ansible_facts['localbase'] }}/etc/devd"
         state: directory
         owner: root
         group: wheel
@@ -156,7 +156,7 @@
     - name: Install devd ZFS alerting rules
       ansible.builtin.template:
         src: devd-zfs.conf.j2
-        dest: "{{ ansible_facts['local_base'] }}/etc/devd/zfs.conf"
+        dest: "{{ ansible_facts['localbase'] }}/etc/devd/zfs.conf"
         owner: root
         group: wheel
         mode: "0644"
@@ -178,7 +178,7 @@
     - name: Install zpool capacity alert job
       ansible.builtin.cron:
         name: Zpool capacity alert
-        cron_file: "{{ ansible_facts['local_base'] }}/etc/cron.d/alert-zpool-capacity"
+        cron_file: "{{ ansible_facts['localbase'] }}/etc/cron.d/alert-zpool-capacity"
         minute: "{{ zfs_pools_capacity_monitoring_schedule.minute | default(omit) }}"
         hour: "{{ zfs_pools_capacity_monitoring_schedule.hour | default(omit) }}"
         day: "{{ zfs_pools_capacity_monitoring_schedule.day | default(omit) }}"

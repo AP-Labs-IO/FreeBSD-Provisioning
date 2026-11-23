@@ -17,10 +17,10 @@ from __future__ import annotations
 
 DOCUMENTATION = r'''
 ---
-module: local_base_facts
+module: localbase_facts
 short_description: Gather FreeBSD user.localbase sysctl as a fact
 description:
-  - Queries the FreeBSD C(user.localbase) sysctl and exposes it as C(ansible_facts['local_base']).
+  - Queries the FreeBSD C(user.localbase) sysctl and exposes it as C(ansible_facts['localbase']).
 version_added: "1.0.0"
 author:
   - Juan Manuel Palacios Plaza (@jmpalacios)
@@ -29,16 +29,16 @@ options: {}
 
 EXAMPLES = r'''
 - name: Gather local base fact
-  ap_labs.freebsd_provisioning.local_base_facts:
+  ap_labs.freebsd_provisioning.localbase_facts:
 '''
 
 RETURN = r'''
 ansible_facts:
-  description: Dictionary containing the C(local_base) fact.
+  description: Dictionary containing the C(localbase) fact.
   returned: always
   type: dict
   contains:
-    local_base:
+    localbase:
       description: Path defined by the C(user.localbase) sysctl.
       type: str
       sample: /usr/local
@@ -58,7 +58,7 @@ def main():
     module.exit_json(
         changed=False,
         ansible_facts={
-            'local_base': out.strip(),
+            'localbase': out.strip(),
         },
     )
 

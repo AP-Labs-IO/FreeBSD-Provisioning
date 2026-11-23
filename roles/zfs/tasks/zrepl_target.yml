@@ -13,14 +13,14 @@
 # limitations under the License.
 ---
 - name: Gather local base fact
-  ap_labs.freebsd_provisioning.local_base_facts:
-  when: ansible_facts['local_base'] is not defined
-  tags: [local-base, facts]
+  ap_labs.freebsd_provisioning.localbase_facts:
+  when: ansible_facts['localbase'] is not defined
+  tags: [localbase, facts]
 
 - name: Install replication SSH public key
   ansible.posix.authorized_key:
     user: "{{ zfs_replication_user.name }}"
-    key_options: 'command="{{ ansible_facts["local_base"] }}/bin/zrepl stdinserver {{ hostvars[host]["ansible_facts"]["hostname"] }}",restrict'
+    key_options: 'command="{{ ansible_facts["localbase"] }}/bin/zrepl stdinserver {{ hostvars[host]["ansible_facts"]["hostname"] }}",restrict'
     key: "{{ hostvars[host]['zfs_reg_replication_pubkey']['content'] | b64decode }}"
   loop: "{{ groups['all'] | difference([inventory_hostname]) }}"
   loop_control:
