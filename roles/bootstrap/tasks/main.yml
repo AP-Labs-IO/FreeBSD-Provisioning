@@ -35,18 +35,10 @@
     file: "freebsd_{{ ansible_facts['distribution_major_version'] }}.yml"
   tags: [config]
 
-- name: Configure local base fact
+- name: Gather local base fact
+  ap_labs.freebsd_provisioning.local_base_facts:
+  when: ansible_facts['local_base'] is not defined
   tags: [local-base, facts]
-  block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: bootstrap_reg_local_base
-      changed_when: false
-
-    - name: Set local base fact
-      ansible.builtin.set_fact:
-        local_base: "{{ bootstrap_reg_local_base.stdout }}"
-        cacheable: true
 
 - name: Set hostname
   community.general.sysrc:

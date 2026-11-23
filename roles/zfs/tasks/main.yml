@@ -15,14 +15,8 @@
 - name: Configure installation paths
   tags: [installation-path, local-base, facts]
   block:
-    - name: Import local base computation
-      ansible.builtin.include_tasks:
-        file: local_base.yml
-        apply:
-          tags:
-            - always
-            - local-base
-            - facts
+    - name: Gather local base fact
+      ap_labs.freebsd_provisioning.local_base_facts:
       when: ansible_facts['local_base'] is not defined
 
     - name: Set installation path

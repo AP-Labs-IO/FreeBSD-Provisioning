@@ -15,15 +15,9 @@
 - name: Configure installation paths
   tags: [installation-path, local-base, facts]
   block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: host_tuning_reg_local_base
-      changed_when: false
-
-    - name: Set local base fact
-      ansible.builtin.set_fact:
-        local_base: "{{ host_tuning_reg_local_base.stdout }}"
-        cacheable: true
+    - name: Gather local base fact
+      ap_labs.freebsd_provisioning.local_base_facts:
+      when: ansible_facts['local_base'] is not defined
 
     - name: Set installation path
       ansible.builtin.set_fact:
