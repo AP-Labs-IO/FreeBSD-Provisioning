@@ -32,7 +32,8 @@ jobs:
 
       - name: Install collection dependencies from galaxy.yml
         run: |
-          ansible-galaxy collection install -r requirements.yml
+          yq '.dependencies | to_entries | map(.key + ":" + .value) | .[]' galaxy.yml \
+            | xargs -r ansible-galaxy collection install
 
       - name: Run ansible-lint
         run: |
