@@ -32,7 +32,7 @@ jobs:
 
       - name: Install collection dependencies from galaxy.yml
         run: |
-          ansible-galaxy collection install -r galaxy.yml
+          ansible-galaxy collection install -r requirements.yml
 
       - name: Run ansible-lint
         run: |
