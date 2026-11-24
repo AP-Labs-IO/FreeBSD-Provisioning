@@ -2,5 +2,6 @@
 *.pyc
 *.retry
 .ansible/
+changelogs/.plugin-cache.yaml
 collections/
 molecule/*/molecule.yml.bkp

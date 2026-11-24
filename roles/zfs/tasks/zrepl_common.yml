@@ -12,16 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Import local base computation
-  ansible.builtin.include_tasks:
-    file: local_base.yml
-    apply:
-      tags:
-        - always
-        - local-base
-        - facts
-  when: ansible_facts['local_base'] is not defined
-  tags: [local-base, facts]
+- name: Gather local base fact
+  ap_labs.freebsd_provisioning.localbase_facts:
+  when: ansible_facts['localbase'] is not defined
+  tags: [localbase, facts]
 
 - name: Create replication group
   ansible.builtin.group:
@@ -53,7 +47,7 @@
     - name: Install zrepl configuration
       ansible.builtin.template:
         src: "zrepl_{{ type }}.yml.j2"
-        dest: "{{ ansible_facts['local_base'] }}/etc/zrepl/zrepl.yml"
+        dest: "{{ ansible_facts['localbase'] }}/etc/zrepl/zrepl.yml"
         owner: root
         group: wheel
         mode: "0644"

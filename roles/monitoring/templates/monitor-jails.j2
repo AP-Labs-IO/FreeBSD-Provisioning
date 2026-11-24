@@ -21,7 +21,7 @@ do
     status=$(jls -j $jail --libxo=json 2>/dev/null | jq '."jail-information".jail | length')
     if [ ${status:-0} -lt 1 ]
     then
-        {{ ansible_facts['local_base'] }}/bin/apprise \
+        {{ ansible_facts['localbase'] }}/bin/apprise \
             --tag=services \
             --notification-type=FAILURE \
             --title="Jail Down Alert: $jail" \

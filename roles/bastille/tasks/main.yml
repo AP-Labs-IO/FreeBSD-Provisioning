@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-- name: Configure local base fact
-  tags: [local-base, facts]
-  block:
-    - name: Query local base
-      ansible.builtin.command: sysctl -n user.localbase
-      register: bastille_reg_local_base
-      changed_when: false
-
-    - name: Set local base fact
-      ansible.builtin.set_fact:
-        local_base: "{{ bastille_reg_local_base.stdout }}"
-        cacheable: true
+- name: Gather local base fact
+  ap_labs.freebsd_provisioning.localbase_facts:
+  when: ansible_facts['localbase'] is not defined
+  tags: [localbase, facts]
 
 - name: Load OS version-specific role constants
   ansible.builtin.include_vars:
@@ -43,7 +35,7 @@
 - name: Install Bastille configuration
   ansible.builtin.template:
     src: bastille.conf.j2
-    dest: "{{ ansible_facts['local_base'] }}/etc/bastille/bastille.conf"
+    dest: "{{ ansible_facts['localbase'] }}/etc/bastille/bastille.conf"
     owner: root
     group: wheel
     mode: "0644"

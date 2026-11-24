@@ -29,3 +29,9 @@ dependencies:
   "ansible.posix": ">=2.1.0"
   "community.general": ">=12.0.1"
   "community.crypto": ">=3.0.5"
+repository: https://github.com/AP-Labs-IO/FreeBSD-Provisioning
+documentation: https://github.com/AP-Labs-IO/FreeBSD-Provisioning/blob/main/README.md
+homepage: https://github.com/AP-Labs-IO/FreeBSD-Provisioning
+issues: https://github.com/AP-Labs-IO/FreeBSD-Provisioning/issues
+build_ignore:
+  - changelogs/.plugin-cache.yaml
