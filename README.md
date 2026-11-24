@@ -68,7 +68,7 @@ Example playbooks for projects consuming individual roles within this collection
 
 ## Requirements & Target Compatibility
 
-* Ansible Core version: `>= 2.20.0`
+* Ansible Core version: `>= 2.19.0`
 * Target Operating System: A supported release of FreeBSD (see [supported releases](https://www.freebsd.org/security/#sup)).
 * Role-specific requirements are documented in each role's `README.md` file, as mapped out above.
 
