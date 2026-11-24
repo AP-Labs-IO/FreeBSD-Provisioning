@@ -43,13 +43,13 @@ The collection is broken down into modular roles designed to be executed sequent
 
 ## Installation
 
-Configure the collection in your Ansible project's `requirements.yml` file as a `git+ssh` dependency:
+Configure the collection in your Ansible project's `requirements.yml` file:
 
 ```yaml
 ---
 collections:
-  - name: git+ssh://git@github.com/AP-Labs-IO/FreeBSD-Provisioning.git
-    version: main
+  - name: ap_labs.freebsd_provisioning
+    version: ">=1.0.0"
 ```
 
 Install it via `ansible-galaxy`:
