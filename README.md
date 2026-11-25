@@ -52,7 +52,16 @@ collections:
     version: ">=1.0.0"
 ```
 
-Install it via `ansible-galaxy`:
+If, instead, you'd like to use the latest stable sources, even if potentially unreleased, you can pull directly from GitHub via the `git+ssh` transport:
+
+```yaml
+---
+collections:
+  - name: git+ssh://git@github.com/AP-Labs-IO/FreeBSD-Provisioning.git
+    version: main
+```
+
+Finally, install the declared dependency via `ansible-galaxy`:
 
 ```bash
 ansible-galaxy collection install -r requirements.yml
