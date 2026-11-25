@@ -4,6 +4,22 @@ Ap\_Labs.Freebsd\_Provisioning Release Notes
 
 .. contents:: Topics
 
+v1.0.2
+======
+
+Release Summary
+---------------
+
+Bumped Ansible Galaxy tag.
+
+v1.0.1
+======
+
+Release Summary
+---------------
+
+Updated collection instructions and improved the localbase_facts documentation.
+
 v1.0.0
 ======
 

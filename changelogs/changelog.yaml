@@ -16,3 +16,20 @@ releases:
         name: localbase_facts
         namespace: ''
     release_date: '2026-11-23'
+  1.0.1:
+    changes:
+      release_summary: 'Updated collection instructions and improved the localbase_facts
+        documentation.
+
+        '
+    fragments:
+      - 1.0.1.yml
+    release_date: '2026-11-25'
+  1.0.2:
+    changes:
+      release_summary: 'Bumped Ansible Galaxy tag.
+
+        '
+    fragments:
+      - 1.0.2.yml
+    release_date: '2026-11-25'
