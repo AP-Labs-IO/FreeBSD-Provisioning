@@ -30,6 +30,8 @@ options: {}
 EXAMPLES = r'''
 - name: Gather local base fact
   ap_labs.freebsd_provisioning.localbase_facts:
+  when: ansible_facts['localbase'] is not defined
+  tags: [localbase, facts]
 '''
 
 RETURN = r'''
