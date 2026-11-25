@@ -1,6 +1,6 @@
 # FreeBSD Infrastructure Provisioning Collection
 
-[![Actions status](https://github.com/AP-Labs-IO/FreeBSD-Provisioning/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AP-Labs-IO/FreeBSD-Provisioning/actions/workflows/ci.yml)
+[![Actions status](https://github.com/AP-Labs-IO/FreeBSD-Provisioning/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AP-Labs-IO/FreeBSD-Provisioning/actions/workflows/ci.yml) [![Ansible Galaxy](https://shields.io/ansible/collection/v/ap_labs/freebsd_provisioning)](https://ansible.com/ui/repo/published/ap_labs/freebsd_provisioning/)
 
 This Ansible collection provides a comprehensive framework for bootstrapping, configuring, securing, and maintaining **FreeBSD** nodes. It consolidates system initialization & configuration, runtime performance tuning, storage management, network layouts, file sharing, and monitoring into a single namespace that provides porpuse-specific roles, each of which aims to accomplish its task in minimalistic fashion, relying on as many system built-in tools as possible and not bringing in any 3rd-party dependencies unless strictly necessary to accomplish its task(s).
 
