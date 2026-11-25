@@ -1,7 +1,7 @@
 ---
 namespace: ap_labs
 name: freebsd_provisioning
-version: 1.0.0
+version: 1.0.2
 readme: README.md
 authors:
   - Juan Manuel Palacios Plaza <jmpalacios@gmail.com>
